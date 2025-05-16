@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#808080" />
+  <rect x="100" y="100" width="300" height="300" fill="#9b7653" />
+  <circle cx="250" cy="250" r="100" fill="#5da130" />
+  <text x="250" y="460" font-family="Arial" font-size="24" text-anchor="middle" fill="#fff">Minecraft Hero</text>
+</svg>

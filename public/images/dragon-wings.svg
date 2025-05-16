@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#ff5722" />
+  <path d="M100,250 C100,150 200,100 250,100 C300,100 400,150 400,250 L350,300 C350,250 300,200 250,200 C200,200 150,250 150,300 Z" fill="#ff8a65" />
+  <path d="M400,250 C400,350 300,400 250,400 C200,400 100,350 100,250 L150,200 C150,250 200,300 250,300 C300,300 350,250 350,200 Z" fill="#ff8a65" />
+  <circle cx="250" cy="250" r="40" fill="#ff5722" stroke="#ff8a65" stroke-width="10" />
+  <text x="250" y="460" font-family="Arial" font-size="24" text-anchor="middle" fill="#fff">Dragon Wings</text>
+</svg>

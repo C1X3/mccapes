@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#7bc771" />
+  <rect x="150" y="100" width="200" height="300" fill="#52a447" />
+  <rect x="180" y="130" width="140" height="240" fill="#2e7d32" />
+  <rect x="220" y="100" width="60" height="300" fill="#7bc771" opacity="0.5" />
+  <rect x="150" y="200" width="200" height="60" fill="#7bc771" opacity="0.5" />
+  <circle cx="250" cy="250" r="50" fill="#2e7d32" />
+  <circle cx="250" cy="250" r="30" fill="#52a447" />
+  <circle cx="250" cy="250" r="15" fill="#7bc771" />
+  <text x="250" y="420" font-family="Arial" font-size="24" text-anchor="middle" fill="#fff">Diamond Cape</text>
+</svg>

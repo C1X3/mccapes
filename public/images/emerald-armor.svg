@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#b39986" />
+  <rect x="150" y="100" width="200" height="300" fill="#8f6e5c" />
+  <rect x="180" y="130" width="140" height="240" fill="#6d4c41" />
+  <path d="M200,150 L300,150 L320,200 L280,230 L220,230 L180,200 Z" fill="#b39986" />
+  <path d="M220,230 L280,230 L290,350 L210,350 Z" fill="#b39986" />
+  <circle cx="250" cy="190" r="15" fill="#6d4c41" />
+  <text x="250" y="420" font-family="Arial" font-size="24" text-anchor="middle" fill="#fff">Emerald Armor</text>
+</svg>
