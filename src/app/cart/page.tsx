@@ -12,6 +12,7 @@ import Footer from "@/components/Footer";
 import { toast } from "react-hot-toast";
 import { useTRPC } from "@/server/client";
 import { useMutation } from "@tanstack/react-query";
+import { PaymentType } from "@generated";
 
 interface PaymentResponse {
     orderId: string;
@@ -24,6 +25,7 @@ const CartPage = () => {
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({ name: "", email: "" });
     const [showCustomerForm, setShowCustomerForm] = useState(false);
+    const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.STRIPE);
 
     const trpc = useTRPC();
 
@@ -41,55 +43,33 @@ const CartPage = () => {
         }
     }));
 
-    // Payment method handling
-    const handlePaymentMethod = (method: string) => {
-        // If customer info is not collected yet, show the form
-        if (!showCustomerForm) {
-            setShowCustomerForm(true);
-            return;
-        }
-
-        // Validate customer info
+    const handlePaymentMethod = (method: PaymentType) => {
         if (!customerInfo.name || !customerInfo.email) {
             toast.error("Please provide your name and email");
             return;
         }
 
-        // Map payment method string to the enum value expected by the API
-        const paymentTypeMap: Record<string, "STRIPE" | "CRYPTO" | "PAYPAL" | "CASH_APP" | "VENMO"> = {
-            "Stripe": "STRIPE",
-            "Crypto": "CRYPTO",
-            "PayPal": "PAYPAL",
-            "Cash App": "CASH_APP",
-            "Venmo": "VENMO"
-        };
+        setPaymentType(method);
+        setShowCustomerForm(true);
+    };
 
-        const paymentType = paymentTypeMap[method];
-        if (!paymentType) {
-            toast.error(`Unsupported payment method: ${method}`);
-            return;
-        }
+    const handleCustomerInfoSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        setShowCustomerForm(false);
 
-        toast.success(`Processing ${method} payment...`);
+        toast.success(`Processing ${paymentType} payment...`);
 
-        // Call the API to process the payment
         processPaymentMutation.mutate({
             items: items.map(item => ({
                 productId: item.product.id,
                 quantity: item.quantity,
-                price: item.product.price
+                price: item.product.price,
+                name: item.product.name
             })),
             customerInfo,
             paymentType,
             totalPrice: totalPrice
         });
-    };
-
-    // Handle customer form submit
-    const handleCustomerInfoSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setShowCustomerForm(false);
-        // Continue with payment process using the already selected method
     };
 
     if (isLoading) {
@@ -424,7 +404,7 @@ const CartPage = () => {
 
                                                 <div className="space-y-4 mb-6">
                                                     <motion.button
-                                                        onClick={() => handlePaymentMethod("Stripe")}
+                                                        onClick={() => handlePaymentMethod(PaymentType.STRIPE)}
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.15 }}
@@ -440,7 +420,7 @@ const CartPage = () => {
                                                     </motion.button>
 
                                                     <motion.button
-                                                        onClick={() => handlePaymentMethod("Crypto")}
+                                                        onClick={() => handlePaymentMethod(PaymentType.CRYPTO)}
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.25 }}
@@ -456,7 +436,7 @@ const CartPage = () => {
                                                     </motion.button>
 
                                                     <motion.button
-                                                        onClick={() => handlePaymentMethod("PayPal")}
+                                                        onClick={() => handlePaymentMethod(PaymentType.PAYPAL)}
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.35 }}
@@ -472,7 +452,7 @@ const CartPage = () => {
                                                     </motion.button>
 
                                                     <motion.button
-                                                        onClick={() => handlePaymentMethod("Cash App")}
+                                                        onClick={() => handlePaymentMethod(PaymentType.CASH_APP)}
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.45 }}
@@ -488,7 +468,7 @@ const CartPage = () => {
                                                     </motion.button>
 
                                                     <motion.button
-                                                        onClick={() => handlePaymentMethod("Venmo")}
+                                                        onClick={() => handlePaymentMethod(PaymentType.VENMO)}
                                                         initial={{ opacity: 0, y: 20 }}
                                                         animate={{ opacity: 1, y: 0 }}
                                                         transition={{ delay: 0.55 }}

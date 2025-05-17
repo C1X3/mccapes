@@ -2,7 +2,10 @@ import { z } from 'zod';
 import { prisma } from '@/utils/prisma';
 import { baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
-import { OrderStatus } from '@generated';
+import { OrderStatus, PaymentType } from '@generated';
+import { createCheckoutSession as createStripeCheckout } from '../providers/stripe';
+import { createCheckoutSession as createPaypalCheckout } from '../providers/paypal';
+import { createCheckoutSession as createCoinbaseCheckout } from '../providers/coinbase';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -13,13 +16,14 @@ export const checkoutRouter = createTRPCRouter({
                         productId: z.string(),
                         quantity: z.number().int().positive(),
                         price: z.number().positive(),
+                        name: z.string(),
                     })
                 ),
                 customerInfo: z.object({
                     name: z.string().min(1),
                     email: z.string().email(),
                 }),
-                paymentType: z.enum(['STRIPE', 'CRYPTO', 'PAYPAL', 'CASH_APP', 'VENMO']),
+                paymentType: z.nativeEnum(PaymentType),
                 totalPrice: z.number().positive(),
             })
         )
@@ -51,28 +55,31 @@ export const checkoutRouter = createTRPCRouter({
 
                 // 2. Generate payment link based on the selected payment method
                 let paymentUrl = '';
-                const redirectUrl = `${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`;
+
+                const payloadForProviders = {
+                    orderId: order.id,
+                    items: input.items,
+                    customerInfo: input.customerInfo,
+                    totalPrice: input.totalPrice
+                };
 
                 switch (input.paymentType) {
-                    case 'STRIPE':
-                        // In a real implementation, you'd call Stripe API
-                        paymentUrl = `https://checkout.stripe.com/c/pay/cs_test_${order.id}?redirect_url=${encodeURIComponent(redirectUrl)}`;
+                    case PaymentType.STRIPE:
+                        paymentUrl = await createStripeCheckout(payloadForProviders);
                         break;
-                    case 'PAYPAL':
-                        // In a real implementation, you'd call PayPal API
-                        paymentUrl = `https://www.paypal.com/checkoutnow?token=${order.id}&redirect_url=${encodeURIComponent(redirectUrl)}`;
+                    case PaymentType.PAYPAL:
+                        paymentUrl = await createPaypalCheckout(payloadForProviders);
                         break;
-                    case 'CRYPTO':
-                        // In a real implementation, you'd generate a crypto payment address
-                        paymentUrl = `https://crypto-payment-gateway.com/pay/${order.id}?redirect_url=${encodeURIComponent(redirectUrl)}`;
+                    case PaymentType.CRYPTO:
+                        paymentUrl = await createCoinbaseCheckout(payloadForProviders);
                         break;
-                    case 'CASH_APP':
+                    case PaymentType.CASH_APP:
                         // In a real implementation, you'd call Cash App API
-                        paymentUrl = `https://cash.app/pay/${order.id}?redirect_url=${encodeURIComponent(redirectUrl)}`;
+                        paymentUrl = `https://cash.app/pay/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
                         break;
-                    case 'VENMO':
+                    case PaymentType.VENMO:
                         // In a real implementation, you'd call Venmo API
-                        paymentUrl = `https://venmo.com/checkout/${order.id}?redirect_url=${encodeURIComponent(redirectUrl)}`;
+                        paymentUrl = `https://venmo.com/checkout/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
                         break;
                     default:
                         throw new TRPCError({

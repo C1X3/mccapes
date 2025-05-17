@@ -73,9 +73,6 @@ export default function ProductFormModal({
 
     // tRPC mutations
     const createProduct = useMutation(trpc.product.create.mutationOptions({
-        onMutate: (data) => {
-            console.log(data);
-        },
         onSuccess: () => {
             toast.success("Product created successfully");
             reset();
