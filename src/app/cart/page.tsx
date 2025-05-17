@@ -4,7 +4,8 @@ import React, { useState } from "react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
-import { FaTrash, FaMinus, FaPlus, FaCreditCard, FaBitcoin, FaPaypal, FaMoneyBillWave, FaArrowLeft } from "react-icons/fa";
+import { FaTrash, FaMinus, FaPlus, FaCreditCard, FaBitcoin, FaPaypal, FaMoneyBillWave, FaArrowLeft, FaEthereum } from "react-icons/fa";
+import { SiLitecoin, SiSolana } from "react-icons/si";
 import Link from "next/link";
 import { formatPrice } from "@/utils/formatting";
 import Navbar from "@/components/Navbar/Navbar";
@@ -12,29 +13,28 @@ import Footer from "@/components/Footer";
 import { toast } from "react-hot-toast";
 import { useTRPC } from "@/server/client";
 import { useMutation } from "@tanstack/react-query";
-import { PaymentType } from "@generated";
-
-interface PaymentResponse {
-    orderId: string;
-    paymentUrl: string;
-    success: boolean;
-}
+import { CryptoType, PaymentType } from "@generated";
+import { useRouter } from "next/navigation";
 
 const CartPage = () => {
+    const router = useRouter();
+    const trpc = useTRPC();
+
     const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart } = useCart();
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
+    const [showCryptoOptions, setShowCryptoOptions] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({ name: "", email: "" });
     const [showCustomerForm, setShowCustomerForm] = useState(false);
     const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.STRIPE);
+    const [cryptoType, setCryptoType] = useState<CryptoType>(CryptoType.BITCOIN);
 
-    const trpc = useTRPC();
-
-    // Process payment mutation
     const processPaymentMutation = useMutation(trpc.checkout.processPayment.mutationOptions({
-        onSuccess: (data: PaymentResponse) => {
-            if (data.success && data.paymentUrl) {
+        onSuccess: (data) => {
+            if (data.success && data.walletDetails.url && data.paymentType !== PaymentType.CRYPTO) {
                 toast.success("Redirecting to payment...");
-                window.location.href = data.paymentUrl;
+                window.location.href = data.walletDetails.url;
+            } else if (data.success && data.paymentType === PaymentType.CRYPTO) {
+                router.push(`/order/${data.orderId}`);
             }
         },
         onError: (error) => {
@@ -45,6 +45,17 @@ const CartPage = () => {
 
     const handlePaymentMethod = (method: PaymentType) => {
         setPaymentType(method);
+        if (method === PaymentType.CRYPTO) {
+            setShowCryptoOptions(true);
+            setShowPaymentOptions(false);
+        } else {
+            setShowCustomerForm(true);
+        }
+    };
+
+    const handleCryptoType = (type: CryptoType) => {
+        setCryptoType(type);
+        setShowCryptoOptions(false);
         setShowCustomerForm(true);
     };
 
@@ -63,6 +74,7 @@ const CartPage = () => {
             })),
             customerInfo,
             paymentType,
+            cryptoType: paymentType === PaymentType.CRYPTO ? cryptoType : undefined,
             totalPrice: totalPrice
         });
 
@@ -238,7 +250,7 @@ const CartPage = () => {
                         </div>
 
                         <div className="lg:col-span-1">
-                            <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 sticky top-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-xl backdrop-blur-sm overflow-hidden" style={{ minHeight: showPaymentOptions ? '480px' : 'auto' }}>
+                            <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 sticky top-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-xl backdrop-blur-sm overflow-hidden" style={{ minHeight: showPaymentOptions || showCryptoOptions ? '480px' : 'auto' }}>
                                 <motion.div
                                     layout
                                     transition={{
@@ -246,11 +258,11 @@ const CartPage = () => {
                                         height: { duration: 0.5 }
                                     }}
                                     style={{
-                                        minHeight: showPaymentOptions ? '480px' : '350px'
+                                        minHeight: showPaymentOptions || showCryptoOptions ? '480px' : '350px'
                                     }}
                                 >
                                     <AnimatePresence mode="wait" initial={false}>
-                                        {!showPaymentOptions ? (
+                                        {!showPaymentOptions && !showCryptoOptions && !showCustomerForm ? (
                                             <motion.div
                                                 key="orderSummary"
                                                 initial={{ opacity: 0, y: 20 }}
@@ -371,16 +383,127 @@ const CartPage = () => {
                                                     </motion.button>
 
                                                     <motion.button
-                                                        onClick={() => setShowCustomerForm(false)}
+                                                        onClick={() => {
+                                                            setShowCustomerForm(false);
+                                                            if (paymentType === PaymentType.CRYPTO) {
+                                                                setShowCryptoOptions(true);
+                                                            } else {
+                                                                setShowPaymentOptions(true);
+                                                            }
+                                                        }}
                                                         whileHover={{ scale: 1.05 }}
                                                         whileTap={{ scale: 0.95 }}
                                                         type="button"
                                                         className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
                                                     >
                                                         <FaArrowLeft />
-                                                        Back to Payment Methods
+                                                        Back to {paymentType === PaymentType.CRYPTO ? "Cryptocurrency Options" : "Payment Methods"}
                                                     </motion.button>
                                                 </form>
+                                            </motion.div>
+                                        ) : showCryptoOptions ? (
+                                            <motion.div
+                                                key="cryptoOptions"
+                                                initial={{ opacity: 0, y: 40 }}
+                                                animate={{ opacity: 1, y: 0 }}
+                                                exit={{ opacity: 0, y: 40 }}
+                                                transition={{
+                                                    duration: 0.4,
+                                                    ease: [0.19, 1.0, 0.22, 1.0]
+                                                }}
+                                                className="h-full"
+                                            >
+                                                <div className="flex items-center justify-between mb-6">
+                                                    <h2 className="text-2xl font-bold text-[var(--foreground)]">
+                                                        Select Cryptocurrency
+                                                    </h2>
+                                                </div>
+
+                                                <div className="space-y-4 mb-6">
+                                                    <motion.button
+                                                        onClick={() => handleCryptoType(CryptoType.BITCOIN)}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.15 }}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        className="w-full p-4 bg-gradient-to-r from-[#f7931a] to-[#e7861a] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                                                    >
+                                                        <FaBitcoin size={24} />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-semibold">Bitcoin (BTC)</span>
+                                                            <span className="text-xs opacity-80">Pay with Bitcoin</span>
+                                                        </div>
+                                                    </motion.button>
+
+                                                    <motion.button
+                                                        onClick={() => handleCryptoType(CryptoType.ETHEREUM)}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.25 }}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        className="w-full p-4 bg-gradient-to-r from-[#627eea] to-[#3c5fea] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                                                    >
+                                                        <FaEthereum size={24} />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-semibold">Ethereum (ETH)</span>
+                                                            <span className="text-xs opacity-80">Pay with Ethereum</span>
+                                                        </div>
+                                                    </motion.button>
+
+                                                    <motion.button
+                                                        onClick={() => handleCryptoType(CryptoType.LITECOIN)}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.35 }}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        className="w-full p-4 bg-gradient-to-r from-[#b8b8b8] to-[#929292] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                                                    >
+                                                        <SiLitecoin size={24} />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-semibold">Litecoin (LTC)</span>
+                                                            <span className="text-xs opacity-80">Pay with Litecoin</span>
+                                                        </div>
+                                                    </motion.button>
+
+                                                    <motion.button
+                                                        onClick={() => handleCryptoType(CryptoType.SOLANA)}
+                                                        initial={{ opacity: 0, y: 20 }}
+                                                        animate={{ opacity: 1, y: 0 }}
+                                                        transition={{ delay: 0.45 }}
+                                                        whileHover={{ scale: 1.02 }}
+                                                        whileTap={{ scale: 0.98 }}
+                                                        className="w-full p-4 bg-gradient-to-r from-[#9945FF] to-[#14F195] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                                                    >
+                                                        <SiSolana size={24} />
+                                                        <div className="flex flex-col text-left">
+                                                            <span className="font-semibold">Solana (SOL)</span>
+                                                            <span className="text-xs opacity-80">Pay with Solana</span>
+                                                        </div>
+                                                    </motion.button>
+                                                </div>
+
+                                                <motion.div
+                                                    initial={{ opacity: 0 }}
+                                                    animate={{ opacity: 1 }}
+                                                    transition={{ delay: 0.55 }}
+                                                    className="mt-6"
+                                                >
+                                                    <motion.button
+                                                        onClick={() => {
+                                                            setShowCryptoOptions(false);
+                                                            setShowPaymentOptions(true);
+                                                        }}
+                                                        whileHover={{ scale: 1.05 }}
+                                                        whileTap={{ scale: 0.95 }}
+                                                        className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+                                                    >
+                                                        <FaArrowLeft />
+                                                        Back to Payment Methods
+                                                    </motion.button>
+                                                </motion.div>
                                             </motion.div>
                                         ) : (
                                             <motion.div

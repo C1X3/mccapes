@@ -1,0 +1,2 @@
+-- CreateEnum
+CREATE TYPE "CryptoType" AS ENUM ('SOLANA', 'BITCOIN', 'ETHEREUM', 'LITECOIN');

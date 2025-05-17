@@ -1,24 +1,8 @@
 import { Stripe } from 'stripe';
+import { CheckoutPayload } from './types';
 
 // Initialize Stripe with the secret key
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
-
-interface LineItem {
-    productId: string;
-    quantity: number;
-    price: number;
-    name: string;
-}
-
-export interface CheckoutPayload {
-    orderId: string;
-    items: LineItem[];
-    customerInfo: {
-        name: string;
-        email: string;
-    };
-    totalPrice: number;
-}
 
 export async function createCheckoutSession(payload: CheckoutPayload): Promise<string> {
     try {

@@ -2,10 +2,11 @@ import { z } from 'zod';
 import { prisma } from '@/utils/prisma';
 import { baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
-import { OrderStatus, PaymentType } from '@generated';
+import { CryptoType, OrderStatus, PaymentType } from '@generated';
 import { createCheckoutSession as createStripeCheckout } from '../providers/stripe';
 import { createCheckoutSession as createPaypalCheckout } from '../providers/paypal';
-import { createCheckoutSession as createCoinbaseCheckout } from '../providers/coinbase';
+import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
+import { WalletDetails } from '../providers/types';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -24,6 +25,7 @@ export const checkoutRouter = createTRPCRouter({
                     email: z.string().email(),
                 }),
                 paymentType: z.nativeEnum(PaymentType),
+                cryptoType: z.nativeEnum(CryptoType).optional(),
                 totalPrice: z.number().positive(),
             })
         )
@@ -45,7 +47,7 @@ export const checkoutRouter = createTRPCRouter({
                 });
 
                 // 2. Generate payment link based on the selected payment method
-                let paymentUrl = '';
+                let walletDetails: WalletDetails | undefined;
 
                 const payloadForProviders = {
                     orderId: order.id,
@@ -56,30 +58,45 @@ export const checkoutRouter = createTRPCRouter({
 
                 switch (input.paymentType) {
                     case PaymentType.STRIPE:
-                        paymentUrl = await createStripeCheckout(payloadForProviders);
+                        walletDetails = {
+                            amount: input.totalPrice.toFixed(2),
+                            address: "",
+                            url: await createStripeCheckout(payloadForProviders),
+                        };
                         break;
                     case PaymentType.PAYPAL:
-                        paymentUrl = await createPaypalCheckout(payloadForProviders);
+                        walletDetails = {
+                            amount: input.totalPrice.toFixed(2),
+                            address: "",
+                            url: await createPaypalCheckout(payloadForProviders),
+                        };
                         break;
                     case PaymentType.CRYPTO:
-                        paymentUrl = await createCoinbaseCheckout(payloadForProviders);
+                        if (!input.cryptoType) {
+                            throw new TRPCError({
+                                code: 'BAD_REQUEST',
+                                message: 'Crypto type is required for crypto payments',
+                            });
+                        }
+
+                        walletDetails = await createCryptoCheckout(payloadForProviders, input.cryptoType);
                         break;
-                    case PaymentType.CASH_APP:
-                        // In a real implementation, you'd call Cash App API
-                        paymentUrl = `https://cash.app/pay/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
-                        break;
-                    case PaymentType.VENMO:
-                        // In a real implementation, you'd call Venmo API
-                        paymentUrl = `https://venmo.com/checkout/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
-                        break;
+                    // case PaymentType.CASH_APP:
+                    //     // In a real implementation, you'd call Cash App API
+                    //     paymentUrl = `https://cash.app/pay/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
+                    //     break;
+                    // case PaymentType.VENMO:
+                    //     // In a real implementation, you'd call Venmo API
+                    //     paymentUrl = `https://venmo.com/checkout/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
+                    //     break;
                     default:
                         throw new TRPCError({
                             code: 'BAD_REQUEST',
-                            message: 'Invalid payment method',
+                            message: 'Payment Method Coming Soon',
                         });
                 }
 
-                if (paymentUrl) {
+                if (walletDetails) {
                     for (const item of input.items) {
                         const product = await prisma.product.findUnique({
                             where: { id: item.productId },
@@ -123,7 +140,8 @@ export const checkoutRouter = createTRPCRouter({
 
                 return {
                     orderId: order.id,
-                    paymentUrl,
+                    paymentType: input.paymentType,
+                    walletDetails,
                     success: true,
                 };
             } catch (err) {
@@ -133,6 +151,35 @@ export const checkoutRouter = createTRPCRouter({
                     message: 'Failed to process payment',
                 });
             }
+        }),
+
+    getCryptoWalletDetails: baseProcedure
+        .input(z.object({ orderId: z.string() }))
+        .query(async ({ input }) => {
+            const order = await prisma.order.findUnique({
+                where: { id: input.orderId },
+            });
+
+            if (!order) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Order not found',
+                });
+            }
+
+            const wallet = await prisma.wallet.findFirst({
+                where: { orderId: input.orderId },
+                orderBy: { depositIndex: 'asc' },
+            });
+
+            if (!wallet) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Wallet not found',
+                });
+            }
+
+            return wallet;
         }),
 
     getOrderStatus: baseProcedure
@@ -164,20 +211,20 @@ export const checkoutRouter = createTRPCRouter({
             } else {
                 return prisma.order.findUnique({
                     where: { id: input.orderId },
-                    include: {
+                    select: {
+                        id: true,
+                        status: true,
+                        createdAt: true,
+                        paymentType: true,
                         OrderItem: {
-                            include: {
-                                product: true,
-                            },
                             select: {
                                 quantity: true,
                                 price: true,
                                 product: true,
-                                codes: false
                             }
                         },
-                        CustomerInformation: true,
-                    },
+                        CustomerInformation: true
+                    }
                 });
             }
         }),

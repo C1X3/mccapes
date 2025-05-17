@@ -45,6 +45,7 @@ const Page = async ({ params, searchParams }: {
         });
     }
 
+    prefetch(trpc.checkout.getCryptoWalletDetails.queryOptions({ orderId: id }));
     prefetch(trpc.checkout.getOrderStatus.queryOptions({ orderId: id }));
 
     return <OrderPage id={id} />;

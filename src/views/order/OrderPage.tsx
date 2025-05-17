@@ -1,46 +1,53 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/utils/formatting";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { FaCheck, FaClock, FaExclamationTriangle, FaShippingFast, FaTimesCircle, FaCopy } from "react-icons/fa";
+import {
+    FaCheck,
+    FaClock,
+    FaExclamationTriangle,
+    FaShippingFast,
+    FaTimesCircle,
+    FaCopy,
+    FaBitcoin,
+    FaEthereum
+} from "react-icons/fa";
+import { SiLitecoin, SiSolana } from "react-icons/si";
 import { useTRPC } from "@/server/client";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import QRCode from "react-qr-code";
+import { CryptoType, OrderStatus } from "@generated";
 
-type OrderStatusType = "PENDING" | "PAID" | "DELIVERED" | "CANCELLED";
-
-// Type definition based on the prisma schema
-type OrderItem = {
-    id: string;
-    orderId: string;
-    productId: string;
-    quantity: number;
-    price: number;
-    codes: string[];
-    createdAt: Date;
-    updatedAt: Date;
-    product: {
-        id: string;
-        name: string;
-        description: string;
-        price: number;
-        stock: string[];
-        image: string;
-        additionalImages: string[];
-        category: string;
-        badge: string;
-        rating: number;
-        features: string[];
-        createdAt: Date;
-        updatedAt: Date;
-    };
+// Confirmation thresholds for different crypto types
+const CONFIRMATION_THRESHOLDS: Record<CryptoType, number> = {
+    [CryptoType.BITCOIN]: 3,
+    [CryptoType.LITECOIN]: 6,
+    [CryptoType.ETHEREUM]: 12,
+    [CryptoType.SOLANA]: 1,
 };
 
-const StatusBadge = ({ status }: { status: OrderStatusType }) => {
+// Icons for different crypto types
+const CRYPTO_ICONS: Record<CryptoType, React.ReactNode> = {
+    [CryptoType.BITCOIN]: <FaBitcoin className="text-[#f7931a]" />,
+    [CryptoType.ETHEREUM]: <FaEthereum className="text-[#627eea]" />,
+    [CryptoType.LITECOIN]: <SiLitecoin className="text-[#345d9d]" />,
+    [CryptoType.SOLANA]: <SiSolana className="text-[#14f195]" />,
+};
+
+// Background gradients for different crypto types
+const CRYPTO_GRADIENTS: Record<CryptoType, string> = {
+    [CryptoType.BITCOIN]: "from-[#f7931a]/10 to-[#f7931a]/5",
+    [CryptoType.ETHEREUM]: "from-[#627eea]/10 to-[#627eea]/5",
+    [CryptoType.LITECOIN]: "from-[#345d9d]/10 to-[#345d9d]/5",
+    [CryptoType.SOLANA]: "from-[#14f195]/10 to-[#14f195]/5",
+};
+
+const StatusBadge = ({ status }: { status: OrderStatus }) => {
     let color = "";
     let Icon = FaClock;
     let text = "Processing";
@@ -76,13 +83,33 @@ const StatusBadge = ({ status }: { status: OrderStatusType }) => {
     );
 };
 
+const ConfirmationProgress = ({ confirmations, cryptoType }: { confirmations: number, cryptoType: CryptoType }) => {
+    const threshold = CONFIRMATION_THRESHOLDS[cryptoType];
+    const progressPercentage = Math.min((confirmations / threshold) * 100, 100);
+
+    return (
+        <div className="mt-4">
+            <div className="flex justify-between mb-2">
+                <span className="text-sm text-[var(--foreground)]">Confirmations: {confirmations}/{threshold}</span>
+                <span className="text-sm text-[var(--primary)]">{progressPercentage.toFixed(0)}%</span>
+            </div>
+            <div className="h-2 bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] rounded-full overflow-hidden">
+                <div
+                    className="h-full bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)]"
+                    style={{ width: `${progressPercentage}%` }}
+                ></div>
+            </div>
+        </div>
+    );
+};
+
 const OrderPage = ({ id }: { id: string }) => {
     const trpc = useTRPC();
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState<string | null>(null);
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-    const { data: order, isLoading: isOrderLoading, error: orderError } = useQuery(trpc.checkout.getOrderStatus.queryOptions(
+    const { data: walletDetails, isLoading: isWalletLoading, error: walletError } = useQuery(trpc.checkout.getCryptoWalletDetails.queryOptions({ orderId: id }));
+
+    const { data: order, isLoading: isOrderLoading, error: orderError, refetch: refetchOrder } = useQuery(trpc.checkout.getOrderStatus.queryOptions(
         { orderId: id as string },
         {
             enabled: !!id,
@@ -92,14 +119,23 @@ const OrderPage = ({ id }: { id: string }) => {
         }
     ));
 
+    const markAsDelivered = useMutation(trpc.checkout.updateOrderStatus.mutationOptions());
+    const isLoading = useMemo(() => isWalletLoading || isOrderLoading, [isWalletLoading, isOrderLoading]);
+    const error = useMemo(() => orderError || walletError, [orderError, walletError]);
+
     useEffect(() => {
-        if (orderError) {
-            setError(orderError.message || "Failed to load order");
-            setIsLoading(false);
-        } else if (!isOrderLoading) {
-            setIsLoading(false);
+        const iv = setInterval(refetchOrder, 3000);
+        return () => clearInterval(iv);
+    }, [refetchOrder]);
+
+    useEffect(() => {
+        if (order?.status === "PAID") {
+            markAsDelivered.mutate({
+                orderId: id,
+                status: 'DELIVERED'
+            });
         }
-    }, [isOrderLoading, orderError]);
+    }, [order?.status, markAsDelivered, id]);
 
     const copyToClipboard = (code: string) => {
         navigator.clipboard.writeText(code).then(() => {
@@ -107,6 +143,8 @@ const OrderPage = ({ id }: { id: string }) => {
             setTimeout(() => setCopiedCode(null), 2000);
         });
     };
+
+    const showCryptoPaymentDetails = order?.paymentType === "CRYPTO" && order?.status === "PENDING" && walletDetails;
 
     if (isLoading) {
         return (
@@ -137,7 +175,7 @@ const OrderPage = ({ id }: { id: string }) => {
                                 </div>
                                 <h1 className="text-2xl font-bold mb-4 text-[var(--foreground)]">Order Not Found</h1>
                                 <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-8">
-                                    {error || "We couldn't find the order you're looking for."}
+                                    {error?.message || "We couldn't find the order you're looking for."}
                                 </p>
                                 <Link href="/shop">
                                     <motion.button
@@ -158,7 +196,7 @@ const OrderPage = ({ id }: { id: string }) => {
     }
 
     // Calculate order totals
-    const subtotal = order.OrderItem.reduce((sum: number, item: OrderItem) => sum + (item.price * item.quantity), 0);
+    const subtotal = order.OrderItem.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const customerInfo = order.CustomerInformation[0];
 
     return (
@@ -174,6 +212,116 @@ const OrderPage = ({ id }: { id: string }) => {
                         <div className="h-1 w-20 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] mx-auto rounded-full"></div>
                     </div>
 
+                    {showCryptoPaymentDetails && (
+                        <div className="mb-8">
+                            <div className={`bg-gradient-to-b ${CRYPTO_GRADIENTS[walletDetails.chain]} rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-lg backdrop-blur-sm`}>
+                                <div className="flex items-center justify-between mb-4">
+                                    <div className="flex items-center">
+                                        <div className="w-10 h-10 flex items-center justify-center mr-3 text-2xl">
+                                            {CRYPTO_ICONS[walletDetails.chain]}
+                                        </div>
+                                        <h2 className="text-xl font-bold text-[var(--foreground)]">
+                                            {walletDetails.chain} Payment
+                                        </h2>
+                                    </div>
+                                    <StatusBadge status={order.status} />
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6">
+                                    <div className="flex flex-col items-center justify-center md:col-span-2">
+                                        <div className="bg-white p-3 rounded-xl shadow-md w-full max-w-[220px]">
+                                            <QRCode
+                                                value={walletDetails.address}
+                                                size={200}
+                                                level="H"
+                                                className="w-full h-auto"
+                                                fgColor="#000000"
+                                                bgColor="#ffffff"
+                                            />
+                                        </div>
+
+                                        <div className="mt-4 text-center">
+                                            <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                                Scan this QR code with your wallet app
+                                            </p>
+                                        </div>
+                                    </div>
+
+                                    <div className="flex flex-col md:col-span-3">
+                                        <div className="bg-[color-mix(in_srgb,var(--background),#fff_5%)] rounded-xl p-6 h-full">
+                                            <h3 className="text-lg font-medium text-[var(--foreground)] mb-4 flex items-center">
+                                                <span className="bg-[var(--primary)]/10 text-[var(--primary)] w-7 h-7 flex items-center justify-center rounded-full mr-2 text-sm">1</span>
+                                                Payment Details
+                                            </h3>
+
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="text-sm font-medium text-[var(--foreground)] mb-1 block">Send Amount</label>
+                                                    <div className="flex items-center">
+                                                        <div
+                                                            className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 rounded-md font-mono text-base flex-grow mr-2 cursor-pointer hover:bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] transition-colors"
+                                                            onClick={() => copyToClipboard(walletDetails.expectedAmount?.toString())}
+                                                            title="Click to copy amount"
+                                                        >
+                                                            <span className="font-bold">{walletDetails.expectedAmount?.toString()}</span>
+                                                        </div>
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => copyToClipboard(walletDetails.expectedAmount?.toString())}
+                                                            className="p-2 bg-[color-mix(in_srgb,var(--primary),#fff_90%)] text-[var(--primary)] rounded-md"
+                                                        >
+                                                            {copiedCode === walletDetails.expectedAmount?.toString() ? <FaCheck /> : <FaCopy />}
+                                                        </motion.button>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="text-sm font-medium text-[var(--foreground)] mb-1 block">Wallet Address</label>
+                                                    <div className="flex items-center">
+                                                        <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 rounded-md overflow-hidden text-ellipsis font-mono text-sm flex-grow mr-2 cursor-pointer hover:bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] transition-colors"
+                                                            onClick={() => copyToClipboard(walletDetails.address)}
+                                                            title="Click to copy address"
+                                                        >
+                                                            {walletDetails.address}
+                                                        </div>
+                                                        <motion.button
+                                                            whileHover={{ scale: 1.05 }}
+                                                            whileTap={{ scale: 0.95 }}
+                                                            onClick={() => copyToClipboard(walletDetails.address)}
+                                                            className="p-2 bg-[color-mix(in_srgb,var(--primary),#fff_90%)] text-[var(--primary)] rounded-md"
+                                                        >
+                                                            {copiedCode === walletDetails.address ? <FaCheck /> : <FaCopy />}
+                                                        </motion.button>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <h3 className="text-lg font-medium text-[var(--foreground)] mt-6 mb-4 flex items-center">
+                                                <span className="bg-[var(--primary)]/10 text-[var(--primary)] w-7 h-7 flex items-center justify-center rounded-full mr-2 text-sm">2</span>
+                                                Payment Status
+                                            </h3>
+
+                                            <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-4 rounded-lg mb-4">
+                                                <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                                    {walletDetails.paid
+                                                        ? <span className="flex items-center"><FaCheck className="text-green-500 mr-2" /> Payment received! Waiting for network confirmations.</span>
+                                                        : <span className="flex items-center"><FaClock className="text-yellow-500 mr-2" /> Waiting for payment. This may take a few minutes after sending.</span>
+                                                    }
+                                                </p>
+                                            </div>
+
+                                            <ConfirmationProgress
+                                                confirmations={walletDetails.confirmations || 0}
+                                                cryptoType={walletDetails.chain}
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
                         <div className="md:col-span-2 space-y-6">
                             {/* Order Status Card */}
@@ -185,7 +333,7 @@ const OrderPage = ({ id }: { id: string }) => {
                                             Placed on {new Date(order.createdAt).toLocaleDateString()}
                                         </p>
                                     </div>
-                                    <StatusBadge status={order.status as OrderStatusType} />
+                                    <StatusBadge status={order.status} />
                                 </div>
                             </div>
 
@@ -194,7 +342,7 @@ const OrderPage = ({ id }: { id: string }) => {
                                 <h2 className="text-xl font-bold mb-4 text-[var(--foreground)]">Items</h2>
                                 <div className="space-y-4">
                                     {order.OrderItem.map((item) => (
-                                        <div key={item.id} className="flex flex-col py-3 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] last:border-0">
+                                        <div key={item.product.id} className="flex flex-col py-3 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] last:border-0">
                                             <div className="flex items-center space-x-4">
                                                 <div className="w-16 h-16 relative bg-gradient-to-br from-[color-mix(in_srgb,var(--primary),#fff_95%)] to-[color-mix(in_srgb,var(--secondary),#fff_95%)] rounded-lg overflow-hidden flex-shrink-0">
                                                     <Image
@@ -219,48 +367,49 @@ const OrderPage = ({ id }: { id: string }) => {
                                             </div>
 
                                             {/* Show codes only for PAID or DELIVERED orders */}
-                                            {(order.status === "PAID" || order.status === "DELIVERED") && item.codes && item.codes.length > 0 && (
-                                                <div className="mt-4 w-full">
-                                                    <div className="flex justify-between items-center mb-2">
-                                                        <h4 className="font-medium text-sm text-[var(--foreground)]">Your Code{item.codes.length > 1 ? "s" : ""}:</h4>
-                                                        <motion.button
-                                                            whileHover={{ scale: 1.05 }}
-                                                            whileTap={{ scale: 0.95 }}
-                                                            onClick={() => copyToClipboard(item.codes.join('\n'))}
-                                                            className="flex items-center px-2 py-1 text-xs bg-[color-mix(in_srgb,var(--primary),#fff_90%)] text-[var(--primary)] rounded"
-                                                        >
-                                                            {copiedCode === item.codes.join('\n') ? "Copied All!" : "Copy All"}
-                                                            <FaCopy className="ml-1" />
-                                                        </motion.button>
+                                            {(order.status === "PAID" || order.status === "DELIVERED") &&
+                                                ('codes' in item && Array.isArray(item.codes) && item.codes.length > 0) && (
+                                                    <div className="mt-4 w-full">
+                                                        <div className="flex justify-between items-center mb-2">
+                                                            <h4 className="font-medium text-sm text-[var(--foreground)]">Your Code{(item.codes as string[]).length > 1 ? "s" : ""}:</h4>
+                                                            <motion.button
+                                                                whileHover={{ scale: 1.05 }}
+                                                                whileTap={{ scale: 0.95 }}
+                                                                onClick={() => copyToClipboard((item.codes as string[]).join('\n'))}
+                                                                className="flex items-center px-2 py-1 text-xs bg-[color-mix(in_srgb,var(--primary),#fff_90%)] text-[var(--primary)] rounded"
+                                                            >
+                                                                {copiedCode === (item.codes as string[]).join('\n') ? "Copied All!" : "Copy All"}
+                                                                <FaCopy className="ml-1" />
+                                                            </motion.button>
+                                                        </div>
+                                                        <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] rounded-md p-3 overflow-x-auto">
+                                                            {(item.codes as string[]).map((code: string, index: number) => (
+                                                                <div key={index} className="flex items-center justify-between mb-2 last:mb-0">
+                                                                    <pre
+                                                                        className="text-sm font-mono text-[var(--foreground)] cursor-pointer flex-grow px-2 py-1 rounded hover:bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]"
+                                                                        onClick={() => copyToClipboard(code)}
+                                                                        title="Click to copy"
+                                                                    >
+                                                                        {code}
+                                                                    </pre>
+                                                                    <motion.button
+                                                                        whileHover={{ scale: 1.05 }}
+                                                                        whileTap={{ scale: 0.95 }}
+                                                                        onClick={() => copyToClipboard(code)}
+                                                                        className="ml-2 p-1 text-xs text-[var(--primary)] rounded hover:bg-[color-mix(in_srgb,var(--primary),#fff_90%)]"
+                                                                        title="Copy code"
+                                                                    >
+                                                                        {copiedCode === code ? (
+                                                                            <FaCheck className="text-green-500" />
+                                                                        ) : (
+                                                                            <FaCopy />
+                                                                        )}
+                                                                    </motion.button>
+                                                                </div>
+                                                            ))}
+                                                        </div>
                                                     </div>
-                                                    <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] rounded-md p-3 overflow-x-auto">
-                                                        {item.codes.map((code, index) => (
-                                                            <div key={index} className="flex items-center justify-between mb-2 last:mb-0">
-                                                                <pre
-                                                                    className="text-sm font-mono text-[var(--foreground)] cursor-pointer flex-grow px-2 py-1 rounded hover:bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]"
-                                                                    onClick={() => copyToClipboard(code)}
-                                                                    title="Click to copy"
-                                                                >
-                                                                    {code}
-                                                                </pre>
-                                                                <motion.button
-                                                                    whileHover={{ scale: 1.05 }}
-                                                                    whileTap={{ scale: 0.95 }}
-                                                                    onClick={() => copyToClipboard(code)}
-                                                                    className="ml-2 p-1 text-xs text-[var(--primary)] rounded hover:bg-[color-mix(in_srgb,var(--primary),#fff_90%)]"
-                                                                    title="Copy code"
-                                                                >
-                                                                    {copiedCode === code ? (
-                                                                        <FaCheck className="text-green-500" />
-                                                                    ) : (
-                                                                        <FaCopy />
-                                                                    )}
-                                                                </motion.button>
-                                                            </div>
-                                                        ))}
-                                                    </div>
-                                                </div>
-                                            )}
+                                                )}
                                         </div>
                                     ))}
                                 </div>
@@ -296,6 +445,7 @@ const OrderPage = ({ id }: { id: string }) => {
                                     <p className="text-sm font-medium text-[var(--foreground)] mb-2">Payment Method</p>
                                     <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                         {order.paymentType.replace('_', ' ')}
+                                        {order.paymentType === "CRYPTO" && walletDetails?.chain && ` (${walletDetails.chain})`}
                                     </p>
                                 </div>
 

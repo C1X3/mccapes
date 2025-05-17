@@ -1,0 +1,23 @@
+enum CryptoType {
+  BITCOIN
+  ETHEREUM
+  LITECOIN
+  SOLANA
+}
+
+model Wallet {
+  id             String      @id @default(cuid())
+  orderId        String
+  order          Order       @relation(fields: [orderId], references: [id])
+  
+  chain          CryptoType
+  depositIndex   Int
+  address        String      @unique
+  expectedAmount Decimal     @db.Decimal(30, 18)
+  paid           Boolean     @default(false)
+  txHash         String?
+  confirmations  Int? @default(0)
+  
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+}
