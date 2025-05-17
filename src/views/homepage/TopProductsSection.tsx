@@ -173,7 +173,7 @@ const TopProductsSection = () => {
                 </motion.div>
             </div>
         </section>
-    )
-}
+    );
+};
 
 export default TopProductsSection;

@@ -38,7 +38,7 @@ const items = [
     label: "Vouches",
     href: "/vouches",
   },
-]
+];
 
 const NavMenu = () => {
   return (

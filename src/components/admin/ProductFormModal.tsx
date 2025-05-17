@@ -7,6 +7,7 @@ import { FaTimes } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { Prisma } from "@generated";
 import { useTRPC } from "@/server/client";
+import { useMutation } from "@tanstack/react-query";
 
 type ProductFormModalProps = {
     isOpen: boolean;
@@ -38,7 +39,7 @@ export default function ProductFormModal({
             name: "",
             description: "",
             price: 0,
-            stock: 0,
+            stock: [],
             image: "",
             additionalImages: [],
             category: "",
@@ -58,7 +59,7 @@ export default function ProductFormModal({
                 name: "",
                 description: "",
                 price: 0,
-                stock: 0,
+                stock: [],
                 image: "",
                 additionalImages: [],
                 category: "",
@@ -71,7 +72,7 @@ export default function ProductFormModal({
     }, [initialData, reset]);
 
     // tRPC mutations
-    const createProduct = trpc.product.create.use({
+    const createProduct = useMutation(trpc.product.create.mutationOptions({
         onMutate: (data) => {
             console.log(data);
         },
@@ -84,9 +85,9 @@ export default function ProductFormModal({
         onError: (error) => {
             toast.error(`Error creating product: ${error.message}`);
         },
-    });
+    }));
 
-    const updateProduct = trpc.product.update.useMutation({
+    const updateProduct = useMutation(trpc.product.update.mutationOptions({
         onSuccess: () => {
             toast.success("Product updated successfully");
             onClose();
@@ -95,7 +96,7 @@ export default function ProductFormModal({
         onError: (error) => {
             toast.error(`Error updating product: ${error.message}`);
         },
-    });
+    }));
 
     const handleAddAdditionalImage = () => {
         if (newImageUrl && !additionalImageUrls.includes(newImageUrl)) {
@@ -120,6 +121,7 @@ export default function ProductFormModal({
             ...data,
             additionalImages: additionalImageUrls,
             features: data.features as string[],
+            stock: data.stock as string[],
         };
 
         if (isEditing && initialData?.id) {
@@ -219,72 +221,82 @@ export default function ProductFormModal({
                     </div>
 
                     {/* Price + Stock */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div>
-                            <label htmlFor="price" className="block text-[var(--foreground)] mb-2">
-                                Price ($) *
-                            </label>
-                            <Controller
-                                name="price"
-                                control={control}
-                                rules={{
-                                    required: "Price is required",
-                                    min: { value: 0, message: "Price must be a positive number" },
-                                }}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <input
-                                            id="price"
-                                            type="number"
-                                            step="0.01"
-                                            value={field.value as number}
-                                            onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                                            onBlur={field.onBlur}
-                                            className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                                            placeholder="Enter price"
-                                        />
-                                        {fieldState.error && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {fieldState.error.message}
-                                            </p>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
-
-                        <div>
-                            <label htmlFor="stock" className="block text-[var(--foreground)] mb-2">
-                                Stock *
-                            </label>
-                            <Controller
-                                name="stock"
-                                control={control}
-                                rules={{
-                                    required: "Stock is required",
-                                    min: { value: 0, message: "Stock must be a positive number" },
-                                }}
-                                render={({ field, fieldState }) => (
-                                    <>
-                                        <input
-                                            id="stock"
-                                            type="number"
-                                            value={field.value as number}
-                                            onChange={(e) => field.onChange(parseInt(e.target.value, 10))}
-                                            onBlur={field.onBlur}
-                                            className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                                            placeholder="Enter stock"
-                                        />
-                                        {fieldState.error && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {fieldState.error.message}
-                                            </p>
-                                        )}
-                                    </>
-                                )}
-                            />
-                        </div>
+                    <div>
+                        <label htmlFor="price" className="block text-[var(--foreground)] mb-2">
+                            Price ($) *
+                        </label>
+                        <Controller
+                            name="price"
+                            control={control}
+                            rules={{
+                                required: "Price is required",
+                                min: { value: 0, message: "Price must be a positive number" },
+                            }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <input
+                                        id="price"
+                                        type="number"
+                                        step="0.01"
+                                        value={field.value as number}
+                                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                                        onBlur={field.onBlur}
+                                        className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                                        placeholder="Enter price"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {fieldState.error.message}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        />
                     </div>
+
+                    {/* Stock */}
+                    <Controller
+                        name="stock"
+                        control={control}
+                        rules={{
+                            required: "At least one stock code is required",
+                        }}
+                        render={({ field, fieldState }) => (
+                            <div>
+                                <label htmlFor="stock" className="block text-[var(--foreground)] mb-2">
+                                    Stock *
+                                </label>
+                                <textarea
+                                    id="stock"
+                                    rows={6}
+                                    value={field.value as string[]}
+                                    onChange={(val) => {
+                                        const arr = val.target.value
+                                            .split("\n")
+                                            .map((s) => s.trim())
+                                            .filter(Boolean);
+                                        field.onChange(arr);
+                                    }}
+                                    onBlur={field.onBlur}
+                                    placeholder="Enter one code per line"
+                                    className="
+                                            w-full p-3
+                                            bg-[color-mix(in_srgb,var(--background),#333_15%)]
+                                            border rounded-lg
+                                            text-[var(--foreground)]
+                                            focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+                                            border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]
+                                            resize-vertical
+                                        "
+                                />
+                                {fieldState.error && (
+                                    <p className="text-red-500 text-sm mt-1">
+                                        {fieldState.error.message}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+                    />
 
                     {/* Category */}
                     <div>
@@ -511,5 +523,4 @@ export default function ProductFormModal({
             </motion.div>
         </motion.div>
     );
-
-} 
+}

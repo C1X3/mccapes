@@ -7,6 +7,7 @@ import ProductCard from "@/components/ProductCard";
 import { FaSearch } from "react-icons/fa";
 import { useTRPC } from "@/server/client";
 import { useQuery } from "@tanstack/react-query";
+import { ProductGetAllOutput } from "@/server/routes/_app";
 
 const ShopPage = () => {
     const trpc = useTRPC();
@@ -18,7 +19,7 @@ const ShopPage = () => {
     } = useQuery(trpc.product.getAll.queryOptions());
 
     // Local UI state
-    const [filteredProducts, setFilteredProducts] = useState<typeof products>([]);
+    const [filteredProducts, setFilteredProducts] = useState<ProductGetAllOutput>([]);
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [searchQuery, setSearchQuery] = useState<string>("");
 

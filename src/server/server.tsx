@@ -1,10 +1,11 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'server-only';
-import { createTRPCContext, createTRPCOptionsProxy, TRPCQueryOptions } from '@trpc/tanstack-react-query';
+import { createTRPCOptionsProxy, TRPCQueryOptions } from '@trpc/tanstack-react-query';
 import { cache } from 'react';
 import { makeQueryClient } from './query-client';
 import { appRouter } from './routes/_app';
 import { dehydrate, HydrationBoundary } from '@tanstack/react-query';
+import { createTRPCContext } from './init';
 
 export const getQueryClient = cache(makeQueryClient);
 export const trpc = createTRPCOptionsProxy({

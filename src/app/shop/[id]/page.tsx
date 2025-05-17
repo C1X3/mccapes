@@ -9,7 +9,12 @@ const Page = async ({ params }: { params: Promise<{ id: string }> }) => {
         },
     });
 
-    return <ProductPage product={product || undefined} />
-}
+    const stockCount = product?.stock.length;
+    if (!product) return null;
+
+    product.stock = [];
+
+    return <ProductPage product={product || undefined} stockCount={stockCount} />;
+};
 
 export default Page;

@@ -82,7 +82,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
                 return [...currentItems, {
                     id: `${product.id}-${Date.now()}`,
                     product,
-                    quantity
+                    quantity,
                 }];
             }
         });

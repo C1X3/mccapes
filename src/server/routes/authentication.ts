@@ -6,7 +6,7 @@ import { cookies } from "next/headers";
 export const authenticationRouter = createTRPCRouter({
   authenticate: baseProcedure
     .input(z.object({ password: z.string() }))
-    .mutation(async ({ input, ctx }) => {
+    .mutation(async ({ input }) => {
       const { password } = input;
 
       // Check if the password is correct
@@ -26,14 +26,11 @@ export const authenticationRouter = createTRPCRouter({
       return true;
     }),
 
-  isAuthenticated: baseProcedure.query(async ({ ctx }) => {
+  isAuthenticated: baseProcedure.query(async ({ }) => {
     // Check if the authenticated cookie is set
     const sessionCookie = (await cookies()).get("authenticated");
     if (!sessionCookie) {
-      throw new TRPCError({
-        code: "UNAUTHORIZED",
-        message: "Not authenticated",
-      });
+      return false;
     }
 
     // Return a success message

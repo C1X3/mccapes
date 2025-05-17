@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { FaEdit, FaTrash, FaPlus, FaEye, FaLock } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
-import { toast, Toaster } from "react-hot-toast";
+import { toast } from "react-hot-toast";
 import ProductFormModal from "@/components/admin/ProductFormModal";
 import { Prisma, Product } from "@generated";
 import { useMutation, useQuery } from "@tanstack/react-query";
@@ -37,7 +37,7 @@ export default function AdminDashboard() {
             isAuthenticated.refetch();
         },
     }));
-    const products = useQuery(trpc.product.getAll.queryOptions());
+    const products = useQuery(trpc.product.getAllWithStock.queryOptions());
     const deleteProductMutation = useMutation(trpc.product.delete.mutationOptions({
         onSuccess: () => {
             toast.success("Product deleted successfully");
@@ -83,8 +83,6 @@ export default function AdminDashboard() {
     return (
         <div className="min-h-screen bg-[var(--background)]">
             {/* Toast notifications */}
-            <Toaster position="top-right" />
-
             <header className="py-8 flex items-center justify-center relative flex-col">
                 <Navbar />
             </header>
@@ -92,7 +90,7 @@ export default function AdminDashboard() {
             <main className="container mx-auto px-4 py-12">
                 {/* Password Dialog */}
                 <AnimatePresence>
-                    {!isAuthenticated && (
+                    {!isAuthenticated.isLoading && isAuthenticated.data === false && (
                         <motion.div
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -151,6 +149,11 @@ export default function AdminDashboard() {
                                 </form>
                             </motion.div>
                         </motion.div>
+                    )}
+                    {isAuthenticated.isLoading && (
+                        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
+                        </div>
                     )}
                 </AnimatePresence>
 
@@ -233,7 +236,7 @@ export default function AdminDashboard() {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {!products.error && products.data?.map((product: Product) => (
+                                            {!products.error && products.data?.map((product) => (
                                                 <tr
                                                     key={product.id}
                                                     className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
@@ -252,14 +255,14 @@ export default function AdminDashboard() {
                                                     </td>
                                                     <td className="py-4 px-2 text-[var(--foreground)]">
                                                         <span
-                                                            className={`px-2 py-1 rounded-full text-xs ${product.stock > 10
+                                                            className={`px-2 py-1 rounded-full text-xs ${product.stock.length > 10
                                                                 ? "bg-green-100 text-green-800"
-                                                                : product.stock > 0
+                                                                : product.stock.length > 0
                                                                     ? "bg-orange-100 text-orange-800"
                                                                     : "bg-red-100 text-red-800"
                                                                 }`}
                                                         >
-                                                            {product.stock}
+                                                            {product.stock.length}
                                                         </span>
                                                     </td>
                                                     <td className="py-4 px-2 text-right">

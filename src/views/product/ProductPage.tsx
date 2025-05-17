@@ -9,8 +9,9 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { FaArrowLeft, FaStar, FaMinus, FaPlus, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
+import { toast } from "react-hot-toast";
 
-const ProductPage = ({ product }: { product?: Product }) => {
+const ProductPage = ({ product, stockCount }: { product?: Product, stockCount?: number }) => {
     const router = useRouter();
     const { addItem } = useCart();
 
@@ -19,7 +20,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
     const [isAdding, setIsAdding] = useState(false);
 
     const handleIncrementQuantity = () => {
-        if (product && quantity < product.stock!) {
+        if (product && quantity < stockCount!) {
             setQuantity(prev => prev + 1);
         }
     };
@@ -39,7 +40,8 @@ const ProductPage = ({ product }: { product?: Product }) => {
         addItem(product, quantity);
         setIsAdding(false);
 
-        // Optional: Add feedback that item was added
+        // Show toast notification
+        toast.success(`Added ${quantity} ${quantity === 1 ? 'item' : 'items'} to cart: ${product.name}`);
     };
 
     const handleBuyNow = () => {
@@ -187,16 +189,16 @@ const ProductPage = ({ product }: { product?: Product }) => {
                         <div className="mb-6">
                             <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-2">
                                 Availability:
-                                <span className={`ml-2 font-medium ${product.stock! > 10 ? 'text-green-500' : product.stock! > 0 ? 'text-orange-500' : 'text-red-500'}`}>
-                                    {product.stock! > 10 ? 'In Stock' : product.stock! > 0 ? 'Low Stock' : 'Out of Stock'}
+                                <span className={`ml-2 font-medium ${stockCount! > 10 ? 'text-green-500' : stockCount! > 0 ? 'text-orange-500' : 'text-red-500'}`}>
+                                    {stockCount! > 10 ? 'In Stock' : stockCount! > 0 ? 'Low Stock' : 'Out of Stock'}
                                 </span>
                             </div>
                             <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                                {product.stock! > 0 ? `${product.stock} units remaining` : 'Currently unavailable'}
+                                {stockCount! > 0 ? `${stockCount} units remaining` : 'Currently unavailable'}
                             </div>
                         </div>
 
-                        {product.stock! > 0 && (
+                        {stockCount! > 0 && (
                             <div className="mb-8">
                                 <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-2">
                                     Quantity:
@@ -221,11 +223,11 @@ const ProductPage = ({ product }: { product?: Product }) => {
                                         <input
                                             type="number"
                                             min="1"
-                                            max={product.stock}
+                                            max={stockCount}
                                             value={quantity}
                                             onChange={(e) => {
                                                 const val = parseInt(e.target.value);
-                                                if (!isNaN(val) && val >= 1 && val <= product.stock!) {
+                                                if (!isNaN(val) && val >= 1 && val <= stockCount!) {
                                                     setQuantity(val);
                                                 }
                                             }}
@@ -240,7 +242,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
                                         />
                                         <button
                                             onClick={handleIncrementQuantity}
-                                            disabled={quantity >= product.stock!}
+                                            disabled={quantity >= stockCount!}
                                             className="
                                                     h-10 w-10 
                                                     flex items-center justify-center 
@@ -255,7 +257,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
                                         </button>
                                     </div>
                                     <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm">
-                                        {product.stock! < 10 && `Only ${product.stock} available`}
+                                        {stockCount! < 10 && `Only ${stockCount} available`}
                                     </div>
                                 </div>
                             </div>
@@ -265,7 +267,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
                         <div className="flex flex-col sm:flex-row gap-4">
                             <motion.button
                                 onClick={handleAddToCart}
-                                disabled={product.stock! <= 0 || isAdding}
+                                disabled={stockCount! <= 0 || isAdding}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="flex-1 px-6 py-3 bg-[var(--primary)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -281,7 +283,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
                             </motion.button>
                             <motion.button
                                 onClick={handleBuyNow}
-                                disabled={product.stock! <= 0}
+                                disabled={stockCount! <= 0}
                                 whileHover={{ scale: 1.02 }}
                                 whileTap={{ scale: 0.98 }}
                                 className="flex-1 px-6 py-3 bg-[var(--accent)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--accent),#000_10%)] transition-colors flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
@@ -295,7 +297,7 @@ const ProductPage = ({ product }: { product?: Product }) => {
 
             <Footer />
         </div>
-    )
-}
+    );
+};
 
 export default ProductPage;

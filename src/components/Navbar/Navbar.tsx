@@ -10,7 +10,7 @@ const Navbar = () => {
       <nav className="relative z-10 container mx-auto px-6 py-4 flex justify-between items-center">
         <Logo />
         <NavMenu />
-        <NavIcons cartCount={0} />
+        <NavIcons />
       </nav>
     </div>
   );

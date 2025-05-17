@@ -6,16 +6,12 @@ model Product {
   price       Float
   image       String
 
-  // Extras
-  stock            Int
+  stock            String[]
   additionalImages String[]
   category         String
   rating           Float
   badge            String
   features         String[]
-
-  // Relations
-  cartItems CartItem[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

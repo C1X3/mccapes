@@ -3,30 +3,28 @@ import { prisma } from '@/utils/prisma';
 import { adminProcedure, baseProcedure, createTRPCRouter } from '../init';
 
 export const productRouter = createTRPCRouter({
-    // Get all products
     getAll: baseProcedure.query(async () => {
+        return await prisma.product.findMany({
+            orderBy: { createdAt: 'desc' },
+            omit: {
+                stock: true,
+            }
+        });
+    }),
+
+    getAllWithStock: adminProcedure.query(async () => {
         return await prisma.product.findMany({
             orderBy: { createdAt: 'desc' },
         });
     }),
 
-    // Get a single product by ID
-    getById: baseProcedure
-        .input(z.object({ id: z.string() }))
-        .query(async ({ input }) => {
-            return await prisma.product.findUnique({
-                where: { id: input.id },
-            });
-        }),
-
-    // Create a new product
     create: adminProcedure
         .input(
             z.object({
                 name: z.string().min(1),
                 description: z.string().min(1),
                 price: z.number().min(0),
-                stock: z.number().min(0),
+                stock: z.array(z.string()),
                 image: z.string().min(1),
                 additionalImages: z.array(z.string()),
                 category: z.string().min(1),
@@ -37,11 +35,10 @@ export const productRouter = createTRPCRouter({
         )
         .mutation(async ({ input }) => {
             return await prisma.product.create({
-                data: input,
+                data: input
             });
         }),
 
-    // Update an existing product
     update: adminProcedure
         .input(
             z.object({
@@ -49,7 +46,7 @@ export const productRouter = createTRPCRouter({
                 name: z.string().min(1).optional(),
                 description: z.string().min(1).optional(),
                 price: z.number().min(0).optional(),
-                stock: z.number().min(0).optional(),
+                stock: z.array(z.string()).optional(),
                 image: z.string().min(1).optional(),
                 additionalImages: z.array(z.string()).optional(),
                 category: z.string().min(1).optional(),
@@ -66,7 +63,6 @@ export const productRouter = createTRPCRouter({
             });
         }),
 
-    // Delete a product
     delete: adminProcedure
         .input(z.object({ id: z.string() }))
         .mutation(async ({ input }) => {

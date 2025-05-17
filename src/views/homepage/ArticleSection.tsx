@@ -128,7 +128,7 @@ const ArticleSection = ({ alignment, description, title, image, index }: Article
                 </motion.div>
             </div>
         </section>
-    )
-}
+    );
+};
 
 export default ArticleSection;

@@ -11,6 +11,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "www.minecraft.net",
       },
+      {
+        protocol: "https",
+        hostname: "imagedelivery.net",
+      },
     ],
   },
 };

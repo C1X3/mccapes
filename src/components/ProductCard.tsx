@@ -2,10 +2,11 @@ import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaStar, FaShoppingCart } from "react-icons/fa";
 import { useRouter } from "next/navigation";
-import { Product } from '@generated';
 import { useCart } from "@/context/CartContext";
+import { toast } from "react-hot-toast";
+import { ProductGetAllOutput } from "@/server/routes/_app";
 
-const ProductCard = ({ product }: { product: Product }) => {
+const ProductCard = ({ product }: { product: ProductGetAllOutput[number] }) => {
     const router = useRouter();
     const { addItem } = useCart();
 
@@ -15,7 +16,8 @@ const ProductCard = ({ product }: { product: Product }) => {
 
     const handleAddToCart = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent navigation when clicking add to cart
-        addItem(product.id);
+        addItem(product);
+        toast.success(`Added to cart: ${product.name}`);
     };
 
     return (
