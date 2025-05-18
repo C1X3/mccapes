@@ -4,6 +4,7 @@ model Product {
   description String
   price       Float
   image       String
+  slug        String @unique @default(uuid())
 
   stock            String[]
   additionalImages String[]

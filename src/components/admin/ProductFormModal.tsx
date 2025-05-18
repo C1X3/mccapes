@@ -13,6 +13,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 export const schema = z.object({
     id: z.string().optional(),
+    slug: z.string(),
     name: z.string(),
     description: z.string(),
     price: z.number(),
@@ -56,6 +57,7 @@ export default function ProductFormModal({
         resolver: zodResolver(schema),
         defaultValues: initialData || {
             name: "",
+            slug: "",
             description: "",
             price: 0,
             stock: [],
@@ -76,6 +78,7 @@ export default function ProductFormModal({
         } else {
             reset({
                 name: "",
+                slug: "",
                 description: "",
                 price: 0,
                 stock: [],
@@ -208,6 +211,34 @@ export default function ProductFormModal({
                         />
                     </div>
 
+                    {/* Slug */}
+                    <div>
+                        <label htmlFor="slug" className="block text-[var(--foreground)] mb-2">
+                            Slug *
+                        </label>
+                        <Controller
+                            name="slug"
+                            control={control}
+                            rules={{ required: "Slug is required" }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <input
+                                        id="slug"
+                                        type="text"
+                                        {...field}
+                                        className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                                        placeholder="Enter product slug"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {fieldState.error.message}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        />
+                    </div>
+
                     {/* Description */}
                     <div>
                         <label htmlFor="description" className="block text-[var(--foreground)] mb-2">
@@ -236,7 +267,7 @@ export default function ProductFormModal({
                         />
                     </div>
 
-                    {/* Price + Stock */}
+                    {/* Price */}
                     <div>
                         <label htmlFor="price" className="block text-[var(--foreground)] mb-2">
                             Price ($) *
@@ -274,9 +305,7 @@ export default function ProductFormModal({
                     <Controller
                         name="stock"
                         control={control}
-                        rules={{
-                            required: "At least one stock code is required",
-                        }}
+                        rules={{}}
                         render={({ field, fieldState }) => {
                             // turn the array into a newline‐delimited string
                             const textValue = Array.isArray(field.value)
@@ -286,19 +315,23 @@ export default function ProductFormModal({
                             return (
                                 <div>
                                     <label htmlFor="stock" className="block text-[var(--foreground)] mb-2">
-                                        Stock *
+                                        Stock
                                     </label>
                                     <textarea
                                         id="stock"
                                         rows={6}
                                         value={textValue}
-                                        onChange={(e) => {
+                                        onChange={e => {
                                             const lines = e.target.value
                                                 .split("\n")
-                                                .map((s) => s.trim());
+                                                .map(s => s.trim());
                                             field.onChange(lines);
                                         }}
-                                        onBlur={field.onBlur}
+                                        onBlur={() => {
+                                            // now you can drop purely-empty lines
+                                            const nonEmpty = field.value.filter(s => s !== "");
+                                            field.onChange(nonEmpty);
+                                        }}
                                         placeholder="Enter one code per line"
                                         className="
                                             w-full p-3
@@ -405,7 +438,7 @@ export default function ProductFormModal({
                                             </button>
                                         ))}
                                     </div>
-                                    {/* Hidden input so the form still “sees” the number */}
+                                    {/* Hidden input so the form still "sees" the number */}
                                     <input type="hidden" value={field.value} />
 
                                     {fieldState.error && (
@@ -447,6 +480,11 @@ export default function ProductFormModal({
                                             field.onChange(lines);
                                         }}
                                         onBlur={field.onBlur}
+                                        onKeyDown={(e) => {
+                                            if (e.key === "Enter" && !e.shiftKey) {
+                                                e.stopPropagation();
+                                            }
+                                        }}
                                         placeholder="Enter one feature per line"
                                         className="
                                             w-full p-3
@@ -559,6 +597,6 @@ export default function ProductFormModal({
                     </div>
                 </form>
             </motion.div>
-        </motion.div>
+        </motion.div >
     );
 }

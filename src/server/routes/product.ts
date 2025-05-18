@@ -9,6 +9,7 @@ export const productRouter = createTRPCRouter({
             select: {
                 id: true,
                 name: true,
+                slug: true,
                 description: true,
                 price: true,
                 image: true,
@@ -39,6 +40,7 @@ export const productRouter = createTRPCRouter({
         .input(
             z.object({
                 name: z.string().min(1),
+                slug: z.string().min(1),
                 description: z.string().min(1),
                 price: z.number().min(0),
                 stock: z.array(z.string()),

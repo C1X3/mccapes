@@ -65,6 +65,7 @@ export default function AdminDashboard() {
     const handleEditProduct = (product: Product) => {
         const formProduct: ProductFormModalSchema = {
             id: product.id,
+            slug: product.slug,
             name: product.name,
             description: product.description,
             price: product.price,
@@ -268,7 +269,7 @@ export default function AdminDashboard() {
                                                     <td className="py-4 px-2 text-right">
                                                         <div className="flex justify-end gap-2">
                                                             <button
-                                                                onClick={() => router.push(`/shop/${product.id}`)}
+                                                                onClick={() => router.push(`/shop/${product.slug}`)}
                                                                 className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
                                                                 title="View Product"
                                                             >

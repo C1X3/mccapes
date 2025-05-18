@@ -10,7 +10,7 @@ const ProductCard = ({ product }: { product: ProductGetAllOutput[number] }) => {
     const { addItem } = useCart();
 
     const handleNavigateToProduct = () => {
-        router.push(`/shop/${product.id}`);
+        router.push(`/shop/${product.slug}`);
     };
 
     const handleAddToCart = (e: React.MouseEvent) => {
@@ -94,7 +94,7 @@ const ProductCard = ({ product }: { product: ProductGetAllOutput[number] }) => {
                             className="p-2.5 bg-[var(--primary)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors flex items-center gap-2"
                             onClick={(e) => {
                                 e.stopPropagation();
-                                router.push(`/shop/${product.id}`);
+                                router.push(`/shop/${product.slug}`);
                             }}
                         >
                             <span className="text-sm font-semibold">View</span>
