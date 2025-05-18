@@ -4,7 +4,7 @@ model Product {
   description String
   price       Float
   image       String
-  slug        String? @unique
+  slug        String @unique
 
   stock            String[]
   additionalImages String[]
