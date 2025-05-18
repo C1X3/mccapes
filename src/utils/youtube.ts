@@ -50,6 +50,7 @@ export const fetchYouTubeChannels = async (
 
     return data.items.map((item) => ({
       id: item.id,
+      url: `https://www.youtube.com/channel/${item.id}`,
       name: item.snippet.title,
       subscribers: formatSubscriberCount(item.statistics.subscriberCount),
       thumbnailUrl: item.snippet.thumbnails.medium.url,

@@ -39,6 +39,7 @@ const PartnerScroller = () => {
         <div
           key={channel.id}
           className="flex flex-col items-center mx-8"
+          onClick={() => window.open(channel.url, "_blank")}
         >
           <div className="w-32 h-32 relative mb-4">
             <motion.div

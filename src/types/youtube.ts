@@ -3,6 +3,7 @@ export interface YouTubeChannel {
   name: string;
   subscribers: string;
   thumbnailUrl: string;
+  url: string;
 }
 
 export interface YouTubeApiResponse {

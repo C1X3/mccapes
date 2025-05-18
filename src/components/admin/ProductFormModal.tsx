@@ -419,46 +419,54 @@ export default function ProductFormModal({
                     </div>
 
                     {/* Features */}
-                    <div>
-                        <label htmlFor="features" className="block text-[var(--foreground)] mb-2">
-                            Features *
-                        </label>
-                        <Controller
-                            name="features"
-                            control={control}
-                            rules={{ required: "Features are required" }}
-                            render={({ field, fieldState }) => {
-                                const valueString = Array.isArray(field.value)
-                                    ? (field.value as string[]).join(", ")
-                                    : "";
+                    <Controller
+                        name="features"
+                        control={control}
+                        rules={{
+                            required: "At least one feature is required",
+                        }}
+                        render={({ field, fieldState }) => {
+                            // turn the array into a newline‐delimited string
+                            const textValue = Array.isArray(field.value)
+                                ? field.value.join("\n")
+                                : "";
 
-                                return (
-                                    <>
-                                        <input
-                                            id="features"
-                                            type="text"
-                                            value={valueString}
-                                            onChange={(e) => {
-                                                const arr = e.target.value
-                                                    .split(",")
-                                                    .map((s) => s.trim());
-                                                field.onChange(arr);
-                                            }}
-                                            onBlur={field.onBlur}
-                                            ref={field.ref}
-                                            className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                                            placeholder="Enter features separated by commas"
-                                        />
-                                        {fieldState.error && (
-                                            <p className="text-red-500 text-sm mt-1">
-                                                {fieldState.error.message}
-                                            </p>
-                                        )}
-                                    </>
-                                );
-                            }}
-                        />
-                    </div>
+                            return (
+                                <div>
+                                    <label htmlFor="features" className="block text-[var(--foreground)] mb-2">
+                                        Features *
+                                    </label>
+                                    <textarea
+                                        id="features"
+                                        rows={6}
+                                        value={textValue}
+                                        onChange={(e) => {
+                                            const lines = e.target.value
+                                                .split("\n")
+                                                .map((s) => s.trim());
+                                            field.onChange(lines);
+                                        }}
+                                        onBlur={field.onBlur}
+                                        placeholder="Enter one feature per line"
+                                        className="
+                                            w-full p-3
+                                            bg-[color-mix(in_srgb,var(--background),#333_15%)]
+                                            border rounded-lg
+                                            text-[var(--foreground)]
+                                            focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
+                                            border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]
+                                            resize-vertical
+                                        "
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {fieldState.error.message}
+                                        </p>
+                                    )}
+                                </div>
+                            );
+                        }}
+                    />
 
                     {/* Main Image */}
                     <div>
