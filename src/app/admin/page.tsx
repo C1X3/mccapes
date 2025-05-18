@@ -65,7 +65,7 @@ export default function AdminDashboard() {
     const handleEditProduct = (product: Product) => {
         const formProduct: ProductFormModalSchema = {
             id: product.id,
-            slug: product.slug,
+            slug: product.slug || "",
             name: product.name,
             description: product.description,
             price: product.price,
