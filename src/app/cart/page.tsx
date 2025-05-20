@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useMemo } from "react";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
@@ -15,6 +15,7 @@ import { useTRPC } from "@/server/client";
 import { useMutation } from "@tanstack/react-query";
 import { CryptoType, PaymentType } from "@generated";
 import { useRouter } from "next/navigation";
+import { formatFeePercentage, calculatePaymentFee, calculateTotalWithFee } from "@/utils/fees";
 
 const CartPage = () => {
     const router = useRouter();
@@ -28,6 +29,10 @@ const CartPage = () => {
     const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.STRIPE);
     const [cryptoType, setCryptoType] = useState<CryptoType>(CryptoType.BITCOIN);
     const [termsAccepted, setTermsAccepted] = useState(false);
+
+    // Calculate fee and total with fee
+    const paymentFee = useMemo(() => calculatePaymentFee(paymentType, totalPrice), [paymentType, totalPrice]);
+    const totalWithFee = useMemo(() => calculateTotalWithFee(paymentType, totalPrice), [paymentType, totalPrice]);
 
     const processPaymentMutation = useMutation(trpc.checkout.processPayment.mutationOptions({
         onSuccess: (data) => {
@@ -77,7 +82,7 @@ const CartPage = () => {
             customerInfo,
             paymentType,
             cryptoType: paymentType === PaymentType.CRYPTO ? cryptoType : undefined,
-            totalPrice: totalPrice
+            totalPrice: totalWithFee
         });
 
         clearCart();
@@ -282,16 +287,18 @@ const CartPage = () => {
                                                 <div className="space-y-4 mb-6">
                                                     <div className="flex justify-between">
                                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
-                                                        <span className="text-[var(--foreground)] font-medium">{formatPrice(totalPrice)}</span>
+                                                        <span className="text-[var(--foreground)]">{formatPrice(totalPrice)}</span>
                                                     </div>
-                                                    <div className="pt-4 mt-4 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                                                        <div className="flex justify-between items-center">
-                                                            <span className="text-lg font-bold text-[var(--foreground)]">Total</span>
-                                                            <div className="text-right">
-                                                                <span className="block text-xl font-bold text-[var(--primary)]">
-                                                                    {formatPrice(totalPrice + (totalPrice * 0.0725))}
-                                                                </span>
-                                                            </div>
+                                                    <div className="flex justify-between">
+                                                        <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                                            Payment Fee ({formatFeePercentage(paymentType)})
+                                                        </span>
+                                                        <span className="text-[var(--foreground)]">{formatPrice(paymentFee)}</span>
+                                                    </div>
+                                                    <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                                                        <div className="flex justify-between">
+                                                            <span className="font-bold text-[var(--foreground)]">Total</span>
+                                                            <span className="font-bold text-[var(--primary)]">{formatPrice(totalWithFee)}</span>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -557,7 +564,7 @@ const CartPage = () => {
                                                         <FaCreditCard size={24} />
                                                         <div className="flex flex-col text-left">
                                                             <span className="font-semibold">Credit/Debit Card</span>
-                                                            <span className="text-xs opacity-80">Pay with Stripe</span>
+                                                            <span className="text-xs opacity-80">Pay with Stripe ({formatFeePercentage(PaymentType.STRIPE)} fee)</span>
                                                         </div>
                                                     </motion.button>
 
@@ -573,7 +580,7 @@ const CartPage = () => {
                                                         <FaBitcoin size={24} />
                                                         <div className="flex flex-col text-left">
                                                             <span className="font-semibold">Cryptocurrency</span>
-                                                            <span className="text-xs opacity-80">Bitcoin, Ethereum, etc.</span>
+                                                            <span className="text-xs opacity-80">BTC, ETH, LTC, SOL ({formatFeePercentage(PaymentType.CRYPTO)} fee)</span>
                                                         </div>
                                                     </motion.button>
 
@@ -589,7 +596,7 @@ const CartPage = () => {
                                                         <FaPaypal size={24} />
                                                         <div className="flex flex-col text-left">
                                                             <span className="font-semibold">PayPal</span>
-                                                            <span className="text-xs opacity-80">Friends & Family</span>
+                                                            <span className="text-xs opacity-80">Friends & Family ({formatFeePercentage(PaymentType.PAYPAL)} fee)</span>
                                                         </div>
                                                     </motion.button>
 

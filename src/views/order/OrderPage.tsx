@@ -2,6 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/utils/formatting";
+import { formatFeePercentage } from "@/utils/fees";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
 import Image from "next/image";
@@ -107,20 +108,18 @@ const OrderPage = ({ id }: { id: string }) => {
     const trpc = useTRPC();
     const [copiedCode, setCopiedCode] = useState<string | null>(null);
 
-    const { data: walletDetails, isLoading: isWalletLoading } = useQuery(trpc.checkout.getCryptoWalletDetails.queryOptions({ orderId: id }));
-
     const { data: order, isLoading: isOrderLoading, refetch: refetchOrder } = useQuery(trpc.checkout.getOrderStatus.queryOptions(
-        { orderId: id as string },
-        {
-            enabled: !!id,
-            retry: 3,
-            retryDelay: 1000,
-            retryOnMount: true,
-        }
+        { orderId: id },
+
     ));
 
+    const { data: walletDetails, isLoading: walletLoading } = useQuery(
+        trpc.checkout.getCryptoWalletDetails.queryOptions({ orderId: id }),
+    );
+
     const markAsDelivered = useMutation(trpc.checkout.updateOrderStatus.mutationOptions());
-    const isLoading = useMemo(() => isWalletLoading || isOrderLoading, [isWalletLoading, isOrderLoading]);
+    const isWalletLoading = useMemo(() => order?.paymentType === PaymentType.CRYPTO && walletLoading, [order, walletLoading]);
+    const isLoading = useMemo(() => isOrderLoading || isWalletLoading, [isOrderLoading, isWalletLoading]);
 
     useEffect(() => {
         const iv = setInterval(() => {
@@ -200,7 +199,7 @@ const OrderPage = ({ id }: { id: string }) => {
     }
 
     // Calculate order totals
-    const subtotal = order.OrderItem.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    const subtotal = order.OrderItem.reduce((sum, item) => sum + (item.price * item.quantity) + (order.paymentFee ?? 0), 0);
     const customerInfo = order.CustomerInformation[0];
 
     return (
@@ -563,10 +562,18 @@ const OrderPage = ({ id }: { id: string }) => {
                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
                                         <span className="text-[var(--foreground)]">{formatPrice(subtotal)}</span>
                                     </div>
+                                    {(order?.paymentFee ?? 0) > 0 && (
+                                        <div className="flex justify-between">
+                                            <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                                Payment Fee ({formatFeePercentage(order?.paymentType as PaymentType)})
+                                            </span>
+                                            <span className="text-[var(--foreground)]">{formatPrice(order?.paymentFee ?? 0)}</span>
+                                        </div>
+                                    )}
                                     <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                                         <div className="flex justify-between">
                                             <span className="font-bold text-[var(--foreground)]">Total</span>
-                                            <span className="font-bold text-[var(--primary)]">{formatPrice(subtotal)}</span>
+                                            <span className="font-bold text-[var(--primary)]">{formatPrice(subtotal + (order?.paymentFee ?? 0))}</span>
                                         </div>
                                     </div>
                                 </div>

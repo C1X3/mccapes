@@ -8,7 +8,8 @@ import QRCode from "qrcode";
 import { CheckoutPayload, WalletDetails } from "./types";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
-import { CryptoType } from "@generated";
+import { CryptoType, PaymentType } from "@generated";
+import { calculatePaymentFee } from "@/utils/fees";
 
 const bip32 = BIP32Factory(ecc);
 
@@ -43,8 +44,9 @@ export async function createWalletDetails(
 ): Promise<WalletDetails> {
     // A) Compute USD total
     const usdTotal = payload.items
-        .reduce((sum, item) => sum + item.price * item.quantity, 0)
-        .toFixed(2);
+        .reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const paymentFee = calculatePaymentFee(PaymentType.CRYPTO, usdTotal);
+    const total = (usdTotal + paymentFee).toFixed(2);
 
     // B) Fetch current USD→crypto rate
     const cgId = CG_IDS[crypto];
@@ -55,7 +57,7 @@ export async function createWalletDetails(
         throw new Error(`Failed to fetch price for ${cgId}`);
     }
     const priceUsd = resp.data[cgId].usd;
-    const amountCrypto = (Number(usdTotal) / priceUsd).toFixed(8);
+    const amountCrypto = (Number(total) / priceUsd).toFixed(8);
 
     // C) Derive a fresh child address and persist
     const last = await prisma.wallet.findFirst({

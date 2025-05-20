@@ -55,7 +55,7 @@ export async function POST(request: NextRequest) {
         ipn.txnType === 'send_money' &&
         ipn.paymentType === 'instant' &&
         ipn.mcCurrency === 'USD' &&
-        ipn.mcGross >= order.totalPrice
+        ipn.mcGross >= (order.totalPrice + order.paymentFee)
     ) {
         await prisma.order.update({
             where: { id: order.id },

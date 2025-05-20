@@ -137,10 +137,7 @@ const ProductPage = ({ product, stockCount }: { product?: Product, stockCount?: 
 
                     {/* Product information */}
                     <div>
-                        <div className="mb-4 flex gap-2">
-                            {product.badge && <span className="inline-block px-3 py-1 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] text-white text-xs font-bold rounded-full mb-2">
-                                {product.badge}
-                            </span>}
+                        <div className="mb-4">
                             <span className="inline-block px-3 py-1 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] text-xs font-medium rounded-full">
                                 {product.category}
                             </span>

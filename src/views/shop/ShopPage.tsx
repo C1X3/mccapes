@@ -132,8 +132,7 @@ const ShopPage = () => {
                                 <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">{topProduct.rating} (198 reviews)</span>
                             </div>
                             <p className="text-[color-mix(in_srgb,var(--foreground),#888_30%)] text-lg leading-relaxed">
-                                {topProduct.description}. Our most iconic design, these wings make a statement in any server with realistic
-                                flame animation and special particle effects that activate while flying.
+                                {topProduct.description}
                             </p>
                             <div className="flex items-center justify-between">
                                 <div>

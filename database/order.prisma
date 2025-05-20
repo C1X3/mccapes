@@ -47,6 +47,7 @@ model Order {
     id String @id @default(cuid())
 
     totalPrice  Float
+    paymentFee  Float   @default(0)
     paymentType PaymentType
     status      OrderStatus
 

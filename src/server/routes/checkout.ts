@@ -7,6 +7,7 @@ import { createCheckoutSession as createStripeCheckout } from '../providers/stri
 import { createCheckoutSession as createPaypalCheckout } from '../providers/paypal';
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
+import { calculatePaymentFee } from '@/utils/fees';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -31,10 +32,15 @@ export const checkoutRouter = createTRPCRouter({
         )
         .mutation(async ({ input }) => {
             try {
+                // Calculate subtotal and payment fee
+                const subtotal = input.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                const paymentFee = calculatePaymentFee(input.paymentType, subtotal);
+                
                 // 1. Create a pending order in the database
                 const order = await prisma.order.create({
                     data: {
                         totalPrice: input.totalPrice,
+                        paymentFee: paymentFee,
                         paymentType: input.paymentType,
                         status: OrderStatus.PENDING,
                         CustomerInformation: {
@@ -45,6 +51,19 @@ export const checkoutRouter = createTRPCRouter({
                         },
                     }
                 });
+
+                // Create OrderItems
+                await Promise.all(input.items.map(item => 
+                    prisma.orderItem.create({
+                        data: {
+                            orderId: order.id,
+                            productId: item.productId,
+                            quantity: item.quantity,
+                            price: item.price,
+                            codes: [],
+                        }
+                    })
+                ));
 
                 // 2. Generate payment link based on the selected payment method
                 let walletDetails: WalletDetails | undefined;
@@ -195,11 +214,18 @@ export const checkoutRouter = createTRPCRouter({
             if (order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED) {
                 return prisma.order.findUnique({
                     where: { id: input.orderId },
-                    include: {
+                    select: {
+                        id: true,
+                        status: true,
+                        createdAt: true,
+                        paymentType: true,
+                        paymentFee: true,
+                        totalPrice: true,
+                        paypalNote: true,
                         OrderItem: {
                             include: {
                                 product: true,
-                            },
+                            }
                         },
                         CustomerInformation: true,
                     },
@@ -212,6 +238,8 @@ export const checkoutRouter = createTRPCRouter({
                         status: true,
                         createdAt: true,
                         paymentType: true,
+                        paymentFee: true,
+                        totalPrice: true,
                         paypalNote: true,
                         OrderItem: {
                             select: {
