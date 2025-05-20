@@ -1,9 +1,9 @@
 "use client";
 
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, Reorder, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { FaEdit, FaTrash, FaPlus, FaEye, FaLock } from "react-icons/fa";
+import { FaEdit, FaTrash, FaPlus, FaEye, FaLock, FaGripVertical } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
 import { toast } from "react-hot-toast";
@@ -18,6 +18,8 @@ export default function AdminDashboard() {
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<ProductFormModalSchema | undefined>(undefined);
+    const [orderedProducts, setOrderedProducts] = useState<Product[]>([]);
+    const [isDragDisabled, setIsDragDisabled] = useState(false);
 
     const router = useRouter();
     const trpc = useTRPC();
@@ -47,6 +49,26 @@ export default function AdminDashboard() {
             toast.error(`Error deleting product: ${error.message}`);
         },
     }));
+    
+    // Product order mutation
+    const updateProductOrderMutation = useMutation(trpc.product.updateOrders.mutationOptions({
+        onSuccess: () => {
+            toast.success("Product order updated successfully");
+        },
+        onError: (error) => {
+            toast.error(`Error updating product order: ${error.message}`);
+            // Reset to original order if update fails
+            if (products.data) {
+                setOrderedProducts(products.data);
+            }
+        },
+    }));
+
+    useEffect(() => {
+        if (products.data) {
+            setOrderedProducts(products.data);
+        }
+    }, [products.data]);
 
     const handlePasswordSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -79,10 +101,23 @@ export default function AdminDashboard() {
             slashPrice: product.slashPrice || 0,
             hideHomePage: product.hideHomePage || false,
             hideProductPage: product.hideProductPage || false,
-            isFeatured: product.isFeatured || false
+            isFeatured: product.isFeatured || false,
+            order: product.order || 0
         };
         setSelectedProduct(formProduct);
         setIsEditModalOpen(true);
+    };
+
+    const handleReorder = (reorderedProducts: Product[]) => {
+        setOrderedProducts(reorderedProducts);
+        
+        // Update products with new order values
+        const productOrders = reorderedProducts.map((product, index) => ({
+            id: product.id,
+            order: index
+        }));
+        
+        updateProductOrderMutation.mutate({ productOrders });
     };
 
     return (
@@ -203,9 +238,14 @@ export default function AdminDashboard() {
                         </div>
 
                         <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
-                            <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">
-                                Products Management
-                            </h2>
+                            <div className="flex justify-between items-center mb-6">
+                                <h2 className="text-xl font-bold text-[var(--foreground)]">
+                                    Products Management
+                                </h2>
+                                <div className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                    Drag and drop to reorder products
+                                </div>
+                            </div>
 
                             {products.isLoading ? (
                                 <div className="flex justify-center py-8">
@@ -220,6 +260,9 @@ export default function AdminDashboard() {
                                     <table className="w-full">
                                         <thead>
                                             <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+                                                <th className="text-left py-4 px-2 text-[var(--foreground)] w-10">
+                                                    Order
+                                                </th>
                                                 <th className="text-left py-4 px-2 text-[var(--foreground)]">
                                                     ID
                                                 </th>
@@ -240,12 +283,25 @@ export default function AdminDashboard() {
                                                 </th>
                                             </tr>
                                         </thead>
-                                        <tbody>
-                                            {!products.error && products.data?.map((product) => (
-                                                <tr
+                                        <Reorder.Group 
+                                            as="tbody" 
+                                            axis="y" 
+                                            values={orderedProducts} 
+                                            onReorder={handleReorder}
+                                            className="relative"
+                                        >
+                                            {!products.error && orderedProducts.map((product) => (
+                                                <Reorder.Item
                                                     key={product.id}
-                                                    className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                                                    value={product}
+                                                    as="tr"
+                                                    dragListener={!isDragDisabled}
+                                                    dragControls={undefined}
+                                                    className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] relative"
                                                 >
+                                                    <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)] cursor-move">
+                                                        <FaGripVertical className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]" />
+                                                    </td>
                                                     <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                                         {product.id.substring(0, 8)}...
                                                     </td>
@@ -276,6 +332,8 @@ export default function AdminDashboard() {
                                                                 onClick={() => router.push(`/shop/${product.slug}`)}
                                                                 className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
                                                                 title="View Product"
+                                                                onMouseEnter={() => setIsDragDisabled(true)}
+                                                                onMouseLeave={() => setIsDragDisabled(false)}
                                                             >
                                                                 <FaEye size={14} />
                                                             </button>
@@ -283,6 +341,8 @@ export default function AdminDashboard() {
                                                                 onClick={() => handleEditProduct(product)}
                                                                 className="p-2 bg-amber-100 text-amber-600 rounded hover:bg-amber-200 transition-colors"
                                                                 title="Edit Product"
+                                                                onMouseEnter={() => setIsDragDisabled(true)}
+                                                                onMouseLeave={() => setIsDragDisabled(false)}
                                                             >
                                                                 <FaEdit size={14} />
                                                             </button>
@@ -290,14 +350,16 @@ export default function AdminDashboard() {
                                                                 onClick={() => handleDeleteProduct(product.id)}
                                                                 className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
                                                                 title="Delete Product"
+                                                                onMouseEnter={() => setIsDragDisabled(true)}
+                                                                onMouseLeave={() => setIsDragDisabled(false)}
                                                             >
                                                                 <FaTrash size={14} />
                                                             </button>
                                                         </div>
                                                     </td>
-                                                </tr>
+                                                </Reorder.Item>
                                             ))}
-                                        </tbody>
+                                        </Reorder.Group>
                                     </table>
                                 </div>
                             )}

@@ -12,6 +12,7 @@ model Product {
   rating           Float
   badge            String?
   features         String[]
+  order            Int @default(0)
 
   slashPrice Float?
   hideHomePage Boolean @default(false)

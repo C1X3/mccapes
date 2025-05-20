@@ -10,7 +10,7 @@ export const productRouter = createTRPCRouter({
         }))
         .query(async ({ input }) => {
             const raw = await prisma.product.findMany({
-                orderBy: { createdAt: 'desc' },
+                orderBy: { order: 'asc' },
                 where: {
                     ...(input.isHomePage && { hideHomePage: false }),
                     ...(input.isProductPage && { hideProductPage: false }),
@@ -32,6 +32,7 @@ export const productRouter = createTRPCRouter({
                 hideHomePage: true,
                 hideProductPage: true,
                 isFeatured: true,
+                order: true,
                 createdAt: true,
                 updatedAt: true,
             },
@@ -45,7 +46,7 @@ export const productRouter = createTRPCRouter({
 
     getAllWithStock: adminProcedure.query(async () => {
         return await prisma.product.findMany({
-            orderBy: { createdAt: 'desc' },
+            orderBy: { order: 'asc' },
         });
     }),
 
@@ -90,6 +91,7 @@ export const productRouter = createTRPCRouter({
                 rating: z.number().min(0).max(5).optional(),
                 features: z.array(z.string()).optional(),
                 slashPrice: z.number().optional(),
+                order: z.number().optional(),
                 hideHomePage: z.boolean().optional(),
                 hideProductPage: z.boolean().optional(),
                 isFeatured: z.boolean().optional(),
@@ -101,6 +103,33 @@ export const productRouter = createTRPCRouter({
                 where: { id },
                 data,
             });
+        }),
+
+    updateOrders: adminProcedure
+        .input(
+            z.object({
+                productOrders: z.array(
+                    z.object({
+                        id: z.string(),
+                        order: z.number(),
+                    })
+                ),
+            })
+        )
+        .mutation(async ({ input }) => {
+            const { productOrders } = input;
+            
+            // Update products in transaction
+            const updates = productOrders.map(({ id, order }) =>
+                prisma.product.update({
+                    where: { id },
+                    data: { order },
+                })
+            );
+            
+            await prisma.$transaction(updates);
+            
+            return { success: true };
         }),
 
     delete: adminProcedure

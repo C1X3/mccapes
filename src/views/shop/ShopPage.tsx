@@ -54,6 +54,9 @@ const ShopPage = () => {
             );
         }
 
+        // Sort products by order (lower numbers appear first)
+        result = [...result].sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
+
         return result;
     }, [products, selectedCategory, searchQuery]);
 

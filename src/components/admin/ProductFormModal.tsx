@@ -24,7 +24,8 @@ export const schema = z.object({
     badge: z.string().optional(),
     rating: z.number(),
     features: z.array(z.string()),
-    slashPrice: z.number(),
+    slashPrice: z.number().optional(),
+    order: z.number().optional().default(0),
     hideHomePage: z.boolean().default(false),
     hideProductPage: z.boolean().default(false),
     isFeatured: z.boolean().default(false),
@@ -72,6 +73,7 @@ export default function ProductFormModal({
             rating: 0,
             features: [],
             slashPrice: 0,
+            order: 0,
             hideHomePage: false,
             hideProductPage: false,
             isFeatured: false,
@@ -97,6 +99,7 @@ export default function ProductFormModal({
                 rating: 0,
                 features: [],
                 slashPrice: undefined,
+                order: 0,
                 hideHomePage: false,
                 hideProductPage: false,
                 isFeatured: false,
@@ -157,6 +160,7 @@ export default function ProductFormModal({
             hideProductPage: data.hideProductPage,
             isFeatured: data.isFeatured,
             slashPrice: data.slashPrice,
+            order: data.order,
         };
 
         if (isEditing && initialData?.id) {
