@@ -22,7 +22,9 @@ const ShopPage = () => {
         isLoading,
         isError,
         error,
-    } = useQuery(trpc.product.getAll.queryOptions());
+    } = useQuery(trpc.product.getAll.queryOptions({
+        isProductPage: true,
+    }));
 
     const [selectedCategory, setSelectedCategory] = useState<string>("All");
     const [searchQuery, setSearchQuery] = useState<string>("");
@@ -56,6 +58,9 @@ const ShopPage = () => {
     }, [products, selectedCategory, searchQuery]);
 
     const topProduct = useMemo(() => {
+        const featuredProduct = products.find(x => x.isFeatured);
+        if (featuredProduct) return featuredProduct;
+
         return filteredProducts.length > 0 
             ? filteredProducts.sort((a, b) => b.price - a.price)[0]
             : products.length > 0 ? products.sort((a, b) => b.price - a.price)[0] : null;
@@ -133,7 +138,7 @@ const ShopPage = () => {
                             <div className="flex items-center justify-between">
                                 <div>
                                     <span className="text-3xl font-bold">${topProduct.price}</span>
-                                    <span className="text-[color-mix(in_srgb,var(--foreground),#888_60%)] ml-2 line-through">${((topProduct.price || 0) * 1.25).toFixed(2)}</span>
+                                    {topProduct.slashPrice && <span className="text-[color-mix(in_srgb,var(--foreground),#888_60%)] ml-2 line-through">${topProduct.slashPrice.toFixed(2)}</span>}
                                 </div>
                                 <motion.button
                                     onClick={handleAddToCart}

@@ -3,7 +3,9 @@ import ShopPage from "@/views/shop/ShopPage";
 
 const Page = async () => {
     prefetch(
-        trpc.product.getAll.queryOptions()
+        trpc.product.getAll.queryOptions({
+            isProductPage: true,
+        })
     );
 
     return (

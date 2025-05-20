@@ -3,10 +3,19 @@ import { prisma } from '@/utils/prisma';
 import { adminProcedure, baseProcedure, createTRPCRouter } from '../init';
 
 export const productRouter = createTRPCRouter({
-    getAll: baseProcedure.query(async () => {
-        const raw = await prisma.product.findMany({
-            orderBy: { createdAt: 'desc' },
-            select: {
+    getAll: baseProcedure
+        .input(z.object({
+            isHomePage: z.boolean().default(false),
+            isProductPage: z.boolean().default(false),
+        }))
+        .query(async ({ input }) => {
+            const raw = await prisma.product.findMany({
+                orderBy: { createdAt: 'desc' },
+                where: {
+                    ...(input.isHomePage && { hideHomePage: false }),
+                    ...(input.isProductPage && { hideProductPage: false }),
+                },
+                select: {
                 id: true,
                 name: true,
                 slug: true,
@@ -19,6 +28,10 @@ export const productRouter = createTRPCRouter({
                 badge: true,
                 features: true,
                 stock: true,
+                slashPrice: true,
+                hideHomePage: true,
+                hideProductPage: true,
+                isFeatured: true,
                 createdAt: true,
                 updatedAt: true,
             },
@@ -50,6 +63,10 @@ export const productRouter = createTRPCRouter({
                 badge: z.string().optional(),
                 rating: z.number().min(0).max(5),
                 features: z.array(z.string()),
+                slashPrice: z.number().optional(),
+                hideHomePage: z.boolean().default(false),
+                hideProductPage: z.boolean().default(false),
+                isFeatured: z.boolean().default(false),
             })
         )
         .mutation(async ({ input }) => {
@@ -72,6 +89,10 @@ export const productRouter = createTRPCRouter({
                 badge: z.string().optional(),
                 rating: z.number().min(0).max(5).optional(),
                 features: z.array(z.string()).optional(),
+                slashPrice: z.number().optional(),
+                hideHomePage: z.boolean().optional(),
+                hideProductPage: z.boolean().optional(),
+                isFeatured: z.boolean().optional(),
             })
         )
         .mutation(async ({ input }) => {

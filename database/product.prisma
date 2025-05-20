@@ -13,6 +13,11 @@ model Product {
   badge            String?
   features         String[]
 
+  slashPrice Float?
+  hideHomePage Boolean @default(false)
+  hideProductPage Boolean @default(false)
+  isFeatured Boolean @default(false)
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 

@@ -75,7 +75,11 @@ export default function AdminDashboard() {
             category: product.category,
             badge: product.badge || undefined,
             rating: product.rating,
-            features: product.features
+            features: product.features,
+            slashPrice: product.slashPrice || 0,
+            hideHomePage: product.hideHomePage || false,
+            hideProductPage: product.hideProductPage || false,
+            isFeatured: product.isFeatured || false
         };
         setSelectedProduct(formProduct);
         setIsEditModalOpen(true);

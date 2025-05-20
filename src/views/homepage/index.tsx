@@ -20,6 +20,7 @@ const productArticles = [
     video: "https://www.youtube.com/embed/878YHLzJmF4",
     color: "var(--primary)",
     alignment: "left", // Image on right
+    productSlug: "founders-cape"
   },
   {
     id: 2,
@@ -29,6 +30,7 @@ const productArticles = [
     video: "https://www.youtube.com/embed/878YHLzJmF4",
     color: "var(--accent)",
     alignment: "right", // Image on left
+    productSlug: "tiktok-cape"
   },
   {
     id: 3,
@@ -38,12 +40,13 @@ const productArticles = [
     video: "https://www.youtube.com/embed/878YHLzJmF4",
     color: "var(--secondary)",
     alignment: "left", // Image on right
+    productSlug: "experience-cape"
   },
 ];
 
 const HomePage = () => {
   const trpc = useTRPC();
-  const { data: products } = useQuery(trpc.product.getAll.queryOptions());
+  const { data: products } = useQuery(trpc.product.getAll.queryOptions({ isHomePage: true }));
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
@@ -63,6 +66,7 @@ const HomePage = () => {
           description={article.description}
           title={article.title}
           video={article.video}
+          productSlug={article.productSlug}
         />
       ))}
 

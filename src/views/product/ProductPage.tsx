@@ -161,6 +161,7 @@ const ProductPage = ({ product, stockCount }: { product?: Product, stockCount?: 
 
                         <div className="text-3xl font-bold text-[var(--foreground)] mb-6">
                             ${product.price.toFixed(2)}
+                            {product.slashPrice && <span className="text-[color-mix(in_srgb,var(--foreground),#888_60%)] ml-2 line-through">${product.slashPrice.toFixed(2)}</span>}
                         </div>
 
                         <div className="mb-6">

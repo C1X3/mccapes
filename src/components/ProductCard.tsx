@@ -73,6 +73,7 @@ const ProductCard = ({ product }: { product: ProductGetAllOutput[number] }) => {
                 <div className="flex items-center justify-between">
                     <span className="text-xl font-bold text-[var(--foreground)]">
                         ${product.price}
+                        {product.slashPrice && <span className="text-[color-mix(in_srgb,var(--foreground),#888_60%)] ml-2 line-through">${product.slashPrice.toFixed(2)}</span>}
                     </span>
                     <div className="flex space-x-2">
                         <button

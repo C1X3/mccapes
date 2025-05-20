@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Controller, useForm } from "react-hook-form";
+import { Controller, Resolver, useForm } from "react-hook-form";
 import { FaTimes } from "react-icons/fa";
 import { toast } from "react-hot-toast";
 import { useTRPC } from "@/server/client";
@@ -24,6 +24,10 @@ export const schema = z.object({
     badge: z.string().optional(),
     rating: z.number(),
     features: z.array(z.string()),
+    slashPrice: z.number(),
+    hideHomePage: z.boolean().default(false),
+    hideProductPage: z.boolean().default(false),
+    isFeatured: z.boolean().default(false),
 });
 
 export type ProductFormModalSchema = z.infer<typeof schema>;
@@ -54,7 +58,7 @@ export default function ProductFormModal({
         reset,
         setValue,
     } = useForm<z.infer<typeof schema>>({
-        resolver: zodResolver(schema),
+        resolver: zodResolver(schema) as Resolver<z.infer<typeof schema>>,
         defaultValues: initialData || {
             name: "",
             slug: "",
@@ -67,6 +71,10 @@ export default function ProductFormModal({
             badge: "",
             rating: 0,
             features: [],
+            slashPrice: 0,
+            hideHomePage: false,
+            hideProductPage: false,
+            isFeatured: false,
         },
     });
 
@@ -88,6 +96,10 @@ export default function ProductFormModal({
                 badge: "",
                 rating: 0,
                 features: [],
+                slashPrice: undefined,
+                hideHomePage: false,
+                hideProductPage: false,
+                isFeatured: false,
             });
             setAdditionalImageUrls([]);
         }
@@ -141,6 +153,10 @@ export default function ProductFormModal({
             additionalImages: additionalImageUrls,
             features: data.features as string[],
             stock: data.stock as string[],
+            hideHomePage: data.hideHomePage,
+            hideProductPage: data.hideProductPage,
+            isFeatured: data.isFeatured,
+            slashPrice: data.slashPrice,
         };
 
         if (isEditing && initialData?.id) {
@@ -407,6 +423,105 @@ export default function ProductFormModal({
                                 </>
                             )}
                         />
+                    </div>
+
+                    {/* Slash Price */}
+                    <div>
+                        <label htmlFor="slashPrice" className="block text-[var(--foreground)] mb-2">
+                            Slash Price ($) - Original price before discount
+                        </label>
+                        <Controller
+                            name="slashPrice"
+                            control={control}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <input
+                                        id="slashPrice"
+                                        type="number"
+                                        step="0.01"
+                                        value={field.value === undefined ? '' : field.value}
+                                        onChange={(e) => field.onChange(e.target.value ? parseFloat(e.target.value) : undefined)}
+                                        onBlur={field.onBlur}
+                                        className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                                        placeholder="Enter original price (optional)"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {fieldState.error.message}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        />
+                    </div>
+
+                    {/* Toggle Group for Product Visibility and Featured Status */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {/* Hide from Home Page */}
+                        <div className="flex flex-col">
+                            <label className="flex items-center gap-2 text-[var(--foreground)] cursor-pointer">
+                                <Controller
+                                    name="hideHomePage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            type="checkbox"
+                                            checked={field.value}
+                                            onChange={(e) => field.onChange(e.target.checked)}
+                                            className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                                        />
+                                    )}
+                                />
+                                <span>Hide from Home Page</span>
+                            </label>
+                            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+                                Product won&apos;t appear on the home page
+                            </span>
+                        </div>
+
+                        {/* Hide from Product Page */}
+                        <div className="flex flex-col">
+                            <label className="flex items-center gap-2 text-[var(--foreground)] cursor-pointer">
+                                <Controller
+                                    name="hideProductPage"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            type="checkbox"
+                                            checked={field.value}
+                                            onChange={(e) => field.onChange(e.target.checked)}
+                                            className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                                        />
+                                    )}
+                                />
+                                <span>Hide from Product Page</span>
+                            </label>
+                            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+                                Product won&apos;t appear on the products list
+                            </span>
+                        </div>
+
+                        {/* Featured Product */}
+                        <div className="flex flex-col">
+                            <label className="flex items-center gap-2 text-[var(--foreground)] cursor-pointer">
+                                <Controller
+                                    name="isFeatured"
+                                    control={control}
+                                    render={({ field }) => (
+                                        <input
+                                            type="checkbox"
+                                            checked={field.value}
+                                            onChange={(e) => field.onChange(e.target.checked)}
+                                            className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                                        />
+                                    )}
+                                />
+                                <span>Featured Product</span>
+                            </label>
+                            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+                                Highlight this product as featured
+                            </span>
+                        </div>
                     </div>
 
                     {/* Rating */}

@@ -3,7 +3,7 @@ import HomePage from "@/views/homepage";
 
 const Page = async () => {
   prefetch(
-    trpc.product.getAll.queryOptions()
+    trpc.product.getAll.queryOptions({ isHomePage: true })
   );
 
   return (
