@@ -8,6 +8,7 @@ import { createCheckoutSession as createPaypalCheckout } from '../providers/payp
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
 import { calculatePaymentFee } from '@/utils/fees';
+import { sendOrderPlacedEmail } from '@/utils/email';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -43,7 +44,7 @@ export const checkoutRouter = createTRPCRouter({
                         paymentFee: paymentFee,
                         paymentType: input.paymentType,
                         status: OrderStatus.PENDING,
-                        CustomerInformation: {
+                        customer: {
                             create: {
                                 name: input.customerInfo.name,
                                 email: input.customerInfo.email,
@@ -138,6 +139,18 @@ export const checkoutRouter = createTRPCRouter({
                             }
                         });
                     }
+
+                    await sendOrderPlacedEmail({
+                        customerName: input.customerInfo.name,
+                        customerEmail: input.customerInfo.email,
+                        orderId: order.id,
+                        items: input.items,
+                        totalPrice: input.totalPrice,
+                        paymentFee: paymentFee,
+                        totalWithFee: input.totalPrice + paymentFee,
+                        paymentType: input.paymentType,
+                        paymentDetails: walletDetails,
+                    });
                 }
 
                 return {
@@ -214,7 +227,7 @@ export const checkoutRouter = createTRPCRouter({
                                 product: true,
                             }
                         },
-                        CustomerInformation: true,
+                        customer: true,
                     },
                 });
             } else {
@@ -235,7 +248,7 @@ export const checkoutRouter = createTRPCRouter({
                                 product: true,
                             }
                         },
-                        CustomerInformation: true
+                        customer: true
                     }
                 });
             }

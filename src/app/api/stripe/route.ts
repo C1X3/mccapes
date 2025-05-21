@@ -4,6 +4,7 @@ import { stripe } from '@/server/providers/stripe';
 import Stripe from 'stripe';
 import { prisma } from '@/utils/prisma';
 import { OrderStatus } from '@generated';
+import { sendOrderCompleteEmail } from '@/utils/email';
 
 export async function POST(request: Request) {
     const reqHeaders = await headers();
@@ -49,12 +50,20 @@ export async function POST(request: Request) {
 
                 const orderId = checkoutIntent.metadata.orderId;
 
-                await prisma.$transaction(async (tx) => {
-                    const order = await tx.order.findUnique({
-                        where: { id: orderId },
-                    });
+                const fullOrderDetails = await prisma.order.findUnique({
+                    where: { id: orderId },
+                    include: {
+                        customer: true,
+                        OrderItem: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                });
 
-                    if (!order) {
+                await prisma.$transaction(async (tx) => {
+                    if (!fullOrderDetails) {
                         console.log('No order found');
                         return NextResponse.json({ error: 'No order found' }, { status: 400 });
                     }
@@ -64,6 +73,26 @@ export async function POST(request: Request) {
                         data: { status: OrderStatus.PAID },
                     });
                 });
+
+                if (fullOrderDetails) {
+                    await sendOrderCompleteEmail({
+                        customerName: fullOrderDetails.customer.name,
+                        customerEmail: fullOrderDetails.customer.email,
+                        orderId: fullOrderDetails.id,
+                        totalPrice: fullOrderDetails.totalPrice,
+                        paymentFee: fullOrderDetails.paymentFee,
+                        totalWithFee: fullOrderDetails.totalPrice + fullOrderDetails.paymentFee,
+                        paymentType: fullOrderDetails.paymentType,
+                        orderDate: fullOrderDetails.createdAt.toISOString(),
+                        items: fullOrderDetails.OrderItem.map(i => ({
+                            name: i.product.name,
+                            price: i.price,
+                            quantity: i.quantity,
+                            codes: i.codes,
+                            image: i.product.image
+                        }))
+                    });
+                }
             }
 
             console.log(`PaymentIntent for ${checkoutIntent.payment_status} was successful!`);

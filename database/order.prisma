@@ -32,32 +32,29 @@ model OrderItem {
 }
 
 model CustomerInformation {
-    id String @id @default(cuid())
+  id      String  @id @default(cuid())
+  name    String
+  email   String
 
-    orderId String
-    order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
-
-    name  String
-    email String
-
-    discord String?
+  discord String?
+  order   Order?
 }
 
 model Order {
-    id String @id @default(cuid())
+  id          String    @id @default(cuid())
+  totalPrice  Float
+  paymentFee  Float     @default(0)
+  paymentType PaymentType
+  status      OrderStatus
 
-    totalPrice  Float
-    paymentFee  Float   @default(0)
-    paymentType PaymentType
-    status      OrderStatus
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  paypalNote  String?
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+  OrderItem   OrderItem[]
 
-    paypalNote String?
+  customer   CustomerInformation @relation(fields: [customerId], references: [id], onDelete: Cascade)
+  customerId String @unique
 
-    OrderItem           OrderItem[]
-    CustomerInformation CustomerInformation[]
-
-    Wallet Wallet[]
+  Wallet Wallet[]
 }

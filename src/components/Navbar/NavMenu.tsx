@@ -42,7 +42,7 @@ const items = [
   },
   {
     label: "Discord",
-    href: "https://discord.gg/mc-capes-1315408127755157615",
+    href: "https://discord.gg/mccapes",
     external: true,
   }
 ];

@@ -202,7 +202,6 @@ const OrderPage = ({ id }: { id: string }) => {
 
     // Calculate order totals
     const subtotal = order.OrderItem.reduce((sum, item) => sum + (item.price * item.quantity) + (order.paymentFee ?? 0), 0);
-    const customerInfo = order.CustomerInformation[0];
 
     return (
         <div className="min-h-screen flex flex-col bg-[var(--background)]">
@@ -627,8 +626,8 @@ const OrderPage = ({ id }: { id: string }) => {
                                 {/* Customer Info */}
                                 <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                                     <p className="text-sm font-medium text-[var(--foreground)] mb-2">Customer</p>
-                                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">{customerInfo?.name}</p>
-                                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">{customerInfo?.email}</p>
+                                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">{order.customer.name}</p>
+                                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">{order.customer.email}</p>
                                 </div>
 
                                 <Link href="/shop">

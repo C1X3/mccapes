@@ -83,7 +83,7 @@ const HeroSection = () => {
                     boxShadow: "0 8px 20px rgba(34,197,94,0.2)",
                   }}
                   whileTap={{ scale: 0.95 }}
-                  onClick={() => window.open("https://discord.gg/mc-capes-1315408127755157615", "_blank")}
+                  onClick={() => window.open("https://discord.gg/mccapes", "_blank")}
                 >
                   Discord
                 </motion.button>

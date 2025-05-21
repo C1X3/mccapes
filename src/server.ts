@@ -6,6 +6,7 @@ import axios from 'axios';
 import { CryptoType, OrderStatus } from '@generated';
 import { prisma } from '@/utils/prisma';
 import { parseUnits } from 'ethers';
+import { sendOrderCompleteEmail } from "./utils/email";
 
 const BLOCKCYPHER_TOKEN = process.env.BLOCKCYPHER_TOKEN!;
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY!;
@@ -132,6 +133,38 @@ async function checkPayments() {
                     where: { id: w.orderId },
                     data: { status: OrderStatus.PAID }
                 });
+
+                const fullOrderDetails = await prisma.order.findUnique({
+                    where: { id: w.orderId },
+                    include: {
+                        customer: true,
+                        OrderItem: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                });
+
+                if (fullOrderDetails) {
+                    await sendOrderCompleteEmail({
+                        customerName: fullOrderDetails.customer.name,
+                        customerEmail: fullOrderDetails.customer.email,
+                        orderId: w.orderId,
+                        totalPrice: fullOrderDetails.totalPrice,
+                        paymentFee: fullOrderDetails.paymentFee,
+                        totalWithFee: fullOrderDetails.totalPrice + fullOrderDetails.paymentFee,
+                        paymentType: fullOrderDetails.paymentType,
+                        orderDate: fullOrderDetails.createdAt.toISOString(),
+                        items: fullOrderDetails.OrderItem.map(i => ({
+                            name: i.product.name,
+                            price: i.price,
+                            quantity: i.quantity,
+                            codes: i.codes,
+                            image: i.product.image
+                        }))
+                    });
+                }
             } else if (foundTxHash && confirmations < threshold) {
                 await prisma.wallet.update({
                     where: { id },

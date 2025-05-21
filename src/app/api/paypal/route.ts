@@ -1,4 +1,5 @@
 import { parseIPN } from "@/types/paypal";
+import { sendOrderCompleteEmail } from "@/utils/email";
 import { prisma } from "@/utils/prisma";
 import { OrderStatus, PaymentType } from "@generated";
 import axios from "axios";
@@ -39,6 +40,14 @@ export async function POST(request: NextRequest) {
             paypalNote: ipn.memo,
             status: OrderStatus.PENDING,
             paymentType: PaymentType.PAYPAL,
+        },
+        include: {
+            customer: true,
+            OrderItem: {
+                include: {
+                    product: true
+                }
+            }
         }
     });
 
@@ -61,6 +70,26 @@ export async function POST(request: NextRequest) {
             where: { id: order.id },
             data: { status: OrderStatus.PAID },
         });
+
+        if (order) {
+            await sendOrderCompleteEmail({
+                customerName: order.customer.name,
+                customerEmail: order.customer.email,
+                orderId: order.id,
+                totalPrice: order.totalPrice,
+                paymentFee: order.paymentFee,
+                totalWithFee: order.totalPrice + order.paymentFee,
+                paymentType: order.paymentType,
+                orderDate: order.createdAt.toISOString(),
+                items: order.OrderItem.map(i => ({
+                    name: i.product.name,
+                    price: i.price,
+                    quantity: i.quantity,
+                    codes: i.codes,
+                    image: i.product.image
+                }))
+            });
+        }
     }
 
     return new NextResponse('OK', {
