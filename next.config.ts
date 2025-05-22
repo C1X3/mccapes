@@ -25,6 +25,33 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        // match any path on the admin host
+        source: '/:path*',
+        has: [
+          {
+            type: 'host',
+            value: 'admin.mccapes.net',
+          },
+        ],
+        // rewrite it to /admin/<whatever>
+        destination: '/admin/:path*',
+      },
+      // (optionally) catch the bare root
+      {
+        source: '/',
+        has: [
+          {
+            type: 'host',
+            value: 'admin.mccapes.net',
+          },
+        ],
+        destination: '/admin',
+      },
+    ]
+  },
 };
 
 export default nextConfig;

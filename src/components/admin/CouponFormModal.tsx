@@ -1,0 +1,333 @@
+"use client";
+
+import { useTRPC } from "@/server/client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useMutation } from "@tanstack/react-query";
+import { motion } from "framer-motion";
+import { Controller, Resolver, useForm } from "react-hook-form";
+import { toast } from "react-hot-toast";
+import { FaTimes } from "react-icons/fa";
+import { z } from "zod";
+
+export const schema = z.object({
+  id: z.string().optional(),
+  code: z.string().min(3, "Code must be at least 3 characters"),
+  discount: z.number().positive("Discount must be a positive number"),
+  type: z.enum(["PERCENTAGE", "FIXED"]),
+  validUntil: z.string().min(1, "Valid until date is required"),
+  usageLimit: z
+    .number()
+    .int()
+    .positive("Usage limit must be a positive number"),
+  active: z.boolean().default(true),
+});
+
+export type CouponFormModalSchema = z.infer<typeof schema>;
+
+type CouponFormModalProps = {
+  isOpen: boolean;
+  onCloseAction: () => void;
+  initialData?: z.infer<typeof schema>;
+  isEditing?: boolean;
+  onSuccess?: () => void;
+};
+
+export default function CouponFormModal({
+  isOpen,
+  onCloseAction,
+  initialData,
+  isEditing = false,
+  onSuccess,
+}: CouponFormModalProps) {
+  const trpc = useTRPC();
+
+  const { control, handleSubmit, reset } = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema) as Resolver<z.infer<typeof schema>>,
+    defaultValues: initialData || {
+      code: "",
+      discount: 0,
+      type: "PERCENTAGE",
+      validUntil: new Date().toISOString().split("T")[0], // Default to today
+      usageLimit: 100,
+      active: true,
+    },
+  });
+
+  const createCoupon = useMutation(
+    trpc.coupon.create.mutationOptions({
+      onSuccess: () => {
+        toast.success("Coupon created successfully!");
+        reset();
+        onCloseAction();
+        if (onSuccess) onSuccess();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to create coupon");
+      },
+    })
+  );
+
+  const updateCoupon = useMutation(
+    trpc.coupon.update.mutationOptions({
+      onSuccess: () => {
+        toast.success("Coupon updated successfully!");
+        reset();
+        onCloseAction();
+        if (onSuccess) onSuccess();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to update coupon");
+      },
+    })
+  );
+
+  const onSubmit = (data: z.infer<typeof schema>) => {
+    if (isEditing && initialData?.id) {
+      updateCoupon.mutate({
+        id: initialData.id,
+        ...data,
+      });
+    } else {
+      createCoupon.mutate(data);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center overflow-y-auto p-4"
+    >
+      <motion.div
+        initial={{ scale: 0.9, opacity: 0 }}
+        animate={{ scale: 1, opacity: 1 }}
+        exit={{ scale: 0.9, opacity: 0 }}
+        className="bg-[var(--background)] rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+      >
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">
+            {isEditing ? "Edit Coupon" : "Add New Coupon"}
+          </h2>{" "}
+          <button
+            onClick={onCloseAction}
+            className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-full transition-colors"
+          >
+            <FaTimes size={20} />
+          </button>
+        </div>
+
+        <form onSubmit={handleSubmit(onSubmit)}>
+          {/* Coupon Code */}
+          <div className="mb-4">
+            <label
+              htmlFor="code"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Coupon Code *
+            </label>
+            <Controller
+              name="code"
+              control={control}
+              rules={{ required: "Coupon code is required" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <input
+                    id="code"
+                    type="text"
+                    {...field}
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    placeholder="e.g., SUMMER20"
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          {/* Discount Amount and Type */}
+          <div className="grid grid-cols-2 gap-4 mb-4">
+            <div>
+              <label
+                htmlFor="discount"
+                className="block text-[var(--foreground)] mb-2"
+              >
+                Discount Amount *
+              </label>
+              <Controller
+                name="discount"
+                control={control}
+                rules={{ required: "Discount amount is required" }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <input
+                      id="discount"
+                      type="number"
+                      step="0.01"
+                      {...field}
+                      onChange={(e) =>
+                        field.onChange(parseFloat(e.target.value) || 0)
+                      }
+                      className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      placeholder="Enter discount amount"
+                    />
+                    {fieldState.error && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+            <div>
+              <label
+                htmlFor="type"
+                className="block text-[var(--foreground)] mb-2"
+              >
+                Discount Type *
+              </label>
+              <Controller
+                name="type"
+                control={control}
+                rules={{ required: "Discount type is required" }}
+                render={({ field, fieldState }) => (
+                  <>
+                    <select
+                      id="type"
+                      {...field}
+                      className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    >
+                      <option value="percentage">Percentage (%)</option>
+                      <option value="fixed">Fixed Amount ($)</option>
+                    </select>
+                    {fieldState.error && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {fieldState.error.message}
+                      </p>
+                    )}
+                  </>
+                )}
+              />
+            </div>
+          </div>
+
+          {/* Valid Until Date */}
+          <div className="mb-4">
+            <label
+              htmlFor="validUntil"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Valid Until *
+            </label>
+            <Controller
+              name="validUntil"
+              control={control}
+              rules={{ required: "Valid until date is required" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <input
+                    id="validUntil"
+                    type="date"
+                    {...field}
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          {/* Usage Limit */}
+          <div className="mb-4">
+            <label
+              htmlFor="usageLimit"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Usage Limit *
+            </label>
+            <Controller
+              name="usageLimit"
+              control={control}
+              rules={{ required: "Usage limit is required" }}
+              render={({ field, fieldState }) => (
+                <>
+                  <input
+                    id="usageLimit"
+                    type="number"
+                    min="1"
+                    {...field}
+                    onChange={(e) =>
+                      field.onChange(parseInt(e.target.value) || 0)
+                    }
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    placeholder="Enter usage limit"
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          {/* Active Status */}
+          <div className="flex flex-col mb-6">
+            <label className="flex items-center gap-2 text-[var(--foreground)] cursor-pointer">
+              <Controller
+                name="active"
+                control={control}
+                render={({ field }) => (
+                  <input
+                    type="checkbox"
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                  />
+                )}
+              />
+              <span>Active</span>
+            </label>
+            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1 ml-7">
+              Enable or disable this coupon
+            </span>
+          </div>
+
+          {/* Submit Buttons */}
+          <div className="flex justify-end gap-3 mt-6">
+            <button
+              type="button"
+              onClick={onCloseAction}
+              className="px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-6 py-3 bg-[var(--primary)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors"
+              disabled={createCoupon.isPending || updateCoupon.isPending}
+            >
+              {createCoupon.isPending || updateCoupon.isPending
+                ? "Saving..."
+                : isEditing
+                  ? "Update Coupon"
+                  : "Add Coupon"}
+            </button>
+          </div>
+        </form>
+      </motion.div>
+    </motion.div>
+  );
+}

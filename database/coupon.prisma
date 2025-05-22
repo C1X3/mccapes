@@ -1,0 +1,17 @@
+enum CouponType {
+  PERCENTAGE
+  FIXED
+}
+
+model Coupon {
+  id         String   @id @default(cuid())
+  code       String   @unique
+  discount   Float
+  type       CouponType
+  validUntil DateTime
+  usageLimit Int
+  usageCount Int      @default(0)
+  active     Boolean  @default(true)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+}

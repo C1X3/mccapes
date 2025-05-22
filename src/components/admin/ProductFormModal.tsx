@@ -1,5 +1,3 @@
-'use client';
-
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Controller, Resolver, useForm } from "react-hook-form";
@@ -92,7 +90,7 @@ export default function ProductFormModal({
     // Update input display values when form values change
     useEffect(() => {
         setPriceInputValue(watchedPrice === 0 && priceInputValue === "" ? "" : watchedPrice.toString());
-    }, [watchedPrice]);
+    }, [priceInputValue, watchedPrice]);
 
     useEffect(() => {
         if (watchedSlashPrice === undefined) {
@@ -102,7 +100,7 @@ export default function ProductFormModal({
         } else {
             setSlashPriceInputValue(watchedSlashPrice.toString());
         }
-    }, [watchedSlashPrice]);
+    }, [slashPriceInputValue, watchedSlashPrice]);
 
     // Reset form when initialData changes
     useEffect(() => {
