@@ -43,11 +43,15 @@ export async function createWalletDetails(
     payload: CheckoutPayload,
     crypto: CryptoType
 ): Promise<WalletDetails> {
-    // A) Compute USD total
-    const usdTotal = payload.items
-        .reduce((sum, item) => sum + item.price * item.quantity, 0);
-    const paymentFee = calculatePaymentFee(PaymentType.CRYPTO, usdTotal);
-    const total = (usdTotal + paymentFee).toFixed(2);
+    // A) Use the totalPrice from the payload which already has the discount applied
+    const totalAmount = payload.totalPrice;
+    const paymentFee = calculatePaymentFee(PaymentType.CRYPTO, totalAmount);
+    const total = (totalAmount + paymentFee).toFixed(2);
+
+    // Include discount information in note if applicable
+    const discountInfo = payload.discountAmount && payload.discountAmount > 0 
+        ? `Discount: $${payload.discountAmount.toFixed(2)}${payload.couponCode ? ` - Coupon: ${payload.couponCode}` : ''}`
+        : '';
 
     // B) Fetch current USD→crypto rate
     const cgId = CG_IDS[crypto];
@@ -133,5 +137,10 @@ export async function createWalletDetails(
     }
 
     const qrCodeDataUrl = await QRCode.toDataURL(uri);
-    return { address, amount: amountCrypto, url: qrCodeDataUrl };
+    return { 
+        address, 
+        amount: amountCrypto, 
+        url: qrCodeDataUrl,
+        note: discountInfo || undefined
+    };
 }

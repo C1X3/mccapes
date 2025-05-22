@@ -58,38 +58,39 @@ export async function POST(request: NextRequest) {
         });
     }
 
+    // Calculate the expected amount with discount applied
+    const expectedTotal = order.totalPrice + order.paymentFee;
+    
     if (
         ipn.receiverEmail === process.env.NEXT_PUBLIC_PAYPAL_EMAIL &&
         ipn.paymentStatus === 'Completed' &&
         ipn.txnType === 'send_money' &&
         ipn.paymentType === 'instant' &&
         ipn.mcCurrency === 'USD' &&
-        ipn.mcGross >= (order.totalPrice + order.paymentFee)
+        ipn.mcGross >= expectedTotal
     ) {
         await prisma.order.update({
             where: { id: order.id },
             data: { status: OrderStatus.PAID },
         });
 
-        if (order) {
-            await sendOrderCompleteEmail({
-                customerName: order.customer.name,
-                customerEmail: order.customer.email,
-                orderId: order.id,
-                totalPrice: order.totalPrice,
-                paymentFee: order.paymentFee,
-                totalWithFee: order.totalPrice + order.paymentFee,
-                paymentType: order.paymentType,
-                orderDate: order.createdAt.toISOString(),
-                items: order.OrderItem.map(i => ({
-                    name: i.product.name,
-                    price: i.price,
-                    quantity: i.quantity,
-                    codes: i.codes,
-                    image: i.product.image
-                }))
-            });
-        }
+        await sendOrderCompleteEmail({
+            customerName: order.customer.name,
+            customerEmail: order.customer.email,
+            orderId: order.id,
+            totalPrice: order.totalPrice,
+            paymentFee: order.paymentFee,
+            totalWithFee: order.totalPrice + order.paymentFee,
+            paymentType: order.paymentType,
+            orderDate: order.createdAt.toISOString(),
+            items: order.OrderItem.map(i => ({
+                name: i.product.name,
+                price: i.price,
+                quantity: i.quantity,
+                codes: i.codes,
+                image: i.product.image
+            }))
+        });
     }
 
     return new NextResponse('OK', {

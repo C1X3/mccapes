@@ -21,7 +21,7 @@ const CartPage = () => {
     const router = useRouter();
     const trpc = useTRPC();
 
-    const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart } = useCart();
+    const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart, coupon, discountAmount, discountedTotal, applyCoupon, removeCoupon, isCouponLoading } = useCart();
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
     const [showCryptoOptions, setShowCryptoOptions] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({ name: "", email: "", discord: "" });
@@ -29,10 +29,11 @@ const CartPage = () => {
     const [paymentType, setPaymentType] = useState<PaymentType>(PaymentType.STRIPE);
     const [cryptoType, setCryptoType] = useState<CryptoType>(CryptoType.BITCOIN);
     const [termsAccepted, setTermsAccepted] = useState(false);
+    const [couponInput, setCouponInput] = useState("");
 
     // Calculate fee and total with fee
-    const paymentFee = useMemo(() => calculatePaymentFee(paymentType, totalPrice), [paymentType, totalPrice]);
-    const totalWithFee = useMemo(() => calculateTotalWithFee(paymentType, totalPrice), [paymentType, totalPrice]);
+    const paymentFee = useMemo(() => calculatePaymentFee(paymentType, discountedTotal), [paymentType, discountedTotal]);
+    const totalWithFee = useMemo(() => calculateTotalWithFee(paymentType, discountedTotal), [paymentType, discountedTotal]);
 
     const processPaymentMutation = useMutation(trpc.checkout.processPayment.mutationOptions({
         onSuccess: (data) => {
@@ -82,10 +83,21 @@ const CartPage = () => {
             customerInfo,
             paymentType,
             cryptoType: paymentType === PaymentType.CRYPTO ? cryptoType : undefined,
-            totalPrice: totalWithFee
+            totalPrice: totalWithFee,
+            couponCode: coupon,
+            discountAmount: discountAmount
         });
 
         clearCart();
+    };
+
+    // Handle applying coupon
+    const handleApplyCoupon = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (couponInput.trim()) {
+            applyCoupon(couponInput.trim());
+            setCouponInput("");
+        }
     };
 
     if (isLoading) {
@@ -289,6 +301,22 @@ const CartPage = () => {
                                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
                                                         <span className="text-[var(--foreground)]">{formatPrice(totalPrice)}</span>
                                                     </div>
+                                                    
+                                                    {coupon && (
+                                                        <div className="flex justify-between text-green-500">
+                                                            <span className="flex items-center gap-2">
+                                                                Discount ({coupon})
+                                                                <button 
+                                                                    onClick={removeCoupon}
+                                                                    className="text-xs bg-green-500/10 text-green-500 rounded-full px-2 py-0.5 hover:bg-green-500/20"
+                                                                >
+                                                                    Remove
+                                                                </button>
+                                                            </span>
+                                                            <span>-{formatPrice(discountAmount)}</span>
+                                                        </div>
+                                                    )}
+                                                    
                                                     <div className="flex justify-between">
                                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                                             Payment Fee ({formatFeePercentage(paymentType)})
@@ -302,6 +330,37 @@ const CartPage = () => {
                                                         </div>
                                                     </div>
                                                 </div>
+
+                                                {!coupon && (
+                                                    <form onSubmit={handleApplyCoupon} className="mb-5">
+                                                        <div className="flex gap-2">
+                                                            <input
+                                                                type="text"
+                                                                value={couponInput}
+                                                                onChange={(e) => setCouponInput(e.target.value)}
+                                                                placeholder="Coupon code"
+                                                                className="flex-1 p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+                                                                disabled={isCouponLoading}
+                                                            />
+                                                            <motion.button
+                                                                whileHover={{ scale: !isCouponLoading ? 1.02 : 1 }}
+                                                                whileTap={{ scale: !isCouponLoading ? 0.98 : 1 }}
+                                                                type="submit"
+                                                                className="px-4 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--background),#333_25%)]"
+                                                                disabled={isCouponLoading}
+                                                            >
+                                                                {isCouponLoading ? (
+                                                                    <div className="w-6 h-6 rounded-full border-2 border-t-transparent border-[var(--primary)] animate-spin"></div>
+                                                                ) : (
+                                                                    "Apply"
+                                                                )}
+                                                            </motion.button>
+                                                        </div>
+                                                        <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-2">
+                                                            Try coupon codes from our promotions or social media
+                                                        </p>
+                                                    </form>
+                                                )}
 
                                                 <motion.button
                                                     whileHover={{ scale: 1.02 }}

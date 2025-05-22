@@ -13,7 +13,7 @@ interface TabItem {
 interface AdminLayoutProps {
   children: ReactNode;
   currentTab: string;
-  onTabChange: (tab: string) => void;
+  onTabChange?: (tab: string) => void;
   isAuthenticated: boolean;
   authComponent: ReactNode;
 }
@@ -35,7 +35,9 @@ export default function AdminLayout({
   ];
 
   const handleTabClick = (tabId: string) => {
-    onTabChange(tabId);
+    if (onTabChange) {
+      onTabChange(tabId);
+    }
     // Close sidebar on mobile when a tab is selected
     setIsMobileSidebarOpen(false);
   };

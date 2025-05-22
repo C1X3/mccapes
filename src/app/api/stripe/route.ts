@@ -62,37 +62,44 @@ export async function POST(request: Request) {
                     }
                 });
 
-                await prisma.$transaction(async (tx) => {
-                    if (!fullOrderDetails) {
-                        console.log('No order found');
-                        return NextResponse.json({ error: 'No order found' }, { status: 400 });
-                    }
+                if (!fullOrderDetails) {
+                    console.log('No order found');
+                    return NextResponse.json({ error: 'No order found' }, { status: 400 });
+                }
 
+                // Verify the payment amount matches the order total (with discount applied)
+                const expectedTotal = fullOrderDetails.totalPrice + fullOrderDetails.paymentFee;
+                const actualAmount = Number((checkoutIntent.amount_total || 0) / 100); // Stripe amounts are in cents
+
+                if (Math.abs(actualAmount - expectedTotal) > 0.01) { // Allow for small rounding differences
+                    console.log(`Payment amount mismatch: expected ${expectedTotal}, got ${actualAmount}`);
+                    return NextResponse.json({ error: 'Payment amount mismatch' }, { status: 400 });
+                }
+
+                await prisma.$transaction(async (tx) => {
                     await tx.order.update({
                         where: { id: orderId },
                         data: { status: OrderStatus.PAID },
                     });
                 });
 
-                if (fullOrderDetails) {
-                    await sendOrderCompleteEmail({
-                        customerName: fullOrderDetails.customer.name,
-                        customerEmail: fullOrderDetails.customer.email,
-                        orderId: fullOrderDetails.id,
-                        totalPrice: fullOrderDetails.totalPrice,
-                        paymentFee: fullOrderDetails.paymentFee,
-                        totalWithFee: fullOrderDetails.totalPrice + fullOrderDetails.paymentFee,
-                        paymentType: fullOrderDetails.paymentType,
-                        orderDate: fullOrderDetails.createdAt.toISOString(),
-                        items: fullOrderDetails.OrderItem.map(i => ({
-                            name: i.product.name,
-                            price: i.price,
-                            quantity: i.quantity,
-                            codes: i.codes,
-                            image: i.product.image
-                        }))
-                    });
-                }
+                await sendOrderCompleteEmail({
+                    customerName: fullOrderDetails.customer.name,
+                    customerEmail: fullOrderDetails.customer.email,
+                    orderId: fullOrderDetails.id,
+                    totalPrice: fullOrderDetails.totalPrice,
+                    paymentFee: fullOrderDetails.paymentFee,
+                    totalWithFee: fullOrderDetails.totalPrice + fullOrderDetails.paymentFee,
+                    paymentType: fullOrderDetails.paymentType,
+                    orderDate: fullOrderDetails.createdAt.toISOString(),
+                    items: fullOrderDetails.OrderItem.map(i => ({
+                        name: i.product.name,
+                        price: i.price,
+                        quantity: i.quantity,
+                        codes: i.codes,
+                        image: i.product.image
+                    }))
+                });
             }
 
             console.log(`PaymentIntent for ${checkoutIntent.payment_status} was successful!`);

@@ -593,23 +593,30 @@ const OrderPage = ({ id }: { id: string }) => {
                                     Order Summary
                                 </h2>
 
-                                <div className="space-y-3 mb-6">
+                                <div className="space-y-4 mb-6">
                                     <div className="flex justify-between">
                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
                                         <span className="text-[var(--foreground)]">{formatPrice(subtotal)}</span>
                                     </div>
-                                    {(order?.paymentFee ?? 0) > 0 && (
-                                        <div className="flex justify-between">
-                                            <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                                                Payment Fee ({formatFeePercentage(order?.paymentType as PaymentType)})
-                                            </span>
-                                            <span className="text-[var(--foreground)]">{formatPrice(order?.paymentFee ?? 0)}</span>
+                                    
+                                    {order.couponUsed && (
+                                        <div className="flex justify-between text-green-500">
+                                            <span>Discount ({order.couponUsed})</span>
+                                            <span>-{formatPrice(order.discountAmount)}</span>
                                         </div>
                                     )}
+                                    
+                                    <div className="flex justify-between">
+                                        <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                            Payment Fee ({formatFeePercentage(order.paymentType)})
+                                        </span>
+                                        <span className="text-[var(--foreground)]">{formatPrice(order.paymentFee)}</span>
+                                    </div>
+
                                     <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                                         <div className="flex justify-between">
                                             <span className="font-bold text-[var(--foreground)]">Total</span>
-                                            <span className="font-bold text-[var(--primary)]">{formatPrice(subtotal + (order?.paymentFee ?? 0))}</span>
+                                            <span className="font-bold text-[var(--primary)]">{formatPrice(order.totalPrice)}</span>
                                         </div>
                                     </div>
                                 </div>

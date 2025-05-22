@@ -10,7 +10,9 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
     try {
         // Calculate subtotal and fee
         const subtotal = payload.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const paymentFee = calculatePaymentFee(PaymentType.STRIPE, subtotal);
+        const discountAmount = payload.discountAmount || 0;
+        const discountedSubtotal = subtotal - discountAmount;
+        const paymentFee = calculatePaymentFee(PaymentType.STRIPE, discountedSubtotal);
         const feePercentageText = formatFeePercentage(PaymentType.STRIPE);
         
         // Create line items for products
@@ -24,9 +26,26 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
             },
             quantity: item.quantity,
         }));
+
+        // Add line items array
+        const lineItems = [...productLineItems];
+        
+        // Add a discount line item if applicable
+        if (discountAmount > 0) {
+            lineItems.push({
+                price_data: {
+                    currency: 'usd',
+                    product_data: {
+                        name: `Discount${payload.couponCode ? ` (${payload.couponCode})` : ''}`,
+                    },
+                    unit_amount: -Math.round(discountAmount * 100),
+                },
+                quantity: 1,
+            });
+        }
         
         // Add a fee line item
-        const feeLineItem = {
+        lineItems.push({
             price_data: {
                 currency: 'usd',
                 product_data: {
@@ -35,17 +54,19 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
                 unit_amount: Math.round(paymentFee * 100),
             },
             quantity: 1,
-        };
+        });
         
         const session = await stripe.checkout.sessions.create({
             payment_method_types: ['card'],
-            line_items: [...productLineItems, feeLineItem],
+            line_items: lineItems,
             customer_email: payload.customerInfo.email,
             mode: 'payment',
             success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?success=true`,
             cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?canceled=true`,
             metadata: {
                 orderId: payload.orderId,
+                couponCode: payload.couponCode || '',
+                discountAmount: discountAmount.toString(),
             },
         });
 

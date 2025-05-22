@@ -13,10 +13,13 @@ export interface CheckoutPayload {
         email: string;
     };
     totalPrice: number;
+    couponCode: string | null;
+    discountAmount: number;
 }
 
 export interface WalletDetails {
     address: string;
     amount: string;
     url: string;
+    note?: string;
 }

@@ -4,7 +4,7 @@
 
 // Constants
 export const CART_STORAGE_KEY = 'mccapes-cart';
-export const CART_EXPIRATION_TIME = 60 * 60 * 1000; // 60 minutes in milliseconds
+export const CART_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days in milliseconds
 
 // Types
 export type Product = {
@@ -26,7 +26,16 @@ export type CartItem = {
 export type StoredCart = {
     items: CartItem[];
     expiration: number; // timestamp in milliseconds
+    coupon: string | null;
+    discountAmount: number;
 };
+
+export interface CartSession {
+    items: CartItem[];
+    expiresAt: string;
+    coupon: string | null;
+    discountAmount: number;
+}
 
 /**
  * Gets the cart from localStorage
@@ -57,13 +66,19 @@ export function getCart(): StoredCart | null {
 /**
  * Saves the cart to localStorage with a new expiration
  */
-export function saveCart(items: CartItem[]): void {
+export function saveCart(
+    items: CartItem[],
+    coupon: string | null = null,
+    discountAmount: number = 0
+): void {
     try {
         if (typeof window === 'undefined') return;
 
         const storedCart: StoredCart = {
             items,
-            expiration: Date.now() + CART_EXPIRATION_TIME
+            expiration: Date.now() + CART_EXPIRATION_TIME,
+            coupon,
+            discountAmount
         };
 
         localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(storedCart));

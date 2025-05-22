@@ -2,15 +2,26 @@ import { CheckoutPayload, WalletDetails } from './types';
 import { fAndFItems } from '@/utils/paypalNotes';
 import { prisma } from '@/utils/prisma';
 import { OrderStatus, PaymentType } from '@generated';
+import { calculatePaymentFee } from '@/utils/fees';
 
 export async function createCheckoutSession(payload: CheckoutPayload): Promise<WalletDetails> {
     if (!process.env.NEXT_PUBLIC_PAYPAL_EMAIL) {
         throw new Error('PAYPAL_EMAIL is not set');
     }
     const email = process.env.NEXT_PUBLIC_PAYPAL_EMAIL;
-    const amount = payload.totalPrice.toFixed(2);
+    
+    // Use the total price from the payload which should already have the discount applied
+    const totalPrice = payload.totalPrice;
+    
+    // For clarity in the transaction details, include discount information
+    const discountInfo = payload.discountAmount && payload.discountAmount > 0 
+        ? ` (Discount: $${payload.discountAmount.toFixed(2)}${payload.couponCode ? ` - Coupon: ${payload.couponCode}` : ''})`
+        : '';
+    
+    const amount = totalPrice.toFixed(2);
+    const paymentDetailsNote = `Order #${payload.orderId}${discountInfo}`;
 
-    // fetch all pending PayPal orders’ notes
+    // fetch all pending PayPal orders' notes
     const currPaypalPending = await prisma.order.findMany({
         where: {
             paymentType: PaymentType.PAYPAL,
@@ -43,12 +54,16 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<W
     // persist the chosen note on the order
     await prisma.order.update({
         where: { id: payload.orderId },
-        data: { paypalNote: note },
+        data: { 
+            paypalNote: note,
+            totalPrice: totalPrice, // Ensure the order has the discounted price
+        },
     });
 
     return {
         address: email,
         amount,
         url: note,
+        note: paymentDetailsNote,
     };
 }

@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.0.1",
-    "@prisma/client": "^6.8.2",
+    "@prisma/client": "6.8.2",
     "@react-email/components": "^0.0.41",
     "@react-email/render": "^1.1.2",
     "@solana/web3.js": "^1.98.2",

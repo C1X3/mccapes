@@ -46,6 +46,8 @@ model Order {
   paymentFee  Float     @default(0)
   paymentType PaymentType
   status      OrderStatus
+  couponUsed  String?
+  discountAmount Float @default(0)
 
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt

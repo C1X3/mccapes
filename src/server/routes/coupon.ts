@@ -23,7 +23,7 @@ export const couponRouter = createTRPCRouter({
 
   validateCoupon: baseProcedure
     .input(z.object({ code: z.string() }))
-    .query(async ({ input }) => {
+    .mutation(async ({ input }) => {
       const coupon = await prisma.coupon.findFirst({
         where: {
           code: input.code,
