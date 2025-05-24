@@ -1,36 +1,53 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+
+const useIsMobile = (breakpoint = 768) => {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const handler = () => setIsMobile(window.innerWidth < breakpoint);
+    handler(); // run on mount
+    window.addEventListener("resize", handler);
+    return () => window.removeEventListener("resize", handler);
+  }, [breakpoint]);
+  return isMobile;
+};
 
 const HeroSection = () => {
   const router = useRouter();
+  const isMobile = useIsMobile(768);  // anything < 768px is “mobile”
 
   return (
     <div className="relative w-full py-24">
       {/* BACKGROUND ORBS CONTAINER */}
-      <div className="absolute inset-0 overflow-visible pointer-events-none" style={{ zIndex: 0 }}>
-        {Array.from({ length: 5 }).map((_, i) => {
-          const size = 100 + Math.random() * 200;
-          const left = Math.random() * 120 - 10 + "%";
-          const top = Math.random() * 120 - 10 + "%";
-          // const duration = 8 + Math.random() * 4;
-          return (
-            <div
-              key={i}
-              className="floating-orb absolute"
-              style={{
-                width: size,
-                height: size,
-                left,
-                top,
-                backgroundColor: "var(--primary)",
-                // "--dance-speed": `${duration}s`,
-                opacity: 0.1,
-              }}
-            />
-          );
-        })}
-      </div>
+      {!isMobile && (
+        <div
+          className="absolute inset-0 overflow-visible pointer-events-none"
+          style={{ zIndex: 0 }}
+        >
+          {Array.from({ length: 5 }).map((_, i) => {
+            const size = 100 + Math.random() * 200;
+            const left = Math.random() * 120 - 10 + "%";
+            const top = Math.random() * 120 - 10 + "%";
+            return (
+              <div
+                key={i}
+                className="floating-orb absolute"
+                style={{
+                  width: size,
+                  height: size,
+                  left,
+                  top,
+                  backgroundColor: "var(--primary)",
+                  opacity: 0.1,
+                  // your CSS-animation lives in .floating-orb
+                }}
+              />
+            );
+          })}
+        </div>
+      )}
 
       {/* MAIN CONTENT WRAPPER */}
       <div className="relative w-full">
@@ -91,31 +108,48 @@ const HeroSection = () => {
             </motion.div>
 
             {/* RIGHT: BLOB IMAGE */}
-            <motion.div
-              className="w-full md:w-1/2 flex justify-center"
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0, scale: 1.1 }}
-              transition={{ delay: 0.3, duration: 1 }}
-            >
+            {isMobile ? (
+              // --- MOBILE: just center the image, no animations ---
+              <div className="w-full h-[300px] flex justify-center items-center">
+                <div className="relative w-3/4 h-full">
+                  <Image
+                    src="/images/hero.webp"
+                    alt="Minecraft Character with Premium Cape"
+                    fill
+                    style={{ objectFit: "contain" }}
+                    className="scale-150"
+                    priority
+                  />
+                </div>
+              </div>
+            ) : (
+              // --- DESKTOP: full motion-div with drag/hover etc. ---
               <motion.div
-                className="relative w-[110%] md:w-[120%] lg:w-[130%] h-[400px] md:h-[500px] lg:h-[650px] overflow-visible transform -translate-x-4"
-                whileHover={{ scale: 1.05, rotate: 2 }}
-                whileTap={{ scale: 0.98 }}
-                drag
-                dragElastic={0.2}
-                dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
-                transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                className="w-full md:w-1/2 flex justify-center"
+                initial={{ opacity: 0, y: 40 }}
+                animate={{ opacity: 1, y: 0, scale: 1.1 }}
+                transition={{ delay: 0.3, duration: 1 }}
               >
-                <Image
-                  src="/images/hero.webp"
-                  alt="Minecraft Character with Premium Cape"
-                  fill
-                  style={{ objectFit: "contain" }}
-                  className="scale-110"
-                  priority
-                />
+                <motion.div
+                  className="relative w-[110%] md:w-[120%] lg:w-[130%] h-[400px] md:h-[500px] lg:h-[650px] overflow-visible transform -translate-x-4"
+                  whileHover={{ scale: 1.05, rotate: 2 }}
+                  whileTap={{ scale: 0.98 }}
+                  drag
+                  dragElastic={0.2}
+                  dragConstraints={{ top: 0, bottom: 0, left: 0, right: 0 }}
+                  transition={{ type: "spring", stiffness: 200, damping: 20 }}
+                >
+                  <Image
+                    src="/images/hero.webp"
+                    alt="Minecraft Character with Premium Cape"
+                    fill
+                    style={{ objectFit: "contain" }}
+                    className="scale-110"
+                    priority
+                  />
+                </motion.div>
               </motion.div>
-            </motion.div>
+            )}
           </div>
 
           {/* ABOUT US CARD SECTION */}

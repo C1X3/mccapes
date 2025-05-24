@@ -83,7 +83,7 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
 
     return (
         <>
-            <section className="py-16 bg-[var(--surface-light)] relative">
+            <section className="py-16 bg-[var(--surface-light)] relative px-4 sm:px-6 lg:px-8">
                 <motion.div
                     className="absolute inset-0 bg-gradient-to-tr from-[var(--primary-light)] to-transparent z-0"
                     animate={{
