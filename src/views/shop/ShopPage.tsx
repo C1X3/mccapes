@@ -66,7 +66,7 @@ const ShopPage = () => {
         const featuredProduct = products.find(x => x.isFeatured);
         if (featuredProduct) return featuredProduct;
 
-        return filteredProducts.length > 0 
+        return filteredProducts.length > 0
             ? filteredProducts.sort((a, b) => b.price - a.price)[0]
             : products.length > 0 ? products.sort((a, b) => b.price - a.price)[0] : null;
     }, [filteredProducts, products]);
@@ -95,10 +95,15 @@ const ShopPage = () => {
             <main className="container mx-auto px-4 py-12">
                 {/* Premium Product Spotlight */}
                 {topProduct && <motion.div
-                    className="mb-20 bg-gradient-to-r from-[color-mix(in_srgb,var(--background),#333_10%)] to-[color-mix(in_srgb,var(--background),#000_10%)] p-4 md:p-8 rounded-3xl backdrop-blur-sm border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)]"
+                    className="mb-20 cursor-pointer bg-gradient-to-r from-[color-mix(in_srgb,var(--background),#333_10%)] to-[color-mix(in_srgb,var(--background),#000_10%)] p-4 md:p-8 rounded-3xl backdrop-blur-sm border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)]"
                     initial={{ opacity: 0 }}
                     whileInView={{ opacity: 1 }}
                     viewport={{ once: true }}
+                    whileHover={{
+                        y: -8,
+                        boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+                        borderColor: "var(--accent)"
+                    }}
                     transition={{ duration: 0.7, delay: 0.2 }}
                     onClick={() => router.push(`/shop/${topProduct.slug}`)}
                 >
