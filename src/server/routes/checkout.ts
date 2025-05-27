@@ -131,14 +131,6 @@ export const checkoutRouter = createTRPCRouter({
 
                         walletDetails = await createCryptoCheckout(payloadForProviders, input.cryptoType);
                         break;
-                    // case PaymentType.CASH_APP:
-                    //     // In a real implementation, you'd call Cash App API
-                    //     paymentUrl = `https://cash.app/pay/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
-                    //     break;
-                    // case PaymentType.VENMO:
-                    //     // In a real implementation, you'd call Venmo API
-                    //     paymentUrl = `https://venmo.com/checkout/${order.id}?redirect_url=${encodeURIComponent(`${process.env.NEXT_PUBLIC_APP_URL}/order/${order.id}`)}`;
-                    //     break;
                     default:
                         throw new TRPCError({
                             code: 'BAD_REQUEST',

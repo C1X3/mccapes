@@ -12,8 +12,6 @@ function mapPaymentMethod(method: string): PaymentType {
     if (m.includes('stripe')) return PaymentType.STRIPE;
     if (m.includes('bitcoin') || m.includes('litecoin')) return PaymentType.CRYPTO;
     if (m.includes('paypal')) return PaymentType.PAYPAL;
-    if (m.includes('cash')) return PaymentType.CASH_APP;
-    if (m.includes('venmo')) return PaymentType.VENMO;
     throw new Error(`Unknown payment method "${method}"`);
 }
 

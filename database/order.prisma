@@ -2,8 +2,6 @@ enum PaymentType {
   STRIPE
   CRYPTO
   PAYPAL
-  CASH_APP
-  VENMO
 }
 
 enum OrderStatus {

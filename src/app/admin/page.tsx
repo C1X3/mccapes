@@ -6,10 +6,29 @@ import ArticlesTab from "@/components/admin/ArticlesTab";
 import InvoicesTab from "@/components/admin/InvoicesTab";
 import CouponsTab from "@/components/admin/CouponsTab";
 import AdminWrapper from "@/components/AdminWrapper";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 
-export default function AdminDashboard() {
-    const [currentTab, setCurrentTab] = useState("dashboard");
+export default function AdminPage() {
+    const searchParams = useSearchParams();
+    const router = useRouter();
+    const tabParam = searchParams.get("tab");
+
+    // Initialize with tab from URL or default to dashboard
+    const [currentTab, setCurrentTab] = useState(tabParam || "dashboard");
+
+    // Update URL when tab changes
+    const handleTabChange = (tab: string) => {
+        setCurrentTab(tab);
+        router.push(`/admin?tab=${tab}`);
+    };
+
+    // Update state if URL changes
+    useEffect(() => {
+        if (tabParam && tabParam !== currentTab) {
+            setCurrentTab(tabParam);
+        }
+    }, [tabParam, currentTab]);
 
     const renderTabContent = () => {
         switch (currentTab) {
@@ -29,7 +48,7 @@ export default function AdminDashboard() {
     };
 
     return (
-        <AdminWrapper setCurrentTab={setCurrentTab} currentTab={currentTab}>
+        <AdminWrapper setCurrentTab={handleTabChange} currentTab={currentTab}>
             {renderTabContent()}
         </AdminWrapper>
     );

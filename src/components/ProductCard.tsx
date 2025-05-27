@@ -128,15 +128,6 @@ const ProductCard = ({
                             >
                                 <FaShoppingCart size={16} />
                             </button>
-                            <button
-                                onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleNavigateToProduct();
-                                }}
-                                className="px-3 py-1 text-sm font-medium border border-[var(--primary)] rounded-lg hover:bg-[var(--primary)] hover:text-white transition-colors"
-                            >
-                                View
-                            </button>
                         </div>
                     </div>
                 </div>

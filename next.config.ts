@@ -23,6 +23,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "a.c-dn.net",
       },
+      {
+        protocol: "https",
+        hostname: "flagsapi.com",
+      }
     ],
   },
   async rewrites() {

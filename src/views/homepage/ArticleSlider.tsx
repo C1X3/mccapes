@@ -1,8 +1,7 @@
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, AnimatePresence, PanInfo } from "framer-motion";
 import { useState, useRef } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import { FaChevronLeft, FaChevronRight } from "react-icons/fa";
 import { Article } from "@generated";
 import ProductCard from "@/components/ProductCard";
 import { ProductGetAllOutput } from "@/server/routes/_app";
@@ -19,6 +18,7 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
     const [showModal, setShowModal] = useState(false);
     const [isPlaying, setIsPlaying] = useState(false);
     const videoRef = useRef<HTMLVideoElement>(null);
+    const [dragDirection, setDragDirection] = useState(0);
 
     const currentArticle = articles[currentIndex];
 
@@ -34,6 +34,23 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
             prevIndex === articles.length - 1 ? 0 : prevIndex + 1
         );
         setIsPlaying(false);
+    };
+
+    const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
+        // Only handle swipes on mobile devices
+        if (window.innerWidth <= 768) {
+            const threshold = 50;
+
+            if (info.offset.x > threshold) {
+                // Swiped right - go to previous
+                setDragDirection(-1);
+                goToPrevious();
+            } else if (info.offset.x < -threshold) {
+                // Swiped left - go to next
+                setDragDirection(1);
+                goToNext();
+            }
+        }
     };
 
     // Get video URL from S3
@@ -98,40 +115,48 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
                 />
 
                 <div className="container mx-auto relative">
-                    {/* Navigation buttons */}
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
+                    {/* Navigation buttons - desktop only */}
+                    <div className="hidden md:block absolute left-4 top-1/2 transform -translate-y-1/2 z-20">
                         <button
                             onClick={goToPrevious}
                             className="w-12 h-12 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
                             disabled={articles.length <= 1}
                         >
-                            <FaChevronLeft className="text-[var(--primary)] text-lg" />
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--primary)]" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
                         </button>
                     </div>
 
-                    <div className="absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
+                    <div className="hidden md:block absolute right-4 top-1/2 transform -translate-y-1/2 z-20">
                         <button
                             onClick={goToNext}
                             className="w-12 h-12 bg-white/90 hover:bg-white shadow-lg rounded-full flex items-center justify-center transition-all duration-200 hover:scale-110"
                             disabled={articles.length <= 1}
                         >
-                            <FaChevronRight className="text-[var(--primary)] text-lg" />
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-[var(--primary)]" viewBox="0 0 20 20" fill="currentColor">
+                                <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                            </svg>
                         </button>
                     </div>
 
-                    <AnimatePresence mode="wait" custom={currentIndex}>
+                    <AnimatePresence mode="wait" custom={dragDirection}>
                         <motion.div
                             key={currentIndex}
-                            custom={currentIndex}
+                            custom={dragDirection}
                             variants={slideVariants}
                             initial="enter"
                             animate="center"
                             exit="exit"
                             transition={{
-                                x: { type: "spring", stiffness: 300, damping: 30 },
-                                opacity: { duration: 0.2 }
+                                x: { type: "spring", stiffness: 500, damping: 50 },
+                                opacity: { duration: 0.15 }
                             }}
-                            className="relative"
+                            drag="x"
+                            dragConstraints={{ left: 0, right: 0 }}
+                            dragElastic={0.2}
+                            onDragEnd={handleDragEnd}
+                            className="relative md:cursor-default cursor-grab active:cursor-grabbing"
                         >
                             {/* Product Card if article has productSlug */}
                             {currentArticle.productSlug && (
@@ -200,16 +225,21 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
                                     {firstParagraph}
                                 </motion.p>
 
-                                {paragraphs.length > 1 && (
-                                    <motion.p className="text-gray-600 text-lg mb-4" variants={fadeInUp}>
-                                        {paragraphs[1]}
-                                    </motion.p>
-                                )}
+                                {/* Only show these next paragraphs if user is not on mobile*/}
+                                {window.innerWidth > 768 && (
+                                    <>
+                                        {paragraphs.length > 1 && (
+                                            <motion.p className="text-gray-600 text-lg mb-4" variants={fadeInUp}>
+                                                {paragraphs[1]}
+                                            </motion.p>
+                                        )}
 
-                                {paragraphs.length > 2 && (
-                                    <motion.p className="text-gray-600 text-lg mb-4" variants={fadeInUp}>
-                                        {paragraphs[2]}
-                                    </motion.p>
+                                        {paragraphs.length > 2 && (
+                                            <motion.p className="text-gray-600 text-lg mb-4" variants={fadeInUp}>
+                                                {paragraphs[2]}
+                                            </motion.p>
+                                        )}
+                                    </>
                                 )}
 
                                 {/* Clearfix to handle float properly */}

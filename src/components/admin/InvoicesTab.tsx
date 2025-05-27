@@ -88,10 +88,6 @@ export default function InvoicesTab() {
         return "PayPal";
       case PaymentType.CRYPTO:
         return "Crypto";
-      case PaymentType.CASH_APP:
-        return "Cash App";
-      case PaymentType.VENMO:
-        return "Venmo";
       default:
         return method;
     }

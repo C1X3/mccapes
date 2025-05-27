@@ -216,20 +216,6 @@ import {
                     </Text>
                   </>
                 )}
-  
-                {(paymentType === PaymentType.CASH_APP || paymentType === PaymentType.VENMO) && (
-                  <>
-                    <Text style={paymentInstructionText}>
-                      Please complete your payment by sending {formatPrice(totalWithFee)} via {paymentType.replace('_', ' ')} to:
-                    </Text>
-                    <Text style={paymentAddressText}>
-                      {paymentDetails?.address || `$username`}
-                    </Text>
-                    <Text style={paymentWarningText}>
-                      Important: Do not mention any product details in the payment note.
-                    </Text>
-                  </>
-                )}
               </Section>
   
               <Hr style={divider} />

@@ -16,7 +16,7 @@ interface Video {
 // your videos data
 const videos: Video[] = [
   {
-    title: "Untold History of EVERY Minecraft Cape (#1 in the list)",
+    title: "Untold History of EVERY Minecraft Cape",
     description: "godnxss",
     url: "https://www.youtube.com/embed/wGbQJwCBbR4",
     thumbnail: "https://img.youtube.com/vi/wGbQJwCBbR4/maxresdefault.jpg",

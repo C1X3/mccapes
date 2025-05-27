@@ -11,7 +11,7 @@ import Image from "next/image";
 
 export default function InvoiceDetailPage({ id }: { id: string }) {
   const trpc = useTRPC();
-  
+
   const { data: invoice, isLoading, error } = useQuery(
     trpc.invoices.getById.queryOptions({
       orderId: id as string,
@@ -49,10 +49,6 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
         return "PayPal";
       case PaymentType.CRYPTO:
         return "Crypto";
-      case PaymentType.CASH_APP:
-        return "Cash App";
-      case PaymentType.VENMO:
-        return "Venmo";
       default:
         return method;
     }
@@ -92,7 +88,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           <p className="text-gray-400 text-sm">View the details of the invoice.</p>
         </div>
         <div className="flex gap-2">
-          <button 
+          <button
             className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
             onClick={handleManuallyProcessInvoice}
           >
@@ -108,20 +104,20 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <FaShoppingBag className="text-gray-500" />
             <h2 className="font-semibold">Order Information</h2>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">ID</span>
               <span>{invoice.id}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Status</span>
               <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
                 {invoice.status || "Pending"}
               </span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Payment Method</span>
               <div className="flex items-center gap-2">
@@ -131,27 +127,27 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 )}
               </div>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Subtotal</span>
               <span>${invoice.totalPrice ? invoice.totalPrice.toFixed(2) : "129.99"}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Gateway Fee</span>
               <span>${invoice.paymentFee ? invoice.paymentFee.toFixed(2) : "3.20"}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Total Price</span>
               <span>${(invoice.totalPrice + invoice.paymentFee).toFixed(2)}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Total Paid</span>
               <span>-</span>
             </div>
-            
+
             <div className="flex justify-between pb-2">
               <span className="text-gray-600">Created At</span>
               <span>{formatDate(invoice.createdAt)}</span>
@@ -165,29 +161,29 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <FaUser className="text-gray-500" />
             <h2 className="font-semibold">Customer Information</h2>
           </div>
-          
+
           <div className="space-y-3">
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">E-mail Address</span>
               <span>{invoice.customer?.email || "rea321052@gmail.com"}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">IP Address</span>
-              <span>94.131.9.236</span>
+              <span>{invoice.customer?.ipAddress || "5.238.169.147"}</span>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Country</span>
               <div className="flex items-center gap-2">
-                <span>US</span>
-                <Image src="https://flagsapi.com/US/flat/64.png" alt="US" className="w-6 h-4" />
+                <span>{"US"}</span>
+                <Image src="https://flagsapi.com/US/flat/64.png" alt="US" className="w-6 h-4" width={64} height={64} />
               </div>
             </div>
-            
+
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">User Agent</span>
-              <span className="text-sm truncate max-w-[300px]">Mozilla/5.0 (Linux, Android 10, K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36</span>
+              <span className="text-sm truncate max-w-[300px]">{invoice.customer?.useragent || "Mozilla/5.0 (Linux, Android 10, K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36"}</span>
             </div>
           </div>
         </div>
@@ -199,7 +195,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           <FaBox className="text-gray-500" />
           <h2 className="font-semibold">Items</h2>
         </div>
-        
+
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="border-b border-gray-200">
@@ -217,20 +213,20 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 <tr className="border-b border-gray-100" key={item.id}>
                   <td className="py-3 px-4">
                     <span className="px-2 py-1 rounded-full text-xs font-semibold bg-yellow-100 text-yellow-800">
-                    {invoice.status}
-                  </span>
-                </td>
-                <td className="py-3 px-4">
-                  <div>
-                    <p className="font-medium">Experience Cape Code</p>
-                    <p className="text-sm text-gray-500">Experience Cape Code</p>
-                  </div>
-                </td>
-                <td className="py-3 px-4">{item.quantity}</td>
-                <td className="py-3 px-4">${(item.price * item.quantity).toFixed(2)}</td>
-                <td className="py-3 px-4">{item.codes.join(", ")}</td>
-                <td className="py-3 px-4">{invoice.status === OrderStatus.DELIVERED ? "Yes" : "No"}</td>
-              </tr>
+                      {invoice.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4">
+                    <div>
+                      <p className="font-medium">Experience Cape Code</p>
+                      <p className="text-sm text-gray-500">Experience Cape Code</p>
+                    </div>
+                  </td>
+                  <td className="py-3 px-4">{item.quantity}</td>
+                  <td className="py-3 px-4">${(item.price * item.quantity).toFixed(2)}</td>
+                  <td className="py-3 px-4">{item.codes.join(", ")}</td>
+                  <td className="py-3 px-4">{invoice.status === OrderStatus.DELIVERED ? "Yes" : "No"}</td>
+                </tr>
               ))}
             </tbody>
           </table>

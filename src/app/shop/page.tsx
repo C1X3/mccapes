@@ -1,5 +1,6 @@
 import { HydrateClient, prefetch, trpc } from "@/server/server";
 import ShopPage from "@/views/shop/ShopPage";
+import { Suspense } from "react";
 
 const Page = async () => {
     prefetch(
@@ -10,7 +11,9 @@ const Page = async () => {
 
     return (
         <HydrateClient>
-            <ShopPage />
+            <Suspense>
+                <ShopPage />
+            </Suspense>
         </HydrateClient>
     );
 };

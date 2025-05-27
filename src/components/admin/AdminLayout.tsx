@@ -3,6 +3,7 @@ import { motion } from "framer-motion";
 import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaBars, FaTimes, FaNewspaper } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
+import { useRouter } from "next/navigation";
 
 interface TabItem {
   id: string;
@@ -25,6 +26,7 @@ export default function AdminLayout({
   isAuthenticated,
   authComponent,
 }: AdminLayoutProps) {
+  const router = useRouter();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const tabs: TabItem[] = [{ id: "dashboard", label: "Dashboard", icon: <FaTachometerAlt /> }, { id: "products", label: "Products", icon: <FaBox /> }, { id: "articles", label: "Articles", icon: <FaNewspaper /> }, { id: "invoices", label: "Invoices", icon: <FaReceipt /> }, { id: "coupons", label: "Coupons", icon: <FaTicketAlt /> },];
@@ -32,6 +34,8 @@ export default function AdminLayout({
   const handleTabClick = (tabId: string) => {
     if (onTabChange) {
       onTabChange(tabId);
+    } else {
+      router.push(`/admin?tab=${tabId}`);
     }
     // Close sidebar on mobile when a tab is selected
     setIsMobileSidebarOpen(false);

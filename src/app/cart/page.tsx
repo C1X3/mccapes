@@ -658,40 +658,6 @@ const CartPage = () => {
                                                             <span className="text-xs opacity-80">Friends & Family ({formatFeePercentage(PaymentType.PAYPAL)} fee)</span>
                                                         </div>
                                                     </motion.button>
-
-                                                    <motion.button
-                                                        onClick={() => handlePaymentMethod(PaymentType.CASH_APP)}
-                                                        initial={{ opacity: 0, y: 20 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ delay: 0.45 }}
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        className="w-full p-4 bg-gradient-to-r from-[#00D632] to-[#00B828] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
-                                                    >
-                                                        <FaMoneyBillWave size={24} />
-                                                        <div className="flex flex-col text-left">
-                                                            <span className="font-semibold">Cash App</span>
-                                                            <span className="text-xs opacity-80">Quick mobile payment</span>
-                                                        </div>
-                                                    </motion.button>
-
-                                                    <motion.button
-                                                        onClick={() => handlePaymentMethod(PaymentType.VENMO)}
-                                                        initial={{ opacity: 0, y: 20 }}
-                                                        animate={{ opacity: 1, y: 0 }}
-                                                        transition={{ delay: 0.55 }}
-                                                        whileHover={{ scale: 1.02 }}
-                                                        whileTap={{ scale: 0.98 }}
-                                                        className="w-full p-4 bg-gradient-to-r from-[#3D95CE] to-[#008CFF] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
-                                                    >
-                                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
-                                                            <path d="M17.448 5c-.636 2.006-1.556 3.76-2.73 5.568-.636.943-2.03 3.288-2.346 3.76-.318-.59-1.431-3.406-1.749-4.23-.445-1.236-.445-1.708-.318-2.652h-3.18C6.89 9.186 7.78 11.427 9 14.31c.382.96.89 1.708 1.43 2.18.7.59 1.493.707 2.13.352.636-.354 2.408-2.415 3.34-3.76 1.176-1.767 2.323-4.111 2.902-6.045.127-.471.318-1.061.763-2.002L17.447 5z"></path>
-                                                        </svg>
-                                                        <div className="flex flex-col text-left">
-                                                            <span className="font-semibold">Venmo</span>
-                                                            <span className="text-xs opacity-80">Simple social payments</span>
-                                                        </div>
-                                                    </motion.button>
                                                 </div>
 
                                                 <motion.div

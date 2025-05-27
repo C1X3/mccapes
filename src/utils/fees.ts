@@ -5,8 +5,6 @@ export const PAYMENT_METHOD_FEES = {
   [PaymentType.CRYPTO]: 0.015, // 1.5%
   [PaymentType.PAYPAL]: 0.025, // 2.5%
   [PaymentType.STRIPE]: 0.04,  // 4%
-  [PaymentType.CASH_APP]: 0,   // 0%
-  [PaymentType.VENMO]: 0,      // 0%
 };
 
 /**

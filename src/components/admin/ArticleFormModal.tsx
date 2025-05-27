@@ -138,13 +138,6 @@ export default function ArticleFormModal({
             return;
         }
 
-        // Limit file size (e.g., 100MB)
-        const maxSize = 100 * 1024 * 1024;
-        if (file.size > maxSize) {
-            toast.error('File size exceeds the 100MB limit');
-            return;
-        }
-
         setIsUploading(true);
         setUploadProgress(0);
 
