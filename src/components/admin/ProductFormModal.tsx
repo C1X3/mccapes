@@ -749,24 +749,19 @@ export default function ProductFormModal({
 
                     {/* Stripe Product Name */}
                     <div>
-                        <label htmlFor="slug" className="block text-[var(--foreground)] mb-2">
+                        <label htmlFor="stripeProductName" className="block text-[var(--foreground)] mb-2">
                             Stripe Product Name *
                         </label>
                         <Controller
                             name="stripeProductName"
                             control={control}
-                            rules={{ required: "Stripe product name is required" }}
+                            rules={{ required: "Product name is required" }}
                             render={({ field, fieldState }) => (
                                 <>
                                     <input
-                                        id="slug"
+                                        id="stripeProductName"
                                         type="text"
                                         {...field}
-                                        onChange={(e) => {
-                                            // Remove spaces from input
-                                            const value = e.target.value.replace(/\s+/g, '');
-                                            field.onChange(value);
-                                        }}
                                         className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
                                         placeholder="Enter Stripe product name"
                                     />
