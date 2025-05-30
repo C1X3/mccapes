@@ -16,6 +16,12 @@ interface Video {
 // your videos data
 const videos: Video[] = [
   {
+    title: "How Minecraft's NEW $100,000 Cape Disappeared...",
+    description: "MC Capes",
+    url: "https://www.youtube.com/watch?v=lxdYGesTV6U",
+    thumbnail: "https://img.youtube.com/vi/lxdYGesTV6U/maxresdefault.jpg",
+  },
+  {
     title: "Untold History of EVERY Minecraft Cape",
     description: "godnxss",
     url: "https://www.youtube.com/embed/wGbQJwCBbR4",
@@ -69,6 +75,12 @@ const videos: Video[] = [
     url: "https://www.youtube.com/embed/Fh7Blmb-h5I",
     thumbnail: "https://img.youtube.com/vi/Fh7Blmb-h5I/maxresdefault.jpg",
   },
+  {
+    title: "Secretly Coaching DREAM and DAQUAVIS Before $100,000 FIGHT 👀",
+    description: "godnxss",
+    url: "https://www.youtube.com/embed/-5Mgiewa6lc",
+    thumbnail: "https://img.youtube.com/vi/-5Mgiewa6lc/maxresdefault.jpg",
+  }
 ];
 
 export default function VideosPage() {
