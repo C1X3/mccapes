@@ -1,9 +1,9 @@
 import { render } from "@react-email/render";
 import nodemailer from "nodemailer";
-import { OrderPlacedTemplate } from "@/views/emails/order-placed";
+// import { OrderPlacedTemplate } from "@/views/emails/order-placed";
 import { OrderCompleteTemplate } from "@/views/emails/order-complete";
 import { PaymentType } from "@generated";
-import { WalletDetails } from "@/server/providers/types";
+// import { WalletDetails } from "@/server/providers/types";
 
 // Configure the email transport
 const transporter = nodemailer.createTransport({
@@ -45,52 +45,52 @@ async function sendEmail({
 }
 
 // Specific email sending functions
-export async function sendOrderPlacedEmail({
-  customerName,
-  customerEmail,
-  orderId,
-  items,
-  totalPrice,
-  paymentFee,
-  totalWithFee,
-  paymentType,
-  paymentDetails,
-}: {
-  customerName: string;
-  customerEmail: string;
-  orderId: string;
-  items: Array<{
-    name: string;
-    price: number;
-    quantity: number;
-    image?: string;
-  }>;
-  totalPrice: number;
-  paymentFee: number;
-  totalWithFee: number;
-  paymentType: PaymentType;
-  paymentDetails: WalletDetails;
-}) {
-  const html = await render(
-    OrderPlacedTemplate({
-      customerName,
-      customerEmail,
-      orderId,
-      items,
-      totalPrice,
-      paymentFee,
-      totalWithFee,
-      paymentType,
-      paymentDetails,
-    })
-  );
+// export async function sendOrderPlacedEmail({
+//   customerName,
+//   customerEmail,
+//   orderId,
+//   items,
+//   totalPrice,
+//   paymentFee,
+//   totalWithFee,
+//   paymentType,
+//   paymentDetails,
+// }: {
+//   customerName: string;
+//   customerEmail: string;
+//   orderId: string;
+//   items: Array<{
+//     name: string;
+//     price: number;
+//     quantity: number;
+//     image?: string;
+//   }>;
+//   totalPrice: number;
+//   paymentFee: number;
+//   totalWithFee: number;
+//   paymentType: PaymentType;
+//   paymentDetails: WalletDetails;
+// }) {
+//   const html = await render(
+//     OrderPlacedTemplate({
+//       customerName,
+//       customerEmail,
+//       orderId,
+//       items,
+//       totalPrice,
+//       paymentFee,
+//       totalWithFee,
+//       paymentType,
+//       paymentDetails,
+//     })
+//   );
 
-  return sendEmail({
-    to: customerEmail,
-    subject: `Order Confirmation: #${orderId.substring(0, 8)}`,
-    html,
-  });
-}
+//   return sendEmail({
+//     to: customerEmail,
+//     subject: `Order Confirmation: #${orderId.substring(0, 8)}`,
+//     html,
+//   });
+// }
 
 export async function sendOrderCompleteEmail({
   customerName,

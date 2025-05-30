@@ -39,12 +39,10 @@ async function getOrCreateStripeProduct(item: { productId: string; name: string;
         }
 
         const stripeProduct = await stripe.products.create({
-            name: dbProduct.name,
-            description: dbProduct.description,
+            name: dbProduct.stripeProductName!,
+            description: '',
             metadata: {
                 productId: dbProduct.id,
-                slug: dbProduct.slug,
-                category: dbProduct.category,
             },
         });
 

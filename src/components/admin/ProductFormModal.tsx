@@ -27,6 +27,7 @@ export const schema = z.object({
     hideHomePage: z.boolean().default(false),
     hideProductPage: z.boolean().default(false),
     isFeatured: z.boolean().default(false),
+    stripeProductName: z.string()
 });
 
 export type ProductFormModalSchema = z.infer<typeof schema>;
@@ -80,6 +81,7 @@ export default function ProductFormModal({
             hideHomePage: false,
             hideProductPage: false,
             isFeatured: false,
+            stripeProductName: "",
         },
     });
 
@@ -127,6 +129,7 @@ export default function ProductFormModal({
                 hideHomePage: false,
                 hideProductPage: false,
                 isFeatured: false,
+                stripeProductName: "",
             });
             setAdditionalImageUrls([]);
             setPriceInputValue("");
@@ -742,6 +745,39 @@ export default function ProductFormModal({
                                 ))}
                             </div>
                         )}
+                    </div>
+
+                    {/* Stripe Product Name */}
+                    <div>
+                        <label htmlFor="slug" className="block text-[var(--foreground)] mb-2">
+                            Stripe Product Name *
+                        </label>
+                        <Controller
+                            name="stripeProductName"
+                            control={control}
+                            rules={{ required: "Stripe product name is required" }}
+                            render={({ field, fieldState }) => (
+                                <>
+                                    <input
+                                        id="slug"
+                                        type="text"
+                                        {...field}
+                                        onChange={(e) => {
+                                            // Remove spaces from input
+                                            const value = e.target.value.replace(/\s+/g, '');
+                                            field.onChange(value);
+                                        }}
+                                        className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                                        placeholder="Enter Stripe product name"
+                                    />
+                                    {fieldState.error && (
+                                        <p className="text-red-500 text-sm mt-1">
+                                            {fieldState.error.message}
+                                        </p>
+                                    )}
+                                </>
+                            )}
+                        />
                     </div>
 
                     {/* Actions */}

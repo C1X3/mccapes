@@ -185,6 +185,11 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <span className="text-gray-600">User Agent</span>
               <span className="text-sm truncate max-w-[300px]">{invoice.customer?.useragent || "Mozilla/5.0 (Linux, Android 10, K) AppleWebKit/537.36 (KHTML, like Gecko) SamsungBrowser/24.0 Chrome/117.0.0.0 Mobile Safari/537.36"}</span>
             </div>
+
+            <div className="flex justify-between border-b border-gray-200 pb-2">
+              <span className="text-gray-600">Discord Username</span>
+              <span>{invoice.customer?.discord || "Not provided"}</span>
+            </div>
           </div>
         </div>
       </div>

@@ -8,7 +8,7 @@ import { createCheckoutSession as createPaypalCheckout } from '../providers/payp
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
 import { calculatePaymentFee } from '@/utils/fees';
-import { sendOrderCompleteEmail, sendOrderPlacedEmail } from '@/utils/email';
+import { sendOrderCompleteEmail } from '@/utils/email';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -179,17 +179,17 @@ export const checkoutRouter = createTRPCRouter({
                         });
                     }
 
-                    await sendOrderPlacedEmail({
-                        customerName: input.customerInfo.name,
-                        customerEmail: input.customerInfo.email,
-                        orderId: order.id,
-                        items: input.items,
-                        totalPrice: input.totalPrice,
-                        paymentFee: paymentFee,
-                        totalWithFee: input.totalPrice + paymentFee,
-                        paymentType: input.paymentType,
-                        paymentDetails: walletDetails,
-                    });
+                    // await sendOrderPlacedEmail({
+                    //     customerName: input.customerInfo.name,
+                    //     customerEmail: input.customerInfo.email,
+                    //     orderId: order.id,
+                    //     items: input.items,
+                    //     totalPrice: input.totalPrice,
+                    //     paymentFee: paymentFee,
+                    //     totalWithFee: input.totalPrice + paymentFee,
+                    //     paymentType: input.paymentType,
+                    //     paymentDetails: walletDetails,
+                    // });
                 }
 
                 return {

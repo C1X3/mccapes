@@ -3,7 +3,7 @@ import "module-alias/register";
 dotenv.config(); // Load .env variables
 
 import axios from 'axios';
-import { CryptoType, OrderStatus } from '@generated';
+import { CryptoType, OrderStatus, PaymentType } from '@generated';
 import { prisma } from '@/utils/prisma';
 import { parseUnits } from 'ethers';
 import { sendOrderCompleteEmail } from "./utils/email";
@@ -181,11 +181,49 @@ async function checkPayments() {
     }
 }
 
+async function expireOrders() {
+    // Fetch all orders, if it's stripe or paypal and lasts more than 30 minutes from created cancel the order
+    const orders = await prisma.order.findMany({
+        where: {
+            status: OrderStatus.PENDING,
+            paymentType: { in: [PaymentType.STRIPE, PaymentType.PAYPAL] },
+            createdAt: { lt: new Date(Date.now() - 30 * 60 * 1000) }
+        },
+        include: {
+            OrderItem: true
+        }
+    });
+
+    for (const order of orders) {
+        await prisma.$transaction(async (tx) => {
+            for (const item of order.OrderItem) {
+                const product = await tx.product.findUnique({
+                    where: { id: item.productId },
+                });
+
+                if (!product) continue;
+
+                const stock = product.stock.concat(item.codes);
+                await tx.product.update({
+                    where: { id: item.productId },
+                    data: { stock },
+                });
+            }
+
+            await tx.order.update({
+                where: { id: order.id },
+                data: { status: OrderStatus.CANCELLED },
+            });
+        });
+    }
+}
+
 (async function pollLoop() {
     try {
         while (true) {
             console.log('Checking payments...');
             await checkPayments();
+            await expireOrders();
             await new Promise(res => setTimeout(res, POLL_INTERVAL));
         }
     } catch (err) {
