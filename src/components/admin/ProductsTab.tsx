@@ -74,7 +74,8 @@ export default function ProductsTab() {
       hideHomePage: product.hideHomePage || false,
       hideProductPage: product.hideProductPage || false,
       isFeatured: product.isFeatured || false,
-      order: product.order || 0
+      order: product.order || 0,
+      stripeProductName: product.stripeProductName || ""
     };
     setSelectedProduct(formProduct);
     setIsEditModalOpen(true);

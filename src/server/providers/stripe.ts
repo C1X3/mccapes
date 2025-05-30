@@ -40,7 +40,7 @@ async function getOrCreateStripeProduct(item: { productId: string; name: string;
 
         const stripeProduct = await stripe.products.create({
             name: dbProduct.stripeProductName!,
-            description: '',
+            description: 'For buying this service, you will be added to the MC Tournaments server where you will have an opportunity to win fun prizes and compete with peers who are also into competition. The higher priced products will give you access to bigger and larger tournaments, while the lower priced products will give you access to smaller tournaments and will have different amenities. This product will also come with complementaries such as rare accessory designs and one on one support. To receive the complimentary gift you must check your email and ensure to check the spam folder if you are unable to find it.',
             metadata: {
                 productId: dbProduct.id,
             },
