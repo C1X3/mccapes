@@ -40,7 +40,6 @@ const nextConfig: NextConfig = {
           },
         ],
         destination: 'https://mccapes.net/admin/:path*',
-        permanent: true, // or false if you want a 307 instead of 308/301
       },
     ];
   },
