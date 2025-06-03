@@ -109,7 +109,6 @@ export const checkoutRouter = createTRPCRouter({
                                 productId: item.productId,
                                 quantity: item.quantity,
                                 price: item.price,
-                                name: item.name,
                             }))
                         }
                     }
