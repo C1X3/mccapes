@@ -425,4 +425,46 @@ export const checkoutRouter = createTRPCRouter({
 
             return { success: true, order };
         }),
+
+    cancelInvoice: adminProcedure
+        .input(z.object({ orderId: z.string() }))
+        .mutation(async ({ input }) => {
+            // Fetch all orders, if it's stripe or paypal and lasts more than 30 minutes from created cancel the order
+            const order = await prisma.order.findUnique({
+                where: { id: input.orderId },
+                include: {
+                    OrderItem: true
+                }
+            });
+
+            if (!order) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Order not found',
+                });
+            }
+
+            await prisma.$transaction(async (tx) => {
+                for (const item of order.OrderItem) {
+                    const product = await tx.product.findUnique({
+                        where: { id: item.productId },
+                    });
+
+                    if (!product) continue;
+
+                    const stock = product.stock.concat(item.codes);
+                    await tx.product.update({
+                        where: { id: item.productId },
+                        data: { stock },
+                    });
+                }
+
+                await tx.order.update({
+                    where: { id: order.id },
+                    data: { status: OrderStatus.CANCELLED },
+                });
+            });
+
+            return { success: true, order };
+        }),
 }); 

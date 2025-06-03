@@ -9,7 +9,6 @@ import {
   FaBox,
   FaCalendarAlt,
   FaChartLine,
-  FaClock,
   FaShoppingCart,
   FaTachometerAlt,
   FaUser,
@@ -76,7 +75,7 @@ export default function DashboardTab() {
           : undefined,
     })
   );
-  
+
   const chartDataQuery = useQuery(
     trpc.analytics.getChartData.queryOptions({
       timeRange,

@@ -3,7 +3,7 @@
 import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React from "react";
-import { FaBox, FaUser, FaShoppingBag, FaFileInvoice } from "react-icons/fa";
+import { FaBox, FaUser, FaShoppingBag, FaFileInvoice, FaTrash } from "react-icons/fa";
 import { OrderStatus, PaymentType } from "@generated";
 import Link from "next/link";
 import toast from "react-hot-toast";
@@ -25,6 +25,17 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       },
       onError: () => {
         toast.error("Failed to manually process invoice");
+      },
+    }),
+  );
+
+  const { mutate: cancelInvoice, isPending: isCancelling } = useMutation(
+    trpc.checkout.cancelInvoice.mutationOptions({
+      onSuccess: () => {
+        toast.success("Invoice cancelled");
+      },
+      onError: () => {
+        toast.error("Failed to cancel invoice");
       },
     }),
   );
@@ -56,6 +67,12 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
   const handleManuallyProcessInvoice = () => {
     manuallyProcessInvoice({
+      orderId: id as string,
+    });
+  };
+
+  const handleCancelInvoice = () => {
+    cancelInvoice({
       orderId: id as string,
     });
   };
@@ -94,6 +111,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           >
             <FaFileInvoice /> {isManuallyProcessing ? "Processing..." : "Manually Process Invoice"}
           </button>
+          {invoice.status == OrderStatus.PENDING && <div className="flex gap-2">
+            <button
+              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+              onClick={handleCancelInvoice}
+            >
+              <FaTrash /> {isCancelling ? "Cancelling..." : "Cancel Invoice"}
+            </button>
+          </div>}
         </div>
       </div>
 
