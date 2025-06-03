@@ -103,6 +103,14 @@ export const checkoutRouter = createTRPCRouter({
                                 ipAddress: ip,
                                 useragent: userAgent,
                             }
+                        },
+                        OrderItem: {
+                            create: input.items.map(item => ({
+                                productId: item.productId,
+                                quantity: item.quantity,
+                                price: item.price,
+                                name: item.name,
+                            }))
                         }
                     }
                 });
