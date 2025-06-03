@@ -25,6 +25,7 @@ export const checkoutRouter = createTRPCRouter({
                 customerInfo: z.object({
                     name: z.string().min(1),
                     email: z.string().email(),
+                    discord: z.string().optional(),
                 }),
                 paymentType: z.nativeEnum(PaymentType),
                 cryptoType: z.nativeEnum(CryptoType).optional(),
@@ -93,6 +94,7 @@ export const checkoutRouter = createTRPCRouter({
                             create: {
                                 name: input.customerInfo.name,
                                 email: input.customerInfo.email,
+                                discord: input.customerInfo.discord,
                             }
                         }
                     }

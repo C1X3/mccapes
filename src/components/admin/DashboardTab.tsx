@@ -328,9 +328,21 @@ export default function DashboardTab() {
                     borderColor: "rgba(0,0,0,0.1)",
                     color: "var(--foreground)",
                   }}
-                  formatter={(value, name) => {
-                    if (name === "revenue") return [`$${value}`, "Revenue"];
-                    return [value, "Orders"];
+                  formatter={(value, name, props) => {
+                    // Custom formatter that ignores the standard format
+                    return null;
+                  }}
+                  content={({ active, payload }) => {
+                    if (active && payload && payload.length) {
+                      return (
+                        <div className="bg-white p-3 border border-gray-200 rounded shadow-sm">
+                          <p className="font-medium">{payload[0].payload.time}</p>
+                          <p className="text-[#8884d8]">Revenue: ${formatCurrency(Number(payload[0].value || 0)).replace('$', '')}</p>
+                          <p className="text-[#82ca9d]">Orders: {payload[1].value}</p>
+                        </div>
+                      );
+                    }
+                    return null;
                   }}
                 />
                 <Legend />
@@ -388,47 +400,68 @@ export default function DashboardTab() {
           <div className="p-4">
             <div className="space-y-4">
               {recentOrders.map((order) => (
-                <div key={order.id} 
-                className="cursor-pointer bg-gray-50 hover:bg-gray-100 transition-colors duration-150 rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-4"
-                 onClick={() => router.push(`/admin/invoice/${order.id}`)}
-                 >
-                  <div className="flex items-center gap-3">
+                <div
+                  key={order.id}
+                  className="
+                    cursor-pointer
+                    bg-gray-50 hover:bg-gray-100
+                    transition-colors duration-150
+                    rounded-lg p-4
+                    flex flex-col md:flex-row md:items-start justify-between gap-4
+                  "
+                  onClick={() => router.push(`/admin/invoice/${order.id}`)}
+                >
+                  <div className="flex items-start gap-3">
                     <div className="bg-[var(--primary)] bg-opacity-10 rounded-full p-2">
                       <FaShoppingCart className="text-[var(--primary)]" />
                     </div>
                     <div>
-                      <p className="font-medium text-[var(--foreground)]">Order #{order.id}</p>
+                      <p className="font-medium text-[var(--foreground)]">
+                        Order #{order.id}
+                      </p>
                       <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                         {format(parseISO(order.date), "MMM dd, yyyy")}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <div className="bg-gray-200 rounded-full p-2">
                       <FaUser className="text-gray-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-[var(--foreground)]">{order.customer}</p>
-                      <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Customer</p>
+                      <p className="font-medium text-[var(--foreground)]">
+                        {order.customer}
+                      </p>
+                      <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        Customer
+                      </p>
                     </div>
                   </div>
 
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-start gap-3">
                     <div className="bg-gray-200 rounded-full p-2">
                       <FaBox className="text-gray-500" />
                     </div>
                     <div>
-                      <p className="font-medium text-[var(--foreground)]">{order.items}</p>
-                      <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Items</p>
+                      <p className="font-medium text-[var(--foreground)]">
+                        {order.items}
+                      </p>
+                      <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        Items
+                      </p>
                     </div>
                   </div>
 
                   <div>
-                    <p className="text-lg font-semibold text-[var(--primary)]">{formatCurrency(order.total)}</p>
+                    <p className="text-lg font-semibold text-[var(--primary)]">
+                      {formatCurrency(order.total)}
+                    </p>
                   </div>
                 </div>
               ))}
+
+
             </div>
           </div>
         )}

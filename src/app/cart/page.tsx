@@ -301,12 +301,12 @@ const CartPage = () => {
                                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
                                                         <span className="text-[var(--foreground)]">{formatPrice(totalPrice)}</span>
                                                     </div>
-                                                    
+
                                                     {coupon && (
                                                         <div className="flex justify-between text-green-500">
                                                             <span className="flex items-center gap-2">
                                                                 Discount ({coupon})
-                                                                <button 
+                                                                <button
                                                                     onClick={removeCoupon}
                                                                     className="text-xs bg-green-500/10 text-green-500 rounded-full px-2 py-0.5 hover:bg-green-500/20"
                                                                 >
@@ -316,7 +316,7 @@ const CartPage = () => {
                                                             <span>-{formatPrice(discountAmount)}</span>
                                                         </div>
                                                     )}
-                                                    
+
                                                     <div className="flex justify-between">
                                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                                             Payment Fee ({formatFeePercentage(paymentType)})

@@ -3,10 +3,17 @@ import { TRPCError } from "@trpc/server";
 import {
   endOfDay,
   format,
-  parseISO,
   startOfDay,
   subDays,
   subMonths,
+  differenceInHours,
+  differenceInDays,
+  startOfWeek,
+  startOfMonth,
+  addHours,
+  addDays,
+  addWeeks,
+  addMonths,
 } from "date-fns";
 import { z } from "zod";
 import { baseProcedure, createTRPCRouter } from "../init";
@@ -186,7 +193,7 @@ export const analyticsRouter = createTRPCRouter({
             gte: dateRange.start,
             lte: dateRange.end,
           },
-          status: "PAID",
+          status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
         },
       });
 
@@ -231,71 +238,154 @@ export const analyticsRouter = createTRPCRouter({
     .query(async ({ input }) => {
       const { timeRange, customRange } = input;
       const dateRange = getDateRange(timeRange, customRange);
+      const { start, end } = dateRange;
 
-      // Format dates based on time range
-      let groupByFormat = "yyyy-MM-dd"; // Default for daily
-      let resultFormat = "MMM dd"; // Default for daily display
+      let bucketType: 'hour' | 'day' | 'week' | 'month';
+      let bucketSize: number;
 
-      if (timeRange === "today" || timeRange === "yesterday") {
-        groupByFormat = "yyyy-MM-dd-HH";
-        resultFormat = "HH:00";
-      } else if (["past_6_months", "past_year"].includes(timeRange)) {
-        groupByFormat = "yyyy-MM";
-        resultFormat = "MMM yyyy";
+      const totalHours = differenceInHours(end, start);
+      const totalDays = differenceInDays(end, start);
+
+      if (totalHours <= 24) {
+        bucketType = 'hour';
+        bucketSize = 1;
+      } else if (totalHours <= 48) {
+        bucketType = 'hour';
+        bucketSize = 2;
+      } else if (totalHours <= 168) { // 7 days = 168 hours
+        bucketType = 'hour';
+        bucketSize = 6;
+      } else if (totalDays <= 30) {
+        bucketType = 'day';
+        bucketSize = 1;
+      } else if (totalDays <= 90) {
+        bucketType = 'week';
+        bucketSize = 1;
+      } else {
+        bucketType = 'month';
+        bucketSize = 1;
       }
 
-      // Get orders within the date range
+      function floorToBucket(d: Date): Date {
+        if (bucketType === 'hour') {
+          // e.g. if bucketSize = 2, and d = 2025-06-02T15:37:00, we want 2025-06-02T14:00:00
+          const flooredHour = Math.floor(d.getHours() / bucketSize) * bucketSize;
+          return new Date(
+            d.getFullYear(),
+            d.getMonth(),
+            d.getDate(),
+            flooredHour,
+            0,
+            0,
+            0
+          );
+        } else if (bucketType === 'day') {
+          // simply startOfDay
+          return startOfDay(d);
+        } else if (bucketType === 'week') {
+          // startOfWeek (defaults to Sunday start; adjust if you want Monday start, pass { weekStartsOn: 1 })
+          const weekStart = startOfWeek(d, { weekStartsOn: 0 });
+          // if bucketSize > 1, you could floor to 2-week or 3-week boundaries, but for now bucketSize=1
+          return weekStart;
+        } else {
+          // bucketType = 'month'
+          const m = startOfMonth(d);
+          // if bucketSize > 1 (e.g., 3-month buckets), you could do:
+          // const monthGroup = Math.floor(m.getMonth() / bucketSize) * bucketSize;
+          // return new Date(m.getFullYear(), monthGroup, 1);
+          return m;
+        }
+      }
+
+      //
+      // 3) Helper: given a Date, “add one bucket” of the appropriate size
+      //
+      function addOneBucket(d: Date): Date {
+        if (bucketType === 'hour') {
+          return addHours(d, bucketSize);
+        } else if (bucketType === 'day') {
+          return addDays(d, bucketSize);
+        } else if (bucketType === 'week') {
+          return addWeeks(d, bucketSize);
+        } else {
+          // 'month'
+          return addMonths(d, bucketSize);
+        }
+      }
+
+      //
+      // 4) Generate an ordered list of all bucket‐start timestamps from floor(start) up to <= end
+      //
+      const buckets: Date[] = [];
+      let cursor = floorToBucket(start);
+
+      while (cursor <= end) {
+        buckets.push(cursor);
+        cursor = addOneBucket(cursor);
+      }
+
+      //
+      // 5) Fetch all orders in the raw date range, then assign each to its bucket
+      //
       const orders = await prisma.order.findMany({
         where: {
           createdAt: {
-            gte: dateRange.start,
-            lte: dateRange.end,
+            gte: start,
+            lte: end,
           },
-          status: "PAID",
+          status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
         },
         select: {
           totalPrice: true,
           createdAt: true,
         },
         orderBy: {
-          createdAt: "asc",
+          createdAt: 'asc',
         },
       });
 
-      // Group data by date format
-      const groupedData: Record<string, { revenue: number; orders: number }> =
-        {};
+      // Initialize a map from bucket‐ISO (string) → { revenue, orders }
+      const bucketMap: Record<string, { revenue: number; orders: number }> = {};
+      for (const b of buckets) {
+        bucketMap[b.toISOString()] = { revenue: 0, orders: 0 };
+      }
 
-      orders.forEach((order) => {
-        const date = format(order.createdAt, groupByFormat);
-
-        if (!groupedData[date]) {
-          groupedData[date] = { revenue: 0, orders: 0 };
+      // For each order, find its bucket start, then accumulate
+      for (const order of orders) {
+        const bucketStart = floorToBucket(order.createdAt);
+        const key = bucketStart.toISOString();
+        if (!bucketMap[key]) {
+          // In case an order falls exactly on “end + epsilon” or rounding, 
+          // but normally we pre‐filled all buckets up to end inclusive.
+          bucketMap[key] = { revenue: 0, orders: 0 };
         }
+        bucketMap[key].revenue += order.totalPrice;
+        bucketMap[key].orders += 1;
+      }
 
-        groupedData[date].revenue += order.totalPrice;
-        groupedData[date].orders += 1;
-      });
+      //
+      // 6) Convert bucketMap → array in chronological order, formatting labels
+      //
+      const chartData = buckets.map((b) => {
+        const data = bucketMap[b.toISOString()]!;
+        let label: string;
 
-      // Convert to array format expected by chart
-      const chartData = Object.entries(groupedData).map(([date, data]) => {
-        // Format the date for display
-        let dateObj;
-        if (groupByFormat === "yyyy-MM-dd-HH") {
-          // For hourly data
-          const [year, month, day, hour] = date.split("-").map(Number);
-          dateObj = new Date(year, month - 1, day, hour);
-        } else if (groupByFormat === "yyyy-MM") {
-          // For monthly data
-          const [year, month] = date.split("-").map(Number);
-          dateObj = new Date(year, month - 1, 1);
+        if (bucketType === 'hour') {
+          // e.g. “Jun 02 14:00”
+          label = format(b, 'MMM dd HH:00');
+        } else if (bucketType === 'day') {
+          // e.g. “Jun 02”
+          label = format(b, 'MMM dd');
+        } else if (bucketType === 'week') {
+          // show week’s starting day: “Jun 01” (Sunday)
+          label = format(b, 'MMM dd');
         } else {
-          // For daily data
-          dateObj = parseISO(date);
+          // month
+          label = format(b, 'MMM yyyy');
         }
 
         return {
-          time: format(dateObj, resultFormat),
+          time: label,
           revenue: data.revenue,
           orders: data.orders,
         };

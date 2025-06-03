@@ -29,20 +29,6 @@ const nextConfig: NextConfig = {
       }
     ],
   },
-  async rewrites() {
-    return [
-      {
-        source: '/:path*',
-        has: [
-          {
-            type: 'host',
-            value: 'dash.mccapes.net',
-          },
-        ],
-        destination: 'https://mccapes.net/admin/:path*',
-      },
-    ];
-  },
 };
 
 export default nextConfig;

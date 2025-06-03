@@ -118,28 +118,63 @@ export default function InvoicesTab() {
   const exportToCSV = () => {
     // Create CSV content
     const headers = [
-      "ID",
-      "Status",
-      "Customer Name",
-      "Customer Email",
-      "Products",
-      "Total Price",
+      "Product",
+      "Code(s)",
+      "",
+      "Date Sold",
       "Payment Method",
-      "Created At"
+      "Amount",
+      "Discount",
+      "Fees",
+      "",
+      "",
+      "",
+      "Buyer Email",
+      "Buyer Discord",
+      ""
     ].join(",");
 
-    const rows = filteredInvoices.map(invoice => [
-      invoice.id,
-      invoice.status,
-      invoice.customer?.name || "N/A",
-      invoice.customer?.email || "N/A",
-      invoice.OrderItem?.length || 0,
-      invoice.totalPrice.toFixed(2),
-      getPaymentMethodName(invoice.paymentType),
-      new Date(invoice.createdAt).toISOString().split("T")[0]
-    ].join(","));
+    const rows = filteredInvoices.map(invoice => {
+      // For each product in the order, create a separate row
+      if (invoice.OrderItem && invoice.OrderItem.length > 0) {
+        return invoice.OrderItem.map(item => [
+          item.product.name,
+          item.product.id, // Using product ID as code
+          "",
+          new Date(invoice.createdAt).toISOString().split("T")[0],
+          getPaymentMethodName(invoice.paymentType),
+          (item.price * item.quantity).toFixed(2),
+          "0.00", // Placeholder for discount
+          "0.00", // Placeholder for fees
+          "",
+          "",
+          "",
+          invoice.customer?.email || "N/A",
+          invoice.customer?.discord || "N/A",
+          ""
+        ].join(",")).join("\n");
+      } else {
+        // Fallback for invoices without items
+        return [
+          "N/A",
+          "N/A",
+          "",
+          new Date(invoice.createdAt).toISOString().split("T")[0],
+          getPaymentMethodName(invoice.paymentType),
+          invoice.totalPrice.toFixed(2),
+          "0.00",
+          "0.00",
+          "",
+          "",
+          "",
+          invoice.customer?.email || "N/A",
+          invoice.customer?.discord || "N/A",
+          ""
+        ].join(",");
+      }
+    }).join("\n");
 
-    const csvContent = [headers, ...rows].join("\n");
+    const csvContent = [headers, rows].join("\n");
 
     // Create download link
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
