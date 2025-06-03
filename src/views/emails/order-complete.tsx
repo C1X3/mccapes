@@ -1,13 +1,10 @@
 import {
   Body,
-  Column,
   Container,
   Head,
   Hr,
   Html,
-  Img,
   Preview,
-  Row,
   Section,
   Text,
 } from "@react-email/components";
@@ -52,18 +49,9 @@ export const OrderCompleteTemplate = ({
       <Preview>Order Complete - Your payment has been confirmed!</Preview>
       <Body style={main}>
         <Container style={container}>
-          {/* Logo Header */}
-          <Section style={logoContainer}>
-            <Img
-              src="https://mccapes.net/logo.png"
-              width="120"
-              height="40"
-              alt="MCCapes"
-              style={logo}
-            />
-          </Section>
-
+          {/* Header */}
           <Section style={header}>
+            <Text style={headerText}>MCCapes</Text>
             <Hr style={divider} />
           </Section>
 
@@ -114,35 +102,19 @@ export const OrderCompleteTemplate = ({
               <Text style={sectionHeading}>Order Items</Text>
               {items.map((item, index) => (
                 <Section key={index} style={itemSection}>
-                  <Row>
-                    {/* Item Image */}
-                    <Column style={itemImageColumn}>
-                      <Img
-                        src={
-                          item.image || "https://mccapes.net/placeholder.png"
-                        }
-                        width="64"
-                        height="64"
-                        alt={item.name}
-                        style={itemImage}
-                      />
-                    </Column>
-
-                    {/* Item Details */}
-                    <Column style={itemDetailsColumn}>
+                  <div style={itemContainer}>
+                    <div style={itemDetailsContainer}>
                       <Text style={itemName}>{item.name}</Text>
-                      <div style={itemPriceContainer}>
-                        <div style={itemPriceRow}>
-                          <Text style={itemPrice}>
-                            {formatPrice(item.price)} × {item.quantity}
-                          </Text>
-                          <Text style={itemTotal}>
-                            {formatPrice(item.price * item.quantity)}
-                          </Text>
-                        </div>
+                      <div style={itemPriceRow}>
+                        <Text style={itemPrice}>
+                          {formatPrice(item.price)} × {item.quantity}
+                        </Text>
+                        <Text style={itemTotal}>
+                          {formatPrice(item.price * item.quantity)}
+                        </Text>
                       </div>
-                    </Column>
-                  </Row>
+                    </div>
+                  </div>
 
                   {/* Display Codes */}
                   {item.codes && item.codes.length > 0 && (
@@ -218,18 +190,19 @@ const container = {
   margin: "0 auto",
 };
 
-const logoContainer = {
-  textAlign: "center" as const,
-  marginBottom: "24px",
-};
-
-const logo = {
-  margin: "0 auto",
-};
-
 const header = {
   textAlign: "center" as const,
   marginBottom: "24px",
+};
+
+const headerText = {
+  fontSize: "28px",
+  fontWeight: "700",
+  color: "#5897FB",
+  margin: "0 0 16px",
+  textAlign: "center" as const,
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const divider = {
@@ -360,26 +333,19 @@ const sectionHeading = {
 const itemSection = {
   backgroundColor: "#FFFFFF",
   borderRadius: "8px",
-  padding: "12px",
+  padding: "16px",
   marginBottom: "10px",
   border: "1px solid #E2E8F0",
 };
 
-const itemImageColumn = {
-  width: "80px",
-  verticalAlign: "top",
+const itemContainer = {
+  display: "flex",
+  justifyContent: "space-between",
+  width: "100%",
 };
 
-const itemImage = {
-  borderRadius: "8px",
-  objectFit: "cover" as const,
-  border: "1px solid #E2E8F0",
-  backgroundColor: "#F8FAFC",
-};
-
-const itemDetailsColumn = {
-  verticalAlign: "top",
-  paddingLeft: "12px",
+const itemDetailsContainer = {
+  width: "100%",
 };
 
 const itemName = {
@@ -389,11 +355,6 @@ const itemName = {
   margin: "0 0 8px",
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-};
-
-const itemPriceContainer = {
-  display: "flex",
-  flexDirection: "column" as const,
 };
 
 const itemPriceRow = {

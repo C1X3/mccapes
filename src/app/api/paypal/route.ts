@@ -60,7 +60,7 @@ export async function POST(request: NextRequest) {
 
     // Calculate the expected amount with discount applied
     const expectedTotal = order.totalPrice + order.paymentFee;
-    
+
     if (
         ipn.receiverEmail === process.env.NEXT_PUBLIC_PAYPAL_EMAIL &&
         ipn.paymentStatus === 'Completed' &&
@@ -73,6 +73,36 @@ export async function POST(request: NextRequest) {
             where: { id: order.id },
             data: { status: OrderStatus.PAID },
         });
+
+        for (const item of order.OrderItem) {
+            const product = await prisma.product.findUnique({
+                where: { id: item.productId },
+                select: {
+                    stock: true,
+                }
+            });
+
+            if (!product) continue;
+
+            if (product.stock.length < item.quantity) continue;
+
+            const oldestStock = product.stock.slice(0, item.quantity);
+            const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
+            await prisma.product.update({
+                where: { id: item.productId },
+                data: { stock: filteredStock },
+            });
+
+            await prisma.orderItem.create({
+                data: {
+                    orderId: order.id,
+                    productId: item.productId,
+                    quantity: item.quantity,
+                    price: item.price,
+                    codes: oldestStock,
+                }
+            });
+        }
 
         await sendOrderCompleteEmail({
             customerName: order.customer.name,

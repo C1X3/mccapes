@@ -147,60 +147,6 @@ export const checkoutRouter = createTRPCRouter({
                         });
                 }
 
-                if (walletDetails) {
-                    for (const item of input.items) {
-                        const product = await prisma.product.findUnique({
-                            where: { id: item.productId },
-                            select: {
-                                stock: true,
-                            }
-                        });
-
-                        if (!product) {
-                            throw new TRPCError({
-                                code: 'NOT_FOUND',
-                                message: 'Product not found',
-                            });
-                        }
-
-                        if (product.stock.length < item.quantity) {
-                            throw new TRPCError({
-                                code: 'BAD_REQUEST',
-                                message: 'Not enough stock for product',
-                            });
-                        }
-
-                        const oldestStock = product.stock.slice(0, item.quantity);
-                        const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
-                        await prisma.product.update({
-                            where: { id: item.productId },
-                            data: { stock: filteredStock },
-                        });
-
-                        await prisma.orderItem.create({
-                            data: {
-                                orderId: order.id,
-                                productId: item.productId,
-                                quantity: item.quantity,
-                                price: item.price,
-                                codes: oldestStock,
-                            }
-                        });
-                    }
-
-                    // await sendOrderPlacedEmail({
-                    //     customerName: input.customerInfo.name,
-                    //     customerEmail: input.customerInfo.email,
-                    //     orderId: order.id,
-                    //     items: input.items,
-                    //     totalPrice: input.totalPrice,
-                    //     paymentFee: paymentFee,
-                    //     totalWithFee: input.totalPrice + paymentFee,
-                    //     paymentType: input.paymentType,
-                    //     paymentDetails: walletDetails,
-                    // });
-                }
-
                 return {
                     orderId: order.id,
                     paymentType: input.paymentType,
@@ -453,25 +399,9 @@ export const checkoutRouter = createTRPCRouter({
                 });
             }
 
-            await prisma.$transaction(async (tx) => {
-                for (const item of order.OrderItem) {
-                    const product = await tx.product.findUnique({
-                        where: { id: item.productId },
-                    });
-
-                    if (!product) continue;
-
-                    const stock = product.stock.concat(item.codes);
-                    await tx.product.update({
-                        where: { id: item.productId },
-                        data: { stock },
-                    });
-                }
-
-                await tx.order.update({
-                    where: { id: order.id },
-                    data: { status: OrderStatus.CANCELLED },
-                });
+            await prisma.order.update({
+                where: { id: order.id },
+                data: { status: OrderStatus.CANCELLED },
             });
 
             return { success: true, order };

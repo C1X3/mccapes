@@ -129,10 +129,43 @@ async function checkPayments() {
                     data: { paid: true, txHash: foundTxHash, confirmations }
                 });
 
-                await prisma.order.update({
+                const order = await prisma.order.update({
                     where: { id: w.orderId },
-                    data: { status: OrderStatus.PAID }
+                    data: { status: OrderStatus.PAID },
+                    include: {
+                        OrderItem: true
+                    }
                 });
+
+                for (const item of order.OrderItem) {
+                    const product = await prisma.product.findUnique({
+                        where: { id: item.productId },
+                        select: {
+                            stock: true,
+                        }
+                    });
+
+                    if (!product) continue;
+
+                    if (product.stock.length < item.quantity) continue;
+
+                    const oldestStock = product.stock.slice(0, item.quantity);
+                    const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
+                    await prisma.product.update({
+                        where: { id: item.productId },
+                        data: { stock: filteredStock },
+                    });
+
+                    await prisma.orderItem.create({
+                        data: {
+                            orderId: order.id,
+                            productId: item.productId,
+                            quantity: item.quantity,
+                            price: item.price,
+                            codes: oldestStock,
+                        }
+                    });
+                }
 
                 const fullOrderDetails = await prisma.order.findUnique({
                     where: { id: w.orderId },
@@ -182,40 +215,14 @@ async function checkPayments() {
 }
 
 async function expireOrders() {
-    // Fetch all orders, if it's stripe or paypal and lasts more than 30 minutes from created cancel the order
-    const orders = await prisma.order.findMany({
+    await prisma.order.updateMany({
         where: {
             status: OrderStatus.PENDING,
             paymentType: { in: [PaymentType.STRIPE, PaymentType.PAYPAL] },
             createdAt: { lt: new Date(Date.now() - 30 * 60 * 1000) }
         },
-        include: {
-            OrderItem: true
-        }
+        data: { status: OrderStatus.CANCELLED }
     });
-
-    for (const order of orders) {
-        await prisma.$transaction(async (tx) => {
-            for (const item of order.OrderItem) {
-                const product = await tx.product.findUnique({
-                    where: { id: item.productId },
-                });
-
-                if (!product) continue;
-
-                const stock = product.stock.concat(item.codes);
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: { stock },
-                });
-            }
-
-            await tx.order.update({
-                where: { id: order.id },
-                data: { status: OrderStatus.CANCELLED },
-            });
-        });
-    }
 }
 
 (async function pollLoop() {

@@ -14,34 +14,9 @@ const Page = async ({ params, searchParams }: {
     if (!id) redirect("/");
 
     if (id && canceled) {
-        await prisma.$transaction(async (tx) => {
-            const order = await tx.order.findUnique({
-                where: { id },
-                include: {
-                    OrderItem: true,
-                }
-            });
-
-            if (!order) return;
-
-            for (const item of order.OrderItem) {
-                const product = await tx.product.findUnique({
-                    where: { id: item.productId },
-                });
-
-                if (!product) return;
-
-                const stock = product.stock.concat(item.codes);
-                await tx.product.update({
-                    where: { id: item.productId },
-                    data: { stock },
-                });
-            }
-
-            await tx.order.update({
-                where: { id },
-                data: { status: OrderStatus.CANCELLED },
-            });
+        await prisma.order.update({
+            where: { id },
+            data: { status: OrderStatus.CANCELLED },
         });
     }
 

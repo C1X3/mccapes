@@ -77,10 +77,43 @@ export async function POST(request: Request) {
                 }
 
                 await prisma.$transaction(async (tx) => {
-                    await tx.order.update({
+                    const order = await tx.order.update({
                         where: { id: orderId },
                         data: { status: OrderStatus.PAID },
+                        include: {
+                            OrderItem: true
+                        }
                     });
+
+                    for (const item of order.OrderItem) {
+                        const product = await prisma.product.findUnique({
+                            where: { id: item.productId },
+                            select: {
+                                stock: true,
+                            }
+                        });
+
+                        if (!product) continue;
+
+                        if (product.stock.length < item.quantity) continue;
+
+                        const oldestStock = product.stock.slice(0, item.quantity);
+                        const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
+                        await prisma.product.update({
+                            where: { id: item.productId },
+                            data: { stock: filteredStock },
+                        });
+
+                        await prisma.orderItem.create({
+                            data: {
+                                orderId: order.id,
+                                productId: item.productId,
+                                quantity: item.quantity,
+                                price: item.price,
+                                codes: oldestStock,
+                            }
+                        });
+                    }
                 });
 
                 await sendOrderCompleteEmail({
@@ -114,40 +147,9 @@ export async function POST(request: Request) {
 
             const orderId = expiryIntent.metadata.orderId;
 
-            await prisma.$transaction(async (tx) => {
-                const order = await tx.order.findUnique({
-                    where: { id: orderId },
-                    include: {
-                        OrderItem: true,
-                    }
-                });
-
-                if (!order) {
-                    console.log('No order found');
-                    return NextResponse.json({ error: 'No order found' }, { status: 400 });
-                }
-
-                for (const item of order.OrderItem) {
-                    const product = await tx.product.findUnique({
-                        where: { id: item.productId },
-                    });
-
-                    if (!product) {
-                        console.log('No product found');
-                        return NextResponse.json({ error: 'No product found' }, { status: 400 });
-                    }
-
-                    const stock = product.stock.concat(item.codes);
-                    await tx.product.update({
-                        where: { id: item.productId },
-                        data: { stock },
-                    });
-                }
-
-                await tx.order.update({
-                    where: { id: orderId },
-                    data: { status: OrderStatus.CANCELLED },
-                });
+            await prisma.order.update({
+                where: { id: orderId },
+                data: { status: OrderStatus.CANCELLED },
             });
 
             break;

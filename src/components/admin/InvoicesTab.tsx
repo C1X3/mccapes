@@ -297,16 +297,10 @@ export default function InvoicesTab() {
           <thead>
             <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
-                ID
-              </th>
-              <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Status
               </th>
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
-                Customer
-              </th>
-              <th className="text-left py-4 px-2 text-[var(--foreground)]">
-                Email
+                ID
               </th>
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Products
@@ -316,6 +310,9 @@ export default function InvoicesTab() {
               </th>
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Payment Method
+              </th>
+              <th className="text-left py-4 px-2 text-[var(--foreground)]">
+                Email
               </th>
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Created At
@@ -336,9 +333,7 @@ export default function InvoicesTab() {
                   className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_5%)] cursor-pointer"
                   onClick={() => navigateToInvoice(invoice.id)}
                 >
-                  <td className="py-4 px-2 text-[var(--foreground)]">
-                    {invoice.id.substring(0, 8)}...
-                  </td>
+                  {/* Status */}
                   <td className="py-4 px-2">
                     <span
                       className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
@@ -346,12 +341,13 @@ export default function InvoicesTab() {
                       {invoice.status}
                     </span>
                   </td>
+
+                  {/* ID */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
-                    {invoice.customer?.name || "N/A"}
+                    {invoice.id.substring(0, 8)}...
                   </td>
-                  <td className="py-4 px-2 text-[var(--foreground)]">
-                    {invoice.customer?.email || "N/A"}
-                  </td>
+
+                  {/* Products */}
                   <td className="py-4 px-2 text-[var(--foreground)] max-w-[250px]">
                     {invoice.OrderItem && invoice.OrderItem.length > 0 ? (
                       <div className="max-h-[100px] overflow-y-auto">
@@ -363,12 +359,23 @@ export default function InvoicesTab() {
                       </div>
                     ) : "N/A"}
                   </td>
+
+                  {/* Price */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
                     ${invoice.totalPrice.toFixed(2)}
                   </td>
+
+                  {/* Payment Method */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
                     {getPaymentMethodName(invoice.paymentType)}
                   </td>
+
+                  {/* Email */}
+                  <td className="py-4 px-2 text-[var(--foreground)]">
+                    {invoice.customer?.email || "N/A"}
+                  </td>
+
+                  {/* Created At */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
                     {formatDate(invoice.createdAt)}
                   </td>
