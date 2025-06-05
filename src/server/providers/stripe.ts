@@ -6,90 +6,97 @@ import { prisma } from '@/utils/prisma';
 
 export const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || '');
 
-async function getOrCreateProduct(item: { productId: string; name: string; price: number }) {
-    const dbProduct = await prisma.product.findUnique({
+async function getOrCreateProduct(item: {
+    productId: string
+    name: string
+    price: number
+}) {
+    // 1) Look up in your local database
+    let dbProduct = await prisma.product.findUnique({
         where: { id: item.productId },
     });
 
-    if (!dbProduct) {
-        throw new Error(`Product ${item.productId} not found in database`);
-    }
+    // 1a) If it doesn’t exist in your DB, create it now.
+    if (!dbProduct) throw new Error('Product not found');
 
+    // 2) If there’s already a stripeId in the DB, try to retrieve it from Stripe
     if (dbProduct.stripeId) {
-        const product = await stripe.products.retrieve(dbProduct.stripeId);
-        if (!product) {
-            // Create the stripe product
-            const stripeProduct = await stripe.products.create({
-                name: dbProduct.stripeProductName!,
-                description: 'For buying this service, you will be added to the MC Tournaments server where you will have an opportunity to win fun prizes and compete with peers who are also into competition. The higher priced products will give you access to bigger and larger tournaments, while the lower priced products will give you access to smaller tournaments and will have different amenities. This product will also come with complementaries such as rare accessory designs and one on one support. To receive the complimentary gift you must check your email and ensure to check the spam folder if you are unable to find it.',
-                metadata: {
-                    productId: dbProduct.id,
-                },
-            });
+        try {
+            const existing = await stripe.products.retrieve(dbProduct.stripeId);
 
-            await prisma.product.update({
-                where: { id: item.productId },
-                data: { stripeId: stripeProduct.id },
-            });
+            // If Stripe returns an inactive product, reactivate it:
+            if (!existing.active) {
+                await stripe.products.update(dbProduct.stripeId, { active: true });
+            }
 
-            return stripeProduct.id;
-        } else if (!product.active) {
-            await stripe.products.update(dbProduct.stripeId, {
-                active: true,
-            });
-
+            // Return the still-valid Stripe product ID
             return dbProduct.stripeId;
+        } catch {
+            const newProduct = await stripe.products.create({
+                name: item.name,
+                description:
+                    'For buying this service, you will be added to the MC Tournaments server where you will have an opportunity to win fun prizes … (etc)',
+                metadata: { productId: dbProduct.id },
+            });
+
+            dbProduct = await prisma.product.update({
+                where: { id: dbProduct.id },
+                data: { stripeId: newProduct.id },
+            });
+
+            return newProduct.id;
         }
-
-        return dbProduct.stripeId;
-    } else {
-        // Create the stripe product
-        const stripeProduct = await stripe.products.create({
-            name: dbProduct.stripeProductName!,
-            description: 'For buying this service, you will be added to the MC Tournaments server where you will have an opportunity to win fun prizes and compete with peers who are also into competition. The higher priced products will give you access to bigger and larger tournaments, while the lower priced products will give you access to smaller tournaments and will have different amenities. This product will also come with complementaries such as rare accessory designs and one on one support. To receive the complimentary gift you must check your email and ensure to check the spam folder if you are unable to find it.',
-            metadata: {
-                productId: dbProduct.id,
-            },
-        });
-
-        await prisma.product.update({
-            where: { id: item.productId },
-            data: { stripeId: stripeProduct.id },
-        });
-
-        return stripeProduct.id;
     }
+
+    // 3) If we get here, dbProduct exists but has no stripeId – create it from scratch:
+    const brandNew = await stripe.products.create({
+        name: item.name,
+        description:
+            'For buying this service, you will be added to the MC Tournaments server where you will have an opportunity to win fun prizes … (etc)',
+        metadata: { productId: dbProduct.id },
+    });
+
+    dbProduct = await prisma.product.update({
+        where: { id: dbProduct.id },
+        data: { stripeId: brandNew.id },
+    });
+
+    return brandNew.id;
 }
 
 async function getOrCreatePrice(productId: string, price: number) {
+    // 1) List all active prices on this product
     const prices = await stripe.prices.list({
         product: productId,
         active: true,
+        limit: 100,
     });
 
+    // 2) If none exist, create one and return its ID
     if (prices.data.length === 0) {
-        await stripe.prices.create({
+        const newPrice = await stripe.prices.create({
             product: productId,
             unit_amount: Math.round(price * 100),
             currency: 'usd',
         });
+        return newPrice.id;
     }
 
-    const matchingPrice = prices.data.find(price =>
-        Math.abs(Number((price.unit_amount || 0) / 100) - Number(price)) < 0.01
+    // 3) Try to find an existing Price whose amount ≈ `price`
+    const matching = prices.data.find(p =>
+        Math.abs((p.unit_amount ?? 0) / 100 - price) < 0.01
     );
-
-    if (matchingPrice) {
-        return matchingPrice.id;
+    if (matching) {
+        return matching.id;
     }
 
-    await stripe.prices.create({
+    // 4) If no match, create a fresh one and return its ID
+    const created = await stripe.prices.create({
         product: productId,
         unit_amount: Math.round(price * 100),
         currency: 'usd',
     });
-
-    return prices.data[0].id;
+    return created.id;
 }
 
 async function getOrCreateStripeProduct(item: { productId: string; name: string; price: number; quantity: number }) {
