@@ -304,85 +304,64 @@ export const checkoutRouter = createTRPCRouter({
                 });
             }
 
-            // Add a code to the item in prisma
-            if (order.status === OrderStatus.PAID || order.status === OrderStatus.DELIVERED) {
-                for (const item of order.OrderItem) {
-                    const product = await prisma.product.findUnique({
-                        where: { id: item.productId },
-                        select: {
-                            stock: true,
-                        }
-                    });
-
-                    if (!product) {
-                        throw new TRPCError({
-                            code: 'NOT_FOUND',
-                            message: 'Product not found',
-                        });
+            for (const item of order.OrderItem) {
+                const product = await prisma.product.findUnique({
+                    where: { id: item.productId },
+                    select: {
+                        stock: true,
                     }
+                });
 
-                    if (product.stock.length < item.quantity) {
-                        throw new TRPCError({
-                            code: 'BAD_REQUEST',
-                            message: 'Not enough stock for product',
-                        });
-                    }
-
-                    const oldestStock = product.stock.slice(0, item.quantity);
-                    const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
-                    await prisma.product.update({
-                        where: { id: item.productId },
-                        data: { stock: filteredStock },
-                    });
-
-                    await prisma.orderItem.update({
-                        where: { id: item.id },
-                        data: {
-                            codes: item.codes.concat(oldestStock),
-                        }
+                if (!product) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'Product not found',
                     });
                 }
 
-                await sendOrderCompleteEmail({
-                    customerName: order.customer.name,
-                    customerEmail: order.customer.email,
-                    orderId: order.id,
-                    items: order.OrderItem.map(item => ({
-                        name: item.product.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        codes: item.codes,
-                        image: item.product.image,
-                    })),
-                    totalPrice: order.totalPrice,
-                    paymentFee: order.paymentFee,
-                    totalWithFee: order.totalPrice + order.paymentFee,
-                    paymentType: order.paymentType,
-                    orderDate: order.createdAt.toISOString(),
+                if (product.stock.length < item.quantity) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'Not enough stock for product',
+                    });
+                }
+
+                const oldestStock = product.stock.slice(0, item.quantity);
+                const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
+                await prisma.product.update({
+                    where: { id: item.productId },
+                    data: { stock: filteredStock },
                 });
-            } else if (order.status === OrderStatus.PENDING) {
-                await sendOrderCompleteEmail({
-                    customerName: order.customer.name,
-                    customerEmail: order.customer.email,
-                    orderId: order.id,
-                    items: order.OrderItem.map(item => ({
-                        name: item.product.name,
-                        price: item.price,
-                        quantity: item.quantity,
-                        codes: item.codes,
-                        image: item.product.image,
-                    })),
-                    totalPrice: order.totalPrice,
-                    paymentFee: order.paymentFee,
-                    totalWithFee: order.totalPrice + order.paymentFee,
-                    paymentType: order.paymentType,
-                    orderDate: order.createdAt.toISOString(),
+
+                await prisma.orderItem.update({
+                    where: { id: item.id },
+                    data: {
+                        codes: item.codes.concat(oldestStock),
+                    }
                 });
             }
 
             await prisma.order.update({
                 where: { id: input.orderId },
                 data: { status: OrderStatus.PAID },
+            });
+
+            await sendOrderCompleteEmail({
+                customerName: order.customer.name,
+                customerEmail: order.customer.email,
+                orderId: order.id,
+                items: order.OrderItem.map(item => ({
+                    name: item.product.name,
+                    price: item.price,
+                    quantity: item.quantity,
+                    codes: item.codes,
+                    image: item.product.image,
+                })),
+                totalPrice: order.totalPrice,
+                paymentFee: order.paymentFee,
+                totalWithFee: order.totalPrice + order.paymentFee,
+                paymentType: order.paymentType,
+                orderDate: order.createdAt.toISOString(),
             });
 
             return { success: true, order };

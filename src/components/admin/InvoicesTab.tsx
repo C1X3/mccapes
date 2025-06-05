@@ -25,27 +25,37 @@ export default function InvoicesTab() {
   // Filter invoices based on all filters
   const filteredInvoices = useMemo(() => {
     return invoices.filter((invoice) => {
-      // Search term filter
+      // 1) Search‐term filter (unchanged)
       const matchesSearch =
         searchTerm === "" ||
         invoice.id.toLowerCase().includes(searchTerm.toLowerCase()) ||
         invoice.customer?.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
         invoice.customer?.email.toLowerCase().includes(searchTerm.toLowerCase());
 
-      // Status filter
-      const matchesStatus =
-        statusFilter === "ALL" ||
-        invoice.status === statusFilter;
+      // 2) Status filter (updated)
+      const matchesStatus = (() => {
+        if (statusFilter === "ALL") {
+          return true;
+        }
+        if (statusFilter === OrderStatus.DELIVERED) {
+          // when "DELIVERED" is selected, include both PAID and DELIVERED
+          return (
+            invoice.status === OrderStatus.DELIVERED ||
+            invoice.status === OrderStatus.PAID
+          );
+        }
+        // any other status (e.g. "PENDING" or "CANCELLED") must match exactly
+        return invoice.status === statusFilter;
+      })();
 
-      // Payment method filter
+      // 3) Payment‐method filter (unchanged)
       const matchesPayment =
-        paymentFilter === "ALL" ||
-        invoice.paymentType === paymentFilter;
+        paymentFilter === "ALL" || invoice.paymentType === paymentFilter;
 
-      // Product filter
+      // 4) Product‐name filter (unchanged)
       const matchesProduct =
         productFilter === "" ||
-        invoice.OrderItem?.some(item =>
+        invoice.OrderItem?.some((item) =>
           item.product.name.toLowerCase().includes(productFilter.toLowerCase())
         );
 
@@ -118,6 +128,7 @@ export default function InvoicesTab() {
   const exportToCSV = () => {
     // Create CSV content
     const headers = [
+      "Status",
       "Product",
       "Code(s)",
       "",
@@ -138,8 +149,9 @@ export default function InvoicesTab() {
       // For each product in the order, create a separate row
       if (invoice.OrderItem && invoice.OrderItem.length > 0) {
         return invoice.OrderItem.map(item => [
+          invoice.status,
           item.product.name,
-          item.product.id, // Using product ID as code
+          invoice.OrderItem.map(x => x.codes.join(",")).join(","), // Using product ID as code
           "",
           new Date(invoice.createdAt).toISOString().split("T")[0],
           getPaymentMethodName(invoice.paymentType),
@@ -237,7 +249,7 @@ export default function InvoicesTab() {
                 className="w-full p-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_10%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)]"
               >
                 <option value="ALL">All Statuses</option>
-                {Object.values(OrderStatus).map((status) => (
+                {Object.values(OrderStatus).filter(x => x !== OrderStatus.PAID).map((status) => (
                   <option key={status} value={status}>{status}</option>
                 ))}
               </select>
