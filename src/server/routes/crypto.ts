@@ -23,16 +23,20 @@ export const cryptoRouter = createTRPCRouter({
             destination: z.string(),
         }))
         .mutation(async ({ input }) => {
-            if (input.type === CryptoType.SOLANA) {
-                return sendSolanaBalance(input.destination);
-            } else if (input.type === CryptoType.BITCOIN) {
-                return sendBitcoinBalance(input.destination);
-            } else if (input.type === CryptoType.LITECOIN) {
-                return sendLitecoinBalance(input.destination);
-            } else if (input.type === CryptoType.ETHEREUM) {
-                return sendEthereumBalance(input.destination);
-            } else {
-                throw new Error('Unsupported crypto type');
-            }
+            // if (input.type === CryptoType.SOLANA) {
+            //     return sendSolanaBalance(input.destination);
+            // } else if (input.type === CryptoType.BITCOIN) {
+            //     return sendBitcoinBalance(input.destination);
+            // } else if (input.type === CryptoType.LITECOIN) {
+            //     return sendLitecoinBalance(input.destination);
+            // } else if (input.type === CryptoType.ETHEREUM) {
+            //     return sendEthereumBalance(input.destination);
+            // } else {
+            //     throw new Error('Unsupported crypto type');
+            // }
+
+            void input;
+
+            throw new Error('Unsupported crypto type');
         }),
 });
