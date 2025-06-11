@@ -3,6 +3,7 @@ import { CouponType } from "@generated";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { adminProcedure, baseProcedure, createTRPCRouter } from "../init";
+import { couponCodeSchema } from "../schemas/coupon";
 
 export const couponRouter = createTRPCRouter({
   getAll: adminProcedure.query(async () => {
@@ -44,16 +45,7 @@ export const couponRouter = createTRPCRouter({
     }),
 
   create: adminProcedure
-    .input(
-      z.object({
-        code: z.string(),
-        discount: z.number().positive(),
-        type: z.nativeEnum(CouponType),
-        validUntil: z.string(),
-        usageLimit: z.number().int().positive(),
-        active: z.boolean().default(true),
-      })
-    )
+    .input(couponCodeSchema)
     .mutation(async ({ input }) => {
       // Check if coupon code already exists
       const existingCoupon = await prisma.coupon.findUnique({

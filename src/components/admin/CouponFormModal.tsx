@@ -1,6 +1,8 @@
 "use client";
 
 import { useTRPC } from "@/server/client";
+import { couponCodeSchema } from "@/server/schemas/coupon";
+import { CouponType } from "@generated";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { motion } from "framer-motion";
@@ -9,25 +11,12 @@ import { toast } from "react-hot-toast";
 import { FaTimes } from "react-icons/fa";
 import { z } from "zod";
 
-export const schema = z.object({
-  id: z.string().optional(),
-  code: z.string().min(3, "Code must be at least 3 characters"),
-  discount: z.number().positive("Discount must be a positive number"),
-  type: z.enum(["PERCENTAGE", "FIXED"]),
-  validUntil: z.string().min(1, "Valid until date is required"),
-  usageLimit: z
-    .number()
-    .int()
-    .positive("Usage limit must be a positive number"),
-  active: z.boolean().default(true),
-});
-
-export type CouponFormModalSchema = z.infer<typeof schema>;
+export type CouponFormModalSchema = z.infer<typeof couponCodeSchema>;
 
 type CouponFormModalProps = {
   isOpen: boolean;
   onCloseAction: () => void;
-  initialData?: z.infer<typeof schema>;
+  initialData?: CouponFormModalSchema;
   isEditing?: boolean;
   onSuccess?: () => void;
 };
@@ -41,13 +30,13 @@ export default function CouponFormModal({
 }: CouponFormModalProps) {
   const trpc = useTRPC();
 
-  const { control, handleSubmit, reset } = useForm<z.infer<typeof schema>>({
-    resolver: zodResolver(schema) as Resolver<z.infer<typeof schema>>,
-    defaultValues: initialData || {
+  const { control, handleSubmit, reset } = useForm<CouponFormModalSchema>({
+    resolver: zodResolver(couponCodeSchema) as Resolver<CouponFormModalSchema>,
+    defaultValues: initialData ?? {
       code: "",
       discount: 0,
-      type: "PERCENTAGE",
-      validUntil: new Date().toISOString().split("T")[0], // Default to today
+      type: CouponType.PERCENTAGE,
+      validUntil: new Date().toISOString().split("T")[0],
       usageLimit: 100,
       active: true,
     },
@@ -81,7 +70,7 @@ export default function CouponFormModal({
     })
   );
 
-  const onSubmit = (data: z.infer<typeof schema>) => {
+  const onSubmit = (data: CouponFormModalSchema) => {
     if (isEditing && initialData?.id) {
       updateCoupon.mutate({
         id: initialData.id,
@@ -201,11 +190,15 @@ export default function CouponFormModal({
                   <>
                     <select
                       id="type"
-                      {...field}
                       className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      {...field}
+                    // onChange={(e) => {
+                    //   console.log(e.target.value);
+                    //   field.onChange(e.target.value === "PERCENTAGE" ? CouponType.PERCENTAGE : CouponType.FIXED);
+                    // }}
                     >
-                      <option value="percentage">Percentage (%)</option>
-                      <option value="fixed">Fixed Amount ($)</option>
+                      <option value="PERCENTAGE">Percentage (%)</option>
+                      <option value="FIXED">Fixed Amount ($)</option>
                     </select>
                     {fieldState.error && (
                       <p className="text-red-500 text-sm mt-1">
