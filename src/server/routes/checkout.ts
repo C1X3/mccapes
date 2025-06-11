@@ -7,7 +7,6 @@ import { createCheckoutSession as createStripeCheckout } from '../providers/stri
 import { createCheckoutSession as createPaypalCheckout } from '../providers/paypal';
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
-import { calculatePaymentFee } from '@/utils/fees';
 import { sendOrderCompleteEmail } from '@/utils/email';
 import { headers } from 'next/headers';
 
@@ -28,6 +27,7 @@ export const checkoutRouter = createTRPCRouter({
                     email: z.string().email(),
                     discord: z.string().optional(),
                 }),
+                paymentFee: z.number().positive(),
                 paymentType: z.nativeEnum(PaymentType),
                 cryptoType: z.nativeEnum(CryptoType).optional(),
                 totalPrice: z.number().positive(),
@@ -37,46 +37,6 @@ export const checkoutRouter = createTRPCRouter({
         )
         .mutation(async ({ input }) => {
             try {
-                // Calculate subtotal and payment fee
-                const subtotal = input.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-
-                // Apply coupon discount if provided
-                let discountedSubtotal = subtotal;
-                let couponData = null;
-                if (input.couponCode) {
-                    try {
-                        // Verify the coupon is valid
-                        const coupon = await prisma.coupon.findFirst({
-                            where: {
-                                code: input.couponCode,
-                                active: true,
-                                validUntil: { gte: new Date() },
-                                usageCount: { lt: prisma.coupon.fields.usageLimit },
-                            },
-                        });
-                        if (!coupon) {
-                            throw new TRPCError({
-                                code: 'BAD_REQUEST',
-                                message: 'Coupon is invalid or expired',
-                            });
-                        }
-
-                        couponData = coupon;
-
-                        // Apply the discount to the subtotal
-                        if (input.discountAmount && input.discountAmount > 0) {
-                            discountedSubtotal = subtotal - input.discountAmount;
-                            if (discountedSubtotal < 0) discountedSubtotal = 0; // Safety check
-                        }
-                    } catch (error) {
-                        console.error('Coupon validation error:', error);
-                        // Continue without coupon if validation fails
-                    }
-                }
-
-                // Calculate payment fee based on the discounted subtotal
-                const paymentFee = calculatePaymentFee(input.paymentType, discountedSubtotal);
-
                 const reqHeaders = await headers();
                 const ip = reqHeaders.get('CF-Connecting-IP') || reqHeaders.get('X-Forwarded-For') || reqHeaders.get('X-Real-IP');
                 const userAgent = reqHeaders.get('User-Agent');
@@ -84,11 +44,11 @@ export const checkoutRouter = createTRPCRouter({
                 // 1. Create a pending order in the database
                 const order = await prisma.order.create({
                     data: {
-                        totalPrice: discountedSubtotal, // Save the discounted price
-                        paymentFee: paymentFee,
+                        totalPrice: input.totalPrice,
+                        paymentFee: input.paymentFee,
                         paymentType: input.paymentType,
                         status: OrderStatus.PENDING,
-                        couponUsed: couponData?.code || null,
+                        couponUsed: input.couponCode || null,
                         discountAmount: input.discountAmount || 0,
                         customer: {
                             create: {
@@ -116,9 +76,10 @@ export const checkoutRouter = createTRPCRouter({
                     orderId: order.id,
                     items: input.items,
                     customerInfo: input.customerInfo,
-                    totalPrice: discountedSubtotal, // Pass the discounted price to providers
-                    couponCode: couponData?.code || null,
+                    totalPrice: input.totalPrice,
+                    couponCode: input.couponCode || null,
                     discountAmount: input.discountAmount || 0,
+                    paymentFee: input.paymentFee,
                 };
 
                 switch (input.paymentType) {

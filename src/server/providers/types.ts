@@ -15,6 +15,7 @@ export interface CheckoutPayload {
     totalPrice: number;
     couponCode: string | null;
     discountAmount: number;
+    paymentFee: number;
 }
 
 export interface WalletDetails {

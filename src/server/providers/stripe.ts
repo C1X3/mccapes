@@ -1,6 +1,6 @@
 import { Stripe } from 'stripe';
 import { CheckoutPayload } from './types';
-import { calculatePaymentFee, formatFeePercentage } from '@/utils/fees';
+import { formatFeePercentage } from '@/utils/fees';
 import { PaymentType } from '@generated';
 import { prisma } from '@/utils/prisma';
 
@@ -64,21 +64,21 @@ async function getOrCreateProduct(item: {
     return brandNew.id;
 }
 
-async function getOrCreateCoupon(code: string, percentOff: number) {
-    const coupon = await stripe.coupons.list();
-    if (coupon.data.length > 0) {
-        const matching = coupon.data.find(x => x.name === code);
-        if (matching) return matching.id;
-    }
+// async function getOrCreateCoupon(code: string, amount: number) {
+//     const coupon = await stripe.coupons.list();
+//     if (coupon.data.length > 0) {
+//         const matching = coupon.data.find(x => x.name === code);
+//         if (matching) return matching.id;
+//     }
 
-    const newCoupon = await stripe.coupons.create({
-        percent_off: percentOff,
-        duration: 'once',
-        name: code
-    });
+//     const newCoupon = await stripe.coupons.create({
+//         percent_off: percentOff,
+//         duration: 'once',
+//         name: code
+//     });
 
-    return newCoupon.id;
-}
+//     return newCoupon.id;
+// }
 
 async function getOrCreatePrice(productId: string, price: number) {
     // 1) List all active prices on this product
@@ -127,11 +127,6 @@ async function getOrCreateStripeProduct(item: { productId: string; name: string;
 
 export async function createCheckoutSession(payload: CheckoutPayload): Promise<string> {
     try {
-        // Calculate subtotal, discount, fee (unchanged)
-        const subtotal = payload.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
-        const discountAmount = payload.discountAmount || 0;
-        const discountedSubtotal = subtotal - discountAmount;
-        const paymentFee = calculatePaymentFee(PaymentType.STRIPE, discountedSubtotal);
         const feePercentageText = formatFeePercentage(PaymentType.STRIPE);
 
         // Build product line items with “price” instead of “priceId”
@@ -152,7 +147,7 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
                 product_data: {
                     name: `Processing Fee (${feePercentageText})`,
                 },
-                unit_amount: Math.round(paymentFee * 100),
+                unit_amount: Math.round(payload.paymentFee * 100),
             },
             quantity: 1,
         });
@@ -164,13 +159,13 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
             customer_email: payload.customerInfo.email,
             success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?success=true`,
             cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?canceled=true`,
-            discounts: payload.couponCode && discountAmount ? [{
-                coupon: await getOrCreateCoupon(payload.couponCode, discountAmount),
+            discounts: payload.couponCode && payload.discountAmount ? [{
+                // coupon: await getOrCreateCoupon(payload.couponCode, payload.discountAmount),
             }] : [],
             metadata: {
                 orderId: payload.orderId,
                 couponCode: payload.couponCode || '',
-                discountAmount: discountAmount.toString(),
+                discountAmount: payload.discountAmount.toString(),
             },
         });
 

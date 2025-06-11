@@ -84,6 +84,7 @@ const CartPage = () => {
             paymentType,
             cryptoType: paymentType === PaymentType.CRYPTO ? cryptoType : undefined,
             totalPrice: totalWithFee,
+            paymentFee: paymentFee,
             couponCode: coupon,
             discountAmount: discountAmount
         });

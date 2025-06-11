@@ -47,6 +47,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const [isLoading, setIsLoading] = useState(true);
     const [coupon, setCoupon] = useState<string | null>(null);
     const [discountAmount, setDiscountAmount] = useState(0);
+    const [couponDetails, setCouponDetails] = useState<{ code: string, type: CouponType, discount: number } | null>(null);
 
     const { mutateAsync: validateCoupon, isPending: isCouponLoading } = useMutation(trpc.coupon.validateCoupon.mutationOptions());
 
@@ -68,14 +69,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         loadCart();
     }, []);
 
-    // Save cart to localStorage whenever it changes
-    useEffect(() => {
-        // Skip during initial loading
-        if (isLoading) return;
-
-        saveCart(items, coupon, discountAmount);
-    }, [items, coupon, discountAmount, isLoading]);
-
     // Calculate total items
     const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -87,6 +80,28 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Calculate discounted total
     const discountedTotal = Math.max(0, totalPrice - discountAmount);
+
+    // Recalculate discount when total price changes
+    useEffect(() => {
+        if (!couponDetails || isLoading) return;
+
+        let newDiscount = 0;
+        if (couponDetails.type === CouponType.PERCENTAGE) {
+            newDiscount = totalPrice * (couponDetails.discount / 100);
+        } else {
+            newDiscount = Math.min(couponDetails.discount, totalPrice);
+        }
+
+        setDiscountAmount(newDiscount);
+    }, [totalPrice, couponDetails, isLoading]);
+
+    // Save cart to localStorage whenever it changes
+    useEffect(() => {
+        // Skip during initial loading
+        if (isLoading) return;
+
+        saveCart(items, coupon, discountAmount);
+    }, [items, coupon, discountAmount, isLoading]);
 
     // Add item to cart
     const addItem = (product: Product, quantity = 1) => {
@@ -171,6 +186,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         setItems([]);
         setCoupon(null);
         setDiscountAmount(0);
+        setCouponDetails(null);
         clearLocalStorageCart();
     };
 
@@ -179,26 +195,29 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
         if (!code.trim()) return;
 
         try {
-            const coupon = await validateCoupon({ code: code.trim() });
-            if (!coupon) {
+            const couponData = await validateCoupon({ code: code.trim() });
+            if (!couponData) {
                 throw new Error('Invalid coupon code');
             }
 
-            // then apply exactly the same discount logic:
+            // Store coupon details for later recalculation
+            setCouponDetails(couponData);
+            setCoupon(couponData.code);
+
+            // Calculate initial discount
             let discount = 0;
-            if (coupon.type === CouponType.PERCENTAGE) {
-                discount = totalPrice * (coupon.discount / 100);
+            if (couponData.type === CouponType.PERCENTAGE) {
+                discount = totalPrice * (couponData.discount / 100);
             } else {
-                discount = Math.min(coupon.discount, totalPrice);
+                discount = Math.min(couponData.discount, totalPrice);
             }
-            setCoupon(coupon.code);
             setDiscountAmount(discount);
 
             const discountText =
-                coupon.type === CouponType.PERCENTAGE
-                    ? `${coupon.discount}%`
-                    : `$${coupon.discount.toFixed(2)}`;
-            toast.success(`Coupon "${coupon.code}" applied! You saved ${discountText}`);
+                couponData.type === CouponType.PERCENTAGE
+                    ? `${couponData.discount}%`
+                    : `$${couponData.discount.toFixed(2)}`;
+            toast.success(`Coupon "${couponData.code}" applied! You saved ${discountText}`);
         } catch (err) {
             console.error(err);
             toast.error('Invalid coupon code');
@@ -209,6 +228,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     const removeCoupon = () => {
         setCoupon(null);
         setDiscountAmount(0);
+        setCouponDetails(null);
         toast.success('Coupon removed');
     };
 
