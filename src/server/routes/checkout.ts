@@ -27,36 +27,37 @@ export const checkoutRouter = createTRPCRouter({
                     email: z.string().email(),
                     discord: z.string().optional(),
                 }),
-                paymentFee: z.number().positive(),
                 paymentType: z.nativeEnum(PaymentType),
                 cryptoType: z.nativeEnum(CryptoType).optional(),
-                totalPrice: z.number().positive(),
                 couponCode: z.string().nullable().optional(),
+                paymentFee: z.number().positive(),
+                totalPrice: z.number().positive(),
                 discountAmount: z.number().optional(),
             })
         )
         .mutation(async ({ input }) => {
             try {
-                const reqHeaders = await headers();
-                const ip = reqHeaders.get('CF-Connecting-IP') || reqHeaders.get('X-Forwarded-For') || reqHeaders.get('X-Real-IP');
-                const userAgent = reqHeaders.get('User-Agent');
+                console.log(input);
 
-                // 1. Create a pending order in the database
+                const reqHeaders = await headers();
+                const ipAddress = reqHeaders.get('CF-Connecting-IP') || reqHeaders.get('X-Forwarded-For') || reqHeaders.get('X-Real-IP');
+                const useragent = reqHeaders.get('User-Agent');
+
                 const order = await prisma.order.create({
                     data: {
                         totalPrice: input.totalPrice,
                         paymentFee: input.paymentFee,
                         paymentType: input.paymentType,
-                        status: OrderStatus.PENDING,
                         couponUsed: input.couponCode || null,
                         discountAmount: input.discountAmount || 0,
+                        status: OrderStatus.PENDING,
                         customer: {
                             create: {
                                 name: input.customerInfo.name,
                                 email: input.customerInfo.email,
                                 discord: input.customerInfo.discord,
-                                ipAddress: ip,
-                                useragent: userAgent,
+                                ipAddress,
+                                useragent,
                             }
                         },
                         OrderItem: {
@@ -68,6 +69,26 @@ export const checkoutRouter = createTRPCRouter({
                         }
                     }
                 });
+
+                /*
+                    {
+                    items: [
+                        {
+                        productId: 'cmb1vh19m0000pn0k241fv1v3',
+                        quantity: 1,
+                        price: 129.99,
+                        name: 'Experience Cape Code'
+                        }
+                    ],
+                    customerInfo: { name: 'Test', email: 'test@gmail.com', discord: '@test' },
+                    paymentType: 'STRIPE',
+                    cryptoType: undefined,
+                    couponCode: 'JUDELOW',
+                    paymentFee: 4.939620000000001,
+                    totalPrice: 129.99,
+                    discountAmount: 6.499500000000001
+                    }
+                */
 
                 // 2. Generate payment link based on the selected payment method
                 let walletDetails: WalletDetails | undefined;

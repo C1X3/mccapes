@@ -121,6 +121,11 @@ const OrderPage = ({ id }: { id: string }) => {
     const isWalletLoading = useMemo(() => order?.paymentType === PaymentType.CRYPTO && walletLoading, [order, walletLoading]);
     const isLoading = useMemo(() => isOrderLoading || isWalletLoading, [isOrderLoading, isWalletLoading]);
 
+    const finalPrice = useMemo(() => {
+        if (!order) return 0;
+        return order.totalPrice - (order.discountAmount ?? 0) + (order.paymentFee ?? 0);
+    }, [order]);
+
     useEffect(() => {
         const iv = setInterval(() => {
             if (isLoading) return;
@@ -147,7 +152,7 @@ const OrderPage = ({ id }: { id: string }) => {
         });
     };
 
-    const isConfirmationComplete = walletDetails?.confirmations && walletDetails.chain ? 
+    const isConfirmationComplete = walletDetails?.confirmations && walletDetails.chain ?
         walletDetails.confirmations >= CONFIRMATION_THRESHOLDS[walletDetails.chain] : false;
     const showCryptoPaymentDetails = order?.paymentType === "CRYPTO" && order?.status === "PENDING" && walletDetails && !isConfirmationComplete;
 
@@ -199,9 +204,6 @@ const OrderPage = ({ id }: { id: string }) => {
             </div>
         );
     }
-
-    // Calculate order totals
-    const subtotal = order.OrderItem.reduce((sum, item) => sum + (item.price * item.quantity) + (order.paymentFee ?? 0), 0);
 
     return (
         <div className="min-h-screen flex flex-col bg-[var(--background)]">
@@ -410,18 +412,18 @@ const OrderPage = ({ id }: { id: string }) => {
                                                     <div className="flex items-center">
                                                         <div
                                                             className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 rounded-md font-mono text-base flex-grow mr-2 cursor-pointer hover:bg-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] transition-colors"
-                                                            onClick={() => copyToClipboard(subtotal.toString())}
+                                                            onClick={() => copyToClipboard(finalPrice.toString())}
                                                             title="Click to copy amount"
                                                         >
-                                                            <span className="font-bold">{formatPrice(subtotal)}</span>
+                                                            <span className="font-bold">{formatPrice(finalPrice)}</span>
                                                         </div>
                                                         <motion.button
                                                             whileHover={{ scale: 1.05 }}
                                                             whileTap={{ scale: 0.95 }}
-                                                            onClick={() => copyToClipboard(subtotal.toString())}
+                                                            onClick={() => copyToClipboard(finalPrice.toString())}
                                                             className="p-2 bg-[#0d9ad1]/10 text-[#0d9ad1] rounded-md"
                                                         >
-                                                            {copiedCode === subtotal.toString() ? <FaCheck /> : <FaCopy />}
+                                                            {copiedCode === finalPrice.toString() ? <FaCheck /> : <FaCopy />}
                                                         </motion.button>
                                                     </div>
                                                 </div>
@@ -596,16 +598,16 @@ const OrderPage = ({ id }: { id: string }) => {
                                 <div className="space-y-4 mb-6">
                                     <div className="flex justify-between">
                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Subtotal</span>
-                                        <span className="text-[var(--foreground)]">{formatPrice(subtotal)}</span>
+                                        <span className="text-[var(--foreground)]">{formatPrice(order.totalPrice)}</span>
                                     </div>
-                                    
+
                                     {order.couponUsed && (
                                         <div className="flex justify-between text-green-500">
                                             <span>Discount ({order.couponUsed})</span>
                                             <span>-{formatPrice(order.discountAmount)}</span>
                                         </div>
                                     )}
-                                    
+
                                     <div className="flex justify-between">
                                         <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                             Payment Fee ({formatFeePercentage(order.paymentType)})
@@ -616,7 +618,7 @@ const OrderPage = ({ id }: { id: string }) => {
                                     <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                                         <div className="flex justify-between">
                                             <span className="font-bold text-[var(--foreground)]">Total</span>
-                                            <span className="font-bold text-[var(--primary)]">{formatPrice(order.totalPrice)}</span>
+                                            <span className="font-bold text-[var(--primary)]">{formatPrice(finalPrice)}</span>
                                         </div>
                                     </div>
                                 </div>

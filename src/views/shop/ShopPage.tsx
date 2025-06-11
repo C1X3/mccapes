@@ -86,8 +86,7 @@ const ShopPage = () => {
                         Our Shop
                     </h1>
                     <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] max-w-2xl mx-auto">
-                        Discover our curated collection of high-quality products for every
-                        lifestyle.
+                        Discover our curated collection of high-quality products.
                     </p>
                 </div>
             </header>

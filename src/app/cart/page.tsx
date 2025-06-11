@@ -21,7 +21,7 @@ const CartPage = () => {
     const router = useRouter();
     const trpc = useTRPC();
 
-    const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart, coupon, discountAmount, discountedTotal, applyCoupon, removeCoupon, isCouponLoading } = useCart();
+    const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart, coupon: couponCode, discountAmount, discountedTotal, applyCoupon, removeCoupon, isCouponLoading } = useCart();
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
     const [showCryptoOptions, setShowCryptoOptions] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({ name: "", email: "", discord: "" });
@@ -83,10 +83,10 @@ const CartPage = () => {
             customerInfo,
             paymentType,
             cryptoType: paymentType === PaymentType.CRYPTO ? cryptoType : undefined,
-            totalPrice: totalWithFee,
-            paymentFee: paymentFee,
-            couponCode: coupon,
-            discountAmount: discountAmount
+            totalPrice,
+            paymentFee,
+            couponCode,
+            discountAmount
         });
 
         clearCart();
@@ -303,10 +303,10 @@ const CartPage = () => {
                                                         <span className="text-[var(--foreground)]">{formatPrice(totalPrice)}</span>
                                                     </div>
 
-                                                    {coupon && (
+                                                    {couponCode && (
                                                         <div className="flex justify-between text-green-500">
                                                             <span className="flex items-center gap-2">
-                                                                Discount ({coupon})
+                                                                Discount ({couponCode})
                                                                 <button
                                                                     onClick={removeCoupon}
                                                                     className="text-xs bg-green-500/10 text-green-500 rounded-full px-2 py-0.5 hover:bg-green-500/20"
@@ -332,7 +332,7 @@ const CartPage = () => {
                                                     </div>
                                                 </div>
 
-                                                {!coupon && (
+                                                {!couponCode && (
                                                     <form onSubmit={handleApplyCoupon} className="mb-5">
                                                         <div className="flex gap-2">
                                                             <input

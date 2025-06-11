@@ -9,8 +9,7 @@ import QRCode from "qrcode";
 import { CheckoutPayload, WalletDetails } from "./types";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
-import { CryptoType, PaymentType } from "@generated";
-import { calculatePaymentFee } from "@/utils/fees";
+import { CryptoType } from "@generated";
 
 const bip32 = BIP32Factory(ecc);
 
@@ -44,12 +43,10 @@ export async function createWalletDetails(
     crypto: CryptoType
 ): Promise<WalletDetails> {
     // A) Use the totalPrice from the payload which already has the discount applied
-    const totalAmount = payload.totalPrice;
-    const paymentFee = calculatePaymentFee(PaymentType.CRYPTO, totalAmount);
-    const total = (totalAmount + paymentFee).toFixed(2);
+    const expectedAmount = payload.totalPrice + payload.paymentFee - (payload.discountAmount ?? 0);
 
     // Include discount information in note if applicable
-    const discountInfo = payload.discountAmount && payload.discountAmount > 0 
+    const discountInfo = payload.discountAmount && payload.discountAmount > 0
         ? `Discount: $${payload.discountAmount.toFixed(2)}${payload.couponCode ? ` - Coupon: ${payload.couponCode}` : ''}`
         : '';
 
@@ -62,7 +59,7 @@ export async function createWalletDetails(
         throw new Error(`Failed to fetch price for ${cgId}`);
     }
     const priceUsd = resp.data[cgId].usd;
-    const amountCrypto = (Number(total) / priceUsd).toFixed(8);
+    const amountCrypto = (Number(expectedAmount) / priceUsd).toFixed(8);
 
     // C) Derive a fresh child address and persist
     const last = await prisma.wallet.findFirst({
@@ -137,9 +134,9 @@ export async function createWalletDetails(
     }
 
     const qrCodeDataUrl = await QRCode.toDataURL(uri);
-    return { 
-        address, 
-        amount: amountCrypto, 
+    return {
+        address,
+        amount: amountCrypto,
         url: qrCodeDataUrl,
         note: discountInfo || undefined
     };

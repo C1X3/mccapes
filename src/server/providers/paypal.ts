@@ -3,24 +3,7 @@ import { fAndFItems } from '@/utils/paypalNotes';
 import { prisma } from '@/utils/prisma';
 import { OrderStatus, PaymentType } from '@generated';
 
-export async function createCheckoutSession(payload: CheckoutPayload): Promise<WalletDetails> {
-    if (!process.env.NEXT_PUBLIC_PAYPAL_EMAIL) {
-        throw new Error('PAYPAL_EMAIL is not set');
-    }
-    const email = process.env.NEXT_PUBLIC_PAYPAL_EMAIL;
-
-    // Use the total price from the payload which should already have the discount applied
-    const totalPrice = payload.totalPrice;
-
-    // For clarity in the transaction details, include discount information
-    const discountInfo = payload.discountAmount && payload.discountAmount > 0
-        ? ` (Discount: $${payload.discountAmount.toFixed(2)}${payload.couponCode ? ` - Coupon: ${payload.couponCode}` : ''})`
-        : '';
-
-    const amount = totalPrice.toFixed(2);
-    const paymentDetailsNote = `Order #${payload.orderId}${discountInfo}`;
-
-    // fetch all pending PayPal orders' notes
+const pickNote = async () => {
     const currPaypalPending = await prisma.order.findMany({
         where: {
             paymentType: PaymentType.PAYPAL,
@@ -30,11 +13,8 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<W
     });
     const usedNotes = new Set(currPaypalPending.map(o => o.paypalNote));
 
-    // ───────────────────────────────
-    // Build a list of all unused single‐item notes:
     const unusedSingles = fAndFItems.filter((item) => !usedNotes.has(item));
 
-    // Build a list of all unused two‐item combinations:
     const unusedPairs: string[] = [];
     for (let i = 0; i < fAndFItems.length; i++) {
         for (let j = i + 1; j < fAndFItems.length; j++) {
@@ -45,7 +25,6 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<W
         }
     }
 
-    // Prioritize single-word notes, only use pairs if no singles are available
     const candidates = unusedSingles.length > 0 ? unusedSingles : unusedPairs;
 
     // If no candidates remain, throw an error:
@@ -55,24 +34,38 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<W
         );
     }
 
-    // Pick one at random:
     const randomIndex = Math.floor(Math.random() * candidates.length);
-    const note = candidates[randomIndex];
-    // ───────────────────────────────
+    return candidates[randomIndex];
+};
 
-    // persist the chosen note on the order
+export async function createCheckoutSession(payload: CheckoutPayload): Promise<WalletDetails> {
+    if (!process.env.NEXT_PUBLIC_PAYPAL_EMAIL) {
+        throw new Error('PAYPAL_EMAIL is not set');
+    }
+
+    const email = process.env.NEXT_PUBLIC_PAYPAL_EMAIL;
+    const totalPrice = payload.totalPrice;
+
+    const discountInfo = payload.discountAmount && payload.discountAmount > 0
+        ? ` (Discount: $${payload.discountAmount.toFixed(2)}${payload.couponCode ? ` - Coupon: ${payload.couponCode}` : ''})`
+        : '';
+
+    const amount = totalPrice.toFixed(2);
+    const paymentDetailsNote = `Order #${payload.orderId}${discountInfo}`;
+
+    const paypalNote = await pickNote();
     await prisma.order.update({
         where: { id: payload.orderId },
         data: {
-            paypalNote: note,
-            totalPrice: totalPrice, // Ensure the order has the discounted price
+            paypalNote: paypalNote,
+            totalPrice,
         },
     });
 
     return {
         address: email,
         amount,
-        url: note,
+        url: paypalNote,
         note: paymentDetailsNote,
     };
 }

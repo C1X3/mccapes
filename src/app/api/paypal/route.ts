@@ -59,7 +59,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Calculate the expected amount with discount applied
-    const expectedTotal = order.totalPrice + order.paymentFee;
+    const expectedTotal = order.totalPrice + order.paymentFee - (order.discountAmount ?? 0);
 
     if (
         ipn.receiverEmail === process.env.NEXT_PUBLIC_PAYPAL_EMAIL &&

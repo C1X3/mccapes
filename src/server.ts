@@ -55,13 +55,9 @@ async function checkPayments() {
                     outputs: Array<{ addresses: string[], value: number }>;
                 }>;
 
-                console.log(w, txs);
-
                 const expectedUnits = chain === CryptoType.ETHEREUM
                     ? BigInt(parseUnits(expectedAmount.toString(), 18).toString())
                     : BigInt(Math.round(Number(expectedAmount) * 1e8));
-
-                console.log(expectedUnits);
 
                 const normalizedAddr = normalizeHex(address);
                 const match = txs.find(tx => {

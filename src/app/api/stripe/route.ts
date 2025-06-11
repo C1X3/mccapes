@@ -67,15 +67,6 @@ export async function POST(request: Request) {
                     return NextResponse.json({ error: 'No order found' }, { status: 400 });
                 }
 
-                // Verify the payment amount matches the order total (with discount applied)
-                const expectedTotal = fullOrderDetails.totalPrice + fullOrderDetails.paymentFee;
-                const actualAmount = Number((checkoutIntent.amount_total || 0) / 100); // Stripe amounts are in cents
-
-                if (Math.abs(actualAmount - expectedTotal) > 0.01) { // Allow for small rounding differences
-                    console.log(`Payment amount mismatch: expected ${expectedTotal}, got ${actualAmount}`);
-                    return NextResponse.json({ error: 'Payment amount mismatch' }, { status: 400 });
-                }
-
                 await prisma.$transaction(async (tx) => {
                     const order = await tx.order.update({
                         where: { id: orderId },

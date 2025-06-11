@@ -64,22 +64,6 @@ async function getOrCreateProduct(item: {
     return brandNew.id;
 }
 
-// async function getOrCreateCoupon(code: string, amount: number) {
-//     const coupon = await stripe.coupons.list();
-//     if (coupon.data.length > 0) {
-//         const matching = coupon.data.find(x => x.name === code);
-//         if (matching) return matching.id;
-//     }
-
-//     const newCoupon = await stripe.coupons.create({
-//         percent_off: percentOff,
-//         duration: 'once',
-//         name: code
-//     });
-
-//     return newCoupon.id;
-// }
-
 async function getOrCreatePrice(productId: string, price: number) {
     // 1) List all active prices on this product
     const prices = await stripe.prices.list({
@@ -125,6 +109,28 @@ async function getOrCreateStripeProduct(item: { productId: string; name: string;
     };
 }
 
+async function createOneTimeFixedAmountCoupon(
+    amountOff: number,
+    name?: string
+): Promise<string> {
+    if (amountOff <= 0) {
+        throw new Error('Discount amount must be positive.');
+    }
+
+    try {
+        const coupon = await stripe.coupons.create({
+            amount_off: amountOff,
+            currency: 'usd',
+            duration: 'once',
+            name: name || `Fixed Discount ${new Date().toISOString()}`,
+        });
+        return coupon.id;
+    } catch (error) {
+        console.error('Failed to create Stripe coupon:', error);
+        throw new Error('Failed to create one-time coupon for discount.');
+    }
+}
+
 export async function createCheckoutSession(payload: CheckoutPayload): Promise<string> {
     try {
         const feePercentageText = formatFeePercentage(PaymentType.STRIPE);
@@ -152,22 +158,30 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<s
             quantity: 1,
         });
 
-        const session = await stripe.checkout.sessions.create({
+        const sessionParams: Stripe.Checkout.SessionCreateParams = {
             payment_method_types: ['card'],
             line_items: lineItems,
             mode: 'payment',
             customer_email: payload.customerInfo.email,
-            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?success=true`,
+            success_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?session_id={CHECKOUT_SESSION_ID}&success=true`,
             cancel_url: `${process.env.NEXT_PUBLIC_APP_URL}/order/${payload.orderId}?canceled=true`,
-            discounts: payload.couponCode && payload.discountAmount ? [{
-                // coupon: await getOrCreateCoupon(payload.couponCode, payload.discountAmount),
-            }] : [],
             metadata: {
                 orderId: payload.orderId,
-                couponCode: payload.couponCode || '',
-                discountAmount: payload.discountAmount.toString(),
+                ...(payload.couponCode && { couponCode: payload.couponCode }), // Add if exists
+                ...(payload.discountAmount && { discountAmountApplied: payload.discountAmount.toString() }), // Add if exists
             },
-        });
+        };
+
+        if (payload.discountAmount && payload.discountAmount > 0) {
+            const discountAmountInCents = Math.round(payload.discountAmount * 100);
+            const couponId = await createOneTimeFixedAmountCoupon(
+                discountAmountInCents,
+                payload.couponCode || `Order Discount for ${payload.orderId}`
+            );
+            sessionParams.discounts = [{ coupon: couponId }];
+        }
+
+        const session = await stripe.checkout.sessions.create(sessionParams);
 
         return session.url || '';
     } catch (error) {
