@@ -45,8 +45,8 @@ export async function createCheckoutSession(payload: CheckoutPayload): Promise<W
         }
     }
 
-    // Combine both lists into one “candidates” array:
-    const candidates = [...unusedSingles, ...unusedPairs];
+    // Prioritize single-word notes, only use pairs if no singles are available
+    const candidates = unusedSingles.length > 0 ? unusedSingles : unusedPairs;
 
     // If no candidates remain, throw an error:
     if (candidates.length === 0) {
