@@ -236,12 +236,11 @@ export default function InvoicesTab() {
         <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
           <FaReceipt />
           Invoices
-        </h2>
-
-        <div className="flex gap-3 items-center">
+        </h2>        <div className="flex gap-3 items-center flex-wrap">
+          {/* Export to CSV button - hidden on mobile */}
           <button
             onClick={() => exportInvoicesToCSV(filteredInvoices)}
-            className="flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors"
+            className="hidden md:flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors"
             title="Export to CSV"
             >
             <FaDownload className="size-4" />
@@ -254,7 +253,7 @@ export default function InvoicesTab() {
             title="Filter"
             >
             <FaFilter className="size-4" />
-            Filter
+            <span className="hidden md:inline">Filter</span>
             </button>
 
 
@@ -264,7 +263,7 @@ export default function InvoicesTab() {
               placeholder="Quick Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)]"
+              className="pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full md:w-auto md:min-w-[200px] max-w-[150px] md:max-w-none"
             />
             <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]" size={14} />
           </div>
@@ -387,64 +386,66 @@ export default function InvoicesTab() {
             )}
           </tbody>
         </table>
-      </div>
-
-      {/* Pagination Controls */}
-      <div className="mt-6 flex justify-between items-center">
-        <div className="flex items-center gap-2">
-          <span className="text-[var(--foreground)] text-sm">
-            Showing {Math.min(totalItems, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(totalItems, currentPage * itemsPerPage)} of {totalItems} invoices
-          </span>
-          <select
-            className="ml-2 p-1 rounded-md bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)]"
-            value={itemsPerPage}
-            onChange={(e) => {
-              const newPageSize = Number(e.target.value);
-              setItemsPerPage(newPageSize);
-              // Adjust current page to maintain approximately the same starting item
-              const firstItemIndex = (currentPage - 1) * itemsPerPage;
-              const newPage = Math.floor(firstItemIndex / newPageSize) + 1;
-              setCurrentPage(newPage);
-            }}
-          >
-            <option value={10}>10 per page</option>
-            <option value={15}>15 per page</option>
-            <option value={25}>25 per page</option>
-            <option value={50}>50 per page</option>
-            <option value={100}>100 per page</option>
-          </select>
-        </div>
-        
-        <div className="flex items-center gap-2">
-          <button
-            onClick={goToPreviousPage}
-            disabled={currentPage <= 1}
-            className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
-              currentPage <= 1
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
-            }`}
-          >
-            <FaChevronLeft size={14} />
-          </button>
-          
-          <div className="flex items-center">
-            <span className="mx-2 text-[var(--foreground)]">
-              Page {currentPage} of {totalPages}
+      </div>      {/* Pagination Controls */}
+      <div className="mt-6">
+        {/* Pagination info - always visible, responsive layout */}
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
+          <div className="flex flex-col md:flex-row md:items-center gap-2">
+            <span className="text-[var(--foreground)] text-sm">
+              Showing {Math.min(totalItems, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(totalItems, currentPage * itemsPerPage)} of {totalItems} invoices
             </span>
+            {/* Per page selector - only shown on desktop */}
+            <select
+              className="hidden md:block w-fit p-1 rounded-md bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] text-sm"
+              value={itemsPerPage}
+              onChange={(e) => {
+                const newPageSize = Number(e.target.value);
+                setItemsPerPage(newPageSize);
+                // Adjust current page to maintain approximately the same starting item
+                const firstItemIndex = (currentPage - 1) * itemsPerPage;
+                const newPage = Math.floor(firstItemIndex / newPageSize) + 1;
+                setCurrentPage(newPage);
+              }}
+            >
+              <option value={10}>10 per page</option>
+              <option value={15}>15 per page</option>
+              <option value={25}>25 per page</option>
+              <option value={50}>50 per page</option>
+              <option value={100}>100 per page</option>
+            </select>
           </div>
           
-          <button
-            onClick={goToNextPage}
-            disabled={currentPage >= totalPages}
-            className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
-              currentPage >= totalPages
-                ? 'opacity-50 cursor-not-allowed'
-                : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
-            }`}
-          >
-            <FaChevronRight size={14} />
-          </button>
+          <div className="flex items-center justify-center md:justify-end gap-2">
+            <button
+              onClick={goToPreviousPage}
+              disabled={currentPage <= 1}
+              className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
+                currentPage <= 1
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
+              }`}
+            >
+              <FaChevronLeft size={14} />
+            </button>
+            
+            <div className="flex items-center">
+              <span className="mx-2 text-[var(--foreground)] text-sm">
+                Page {currentPage} of {totalPages}
+              </span>
+            </div>
+            
+            <button
+              onClick={goToNextPage}
+              disabled={currentPage >= totalPages}
+              className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
+                currentPage >= totalPages
+                  ? 'opacity-50 cursor-not-allowed'
+                  : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
+              }`}
+            >
+              <FaChevronRight size={14} />
+            </button>
+          </div>
         </div>
       </div>
     </div>

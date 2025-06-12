@@ -124,27 +124,24 @@ export default function ArticlesTab() {
                 Error loading articles: {articles.error?.message}
             </div>
         );
-    }
-
-    return (
-        <div className="space-y-6">
+    }    return (
+        <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
             {/* Header */}
             <div className="flex justify-between items-center">
-                <h1 className="text-2xl font-bold text-[var(--foreground)] flex items-center gap-2">
+                <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
                     <FaNewspaper />
-                    Article Management
-                </h1>
+                    Articles
+                </h2>
                 <button
                     onClick={() => setIsAddModalOpen(true)}
                     className="bg-[var(--primary)] text-white px-4 py-2 rounded-lg hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors flex items-center gap-2"
                 >
                     <FaPlus />
-                    Add Article
-                </button>
+                    Add Article                </button>
             </div>
 
             {/* Stats */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                     <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Articles</h3>
                     <p className="text-2xl font-bold text-[var(--foreground)]">{orderedArticles.length}</p>
@@ -159,12 +156,11 @@ export default function ArticlesTab() {
                     <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Inactive Articles</h3>
                     <p className="text-2xl font-bold text-[var(--foreground)]">
                         {orderedArticles.filter(a => !a.isActive).length}
-                    </p>
-                </div>
+                    </p>                </div>
             </div>
 
             {/* Article List */}
-            <div className="bg-white rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+            <div className="bg-white rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] mt-6">
                 <div className="p-4 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                     <h2 className="text-lg font-semibold text-[var(--foreground)]">Articles</h2>
                     <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
@@ -176,9 +172,7 @@ export default function ArticlesTab() {
                     <div className="p-8 text-center text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                         <FaNewspaper className="mx-auto mb-4 text-4xl" />
                         <p>No articles yet. Create your first article!</p>
-                    </div>
-                ) : (
-                    <div className="p-4">
+                    </div>                ) : (                    <div className="p-4">
                         <Reorder.Group
                             axis="y"
                             values={orderedArticles}
@@ -186,14 +180,12 @@ export default function ArticlesTab() {
                             className="space-y-2"
                         >
                             <AnimatePresence>
-                                {orderedArticles.map((article) => (
-                                    <Reorder.Item
+                                {orderedArticles.map((article) => (                                    <Reorder.Item
                                         key={article.id}
                                         value={article}
                                         dragListener={!isDragDisabled}
                                         className="bg-[color-mix(in_srgb,var(--background),#333_3%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] transition-colors"
-                                    >
-                                        <div className="flex items-center justify-between">
+                                    ><div className="flex items-center justify-between">
                                             <div className="flex items-center gap-3 flex-1">
                                                 <FaGripVertical
                                                     className="text-[color-mix(in_srgb,var(--foreground),#888_50%)] cursor-move"
@@ -205,14 +197,12 @@ export default function ArticlesTab() {
                                                     <h3 className="font-medium text-[var(--foreground)] mb-1">
                                                         {article.title}
                                                     </h3>
-                                                    <div className="flex items-center gap-4 text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                                                    <div className="hidden md:flex items-center gap-4 text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                                                         <span>Product: {article.productSlug}</span>
                                                         <span>Alignment: {article.alignment}</span>
                                                         <span>Order: {article.order}</span>
                                                     </div>
-                                                </div>
-
-                                                <div className="flex items-center gap-2">
+                                                </div>                                                <div className="hidden md:flex items-center gap-2">
                                                     <button
                                                         onClick={() => handleToggleStatus(article)}
                                                         className={`flex items-center gap-1 px-2 py-1 rounded text-sm ${article.isActive
@@ -224,9 +214,7 @@ export default function ArticlesTab() {
                                                         {article.isActive ? "Active" : "Inactive"}
                                                     </button>
                                                 </div>
-                                            </div>
-
-                                            <div className="flex items-center gap-2 ml-4">
+                                            </div>                                            <div className="flex items-center gap-2 ml-4">
                                                 <button
                                                     onClick={() => handleEditArticle(article)}
                                                     className="p-2 text-blue-600 hover:bg-blue-50 rounded"
@@ -235,7 +223,7 @@ export default function ArticlesTab() {
                                                 </button>
                                                 <button
                                                     onClick={() => handleDeleteArticle(article)}
-                                                    className="p-2 text-red-600 hover:bg-red-50 rounded"
+                                                    className="hidden md:block p-2 text-red-600 hover:bg-red-50 rounded"
                                                 >
                                                     <FaTrash />
                                                 </button>

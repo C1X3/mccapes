@@ -355,7 +355,7 @@ export default function DashboardTab() {
             <ResponsiveContainer width="100%" height="100%">
               <LineChart
                 data={chartData}
-                margin={{ top: 5, right: 30, left: 20, bottom: 5 }}
+                margin={{ top: 5, right: 0, left: 0, bottom: 5 }}
               >
                 <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
                 <XAxis
@@ -474,7 +474,8 @@ export default function DashboardTab() {
                       </div>
                       <div>
                         <p className="font-medium text-[var(--foreground)]">
-                          Order #{order.id}
+                          <span className="md:hidden">Order #{order.id.substring(0, 15)}...</span>
+                          <span className="hidden md:inline">Order #{order.id}</span>
                         </p>
                         <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                           {format(parseISO(order.date), "MMM dd, yyyy")}

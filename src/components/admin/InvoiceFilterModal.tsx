@@ -87,163 +87,166 @@ export default function InvoiceFilterModal({
             onApplyFilters();
           }}
         >
-          <input type="submit" className="hidden" />
-          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
-            {/* Left Column */}
-            <div className="flex flex-col gap-4">
-              <div>
-                <label htmlFor="email" className="block text-[var(--foreground)] mb-2">
-                  Invoice ID
-                </label>
-                <input
-                  name="invoiceId"
-                  type="text"
-                  id="invoiceId"
-                  placeholder="xxxxxxxxxxxxxxxxxxxxxxxxx"
-                  value={tempInvoiceIdFilter}
-                  onChange={(e) => setTempInvoiceIdFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="email" className="block text-[var(--foreground)] mb-2">
-                  E-mail Address
-                </label>
-                <input
-                  name="email"
-                  type="text"
-                  id="email"
-                  placeholder="customer@website.com"
-                  value={tempEmailFilter}
-                  onChange={(e) => setTempEmailFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="discord" className="block text-[var(--foreground)] mb-2">
-                  Discord Username
-                </label>
-                <input
-                  name="discord"
-                  type="text"
-                  id="discord"
-                  placeholder="Discord Username"
-                  value={tempDiscordFilter}
-                  onChange={(e) => setTempDiscordFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="product" className="block text-[var(--foreground)] mb-2">
-                  Product Name
-                </label>
-                <input
-                  name="product"
-                  type="text"
-                  id="product"
-                  placeholder="Product Name"
-                  value={tempProductFilter}
-                  onChange={(e) => setTempProductFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="coupon" className="block text-[var(--foreground)] mb-2">
-                  Coupon Code
-                </label>
-                <input
-                  name="coupon"
-                  type="text"
-                  id="coupon"
-                  placeholder="Coupon Code"
-                  value={tempCouponFilter}
-                  onChange={(e) => setTempCouponFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
+          <input type="submit" className="hidden" />          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+            {/* Row 1: Invoice ID, Status */}
+            <div>
+              <label htmlFor="invoiceId" className="block text-[var(--foreground)] mb-2">
+                Invoice ID
+              </label>
+              <input
+                name="invoiceId"
+                type="text"
+                id="invoiceId"
+                placeholder="xxxxxxxxxxxxxxxxxxxxxxxxx"
+                value={tempInvoiceIdFilter}
+                onChange={(e) => setTempInvoiceIdFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
             </div>
-            {/* Right Column */}
-            <div className="flex flex-col gap-4">
-              <div>
-                <label htmlFor="status" className="block text-[var(--foreground)] mb-2">
-                  Status
-                </label>
-                <select
-                  id="status"
-                  value={tempStatusFilter}
-                  onChange={(e) => setTempStatusFilter(e.target.value as OrderStatus | "ALL")}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
-                  style={{ minHeight: '48px' }}
-                >
-                  <option value="ALL">All Statuses</option>
-                  {Object.values(OrderStatus)
-                    .filter((x) => x !== OrderStatus.PAID)
-                    .map((status) => (
-                      <option key={status} value={status}>
-                        {status}
-                      </option>
-                    ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor="paymentMethod" className="block text-[var(--foreground)] mb-2">
-                  Payment Method
-                </label>
-                <select
-                  id="paymentMethod"
-                  value={tempPaymentFilter}
-                  onChange={(e) => setTempPaymentFilter(e.target.value as PaymentType | "ALL")}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
-                  style={{ minHeight: '48px' }}
-                >
-                  <option value="ALL">All Payment Methods</option>
-                  {Object.values(PaymentType).map((method) => (
-                    <option key={method} value={method}>
-                      {getPaymentMethodName(method)}
+            <div>
+              <label htmlFor="status" className="block text-[var(--foreground)] mb-2">
+                Status
+              </label>
+              <select
+                id="status"
+                value={tempStatusFilter}
+                onChange={(e) => setTempStatusFilter(e.target.value as OrderStatus | "ALL")}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                style={{ minHeight: '48px' }}
+              >
+                <option value="ALL">All Statuses</option>
+                {Object.values(OrderStatus)
+                  .filter((x) => x !== OrderStatus.PAID)
+                  .map((status) => (
+                    <option key={status} value={status}>
+                      {status}
                     </option>
                   ))}
-                </select>
-              </div>              <div>
-                <label htmlFor="Date" className="block text-[var(--foreground)] mb-2">
-                    Date Processed
-                </label>
-                <input
-                  name="date"
-                  type="date"
-                  id="date"
-                  value={tempDateProcessedFilter}
-                  onChange={(e) => setTempDateProcessedFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="paypalNote" className="block text-[var(--foreground)] mb-2">
-                  PayPal Note
-                </label>
-                <input
-                  name="paypalNote"
-                  type="text"
-                  id="paypalNote"
-                  placeholder="PayPal Transaction Note"
-                  value={tempPaypalNoteFilter}
-                  onChange={(e) => setTempPaypalNoteFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
-              <div>
-                <label htmlFor="code" className="block text-[var(--foreground)] mb-2">
-                  Deliverable Code
-                </label>
-                <input
-                  name="code"
-                  type="text"
-                  id="code"
-                  placeholder="Deliverable Code"
-                  value={tempCodeFilter}
-                  onChange={(e) => setTempCodeFilter(e.target.value)}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-                />
-              </div>
+              </select>
+            </div>
+
+            {/* Row 2: Email, Payment Method */}
+            <div>
+              <label htmlFor="email" className="block text-[var(--foreground)] mb-2">
+                E-mail Address
+              </label>
+              <input
+                name="email"
+                type="text"
+                id="email"
+                placeholder="customer@website.com"
+                value={tempEmailFilter}
+                onChange={(e) => setTempEmailFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+            <div>
+              <label htmlFor="paymentMethod" className="block text-[var(--foreground)] mb-2">
+                Payment Method
+              </label>
+              <select
+                id="paymentMethod"
+                value={tempPaymentFilter}
+                onChange={(e) => setTempPaymentFilter(e.target.value as PaymentType | "ALL")}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                style={{ minHeight: '48px' }}
+              >
+                <option value="ALL">All Payment Methods</option>
+                {Object.values(PaymentType).map((method) => (
+                  <option key={method} value={method}>
+                    {getPaymentMethodName(method)}
+                  </option>
+                ))}
+              </select>
+            </div>
+
+            {/* Row 3: Discord, Date Processed */}
+            <div>
+              <label htmlFor="discord" className="block text-[var(--foreground)] mb-2">
+                Discord Username
+              </label>
+              <input
+                name="discord"
+                type="text"
+                id="discord"
+                placeholder="Discord Username"
+                value={tempDiscordFilter}
+                onChange={(e) => setTempDiscordFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+            <div>
+              <label htmlFor="date" className="block text-[var(--foreground)] mb-2">
+                Date Processed
+              </label>
+              <input
+                name="date"
+                type="date"
+                id="date"
+                value={tempDateProcessedFilter}
+                onChange={(e) => setTempDateProcessedFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+
+            {/* Row 4: Product Name, PayPal Note */}
+            <div>
+              <label htmlFor="product" className="block text-[var(--foreground)] mb-2">
+                Product Name
+              </label>
+              <input
+                name="product"
+                type="text"
+                id="product"
+                placeholder="Product Name"
+                value={tempProductFilter}
+                onChange={(e) => setTempProductFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+            <div>
+              <label htmlFor="paypalNote" className="block text-[var(--foreground)] mb-2">
+                PayPal Note
+              </label>
+              <input
+                name="paypalNote"
+                type="text"
+                id="paypalNote"
+                placeholder="PayPal Transaction Note"
+                value={tempPaypalNoteFilter}
+                onChange={(e) => setTempPaypalNoteFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+
+            {/* Row 5: Coupon Code, Deliverable Code */}
+            <div>
+              <label htmlFor="coupon" className="block text-[var(--foreground)] mb-2">
+                Coupon Code
+              </label>
+              <input
+                name="coupon"
+                type="text"
+                id="coupon"
+                placeholder="Coupon Code"
+                value={tempCouponFilter}
+                onChange={(e) => setTempCouponFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
+            </div>
+            <div>
+              <label htmlFor="code" className="block text-[var(--foreground)] mb-2">
+                Deliverable Code
+              </label>
+              <input
+                name="code"
+                type="text"
+                id="code"
+                placeholder="Deliverable Code"
+                value={tempCodeFilter}
+                onChange={(e) => setTempCodeFilter(e.target.value)}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+              />
             </div>
           </div>
         </form>

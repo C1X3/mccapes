@@ -1,6 +1,6 @@
-import { ReactNode, useState } from "react";
+import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaBars, FaTimes, FaNewspaper } from "react-icons/fa";
+import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaNewspaper } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import { useRouter } from "next/navigation";
 
@@ -26,7 +26,6 @@ export default function AdminLayout({
   authComponent,
 }: AdminLayoutProps) {
   const router = useRouter();
-  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
   const tabs: TabItem[] = [
     { id: "dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
@@ -42,8 +41,6 @@ export default function AdminLayout({
     } else {
       router.push(`/admin?tab=${tabId}`);
     }
-    // Close sidebar on mobile when a tab is selected
-    setIsMobileSidebarOpen(false);
   };
 
   if (!isAuthenticated) {
@@ -59,23 +56,9 @@ export default function AdminLayout({
         </header>
       </div>
 
-      {/* Mobile Menu Toggle Button */}
-      <div className="fixed top-[120px] left-4 z-30 md:hidden">
-        <button
-          onClick={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
-          className="bg-[var(--primary)] text-white p-3 rounded-full shadow-lg"
-        >
-          {isMobileSidebarOpen ? <FaTimes /> : <FaBars />}
-        </button>
-      </div>
-
-      <div className="flex flex-1 pt-[120px]">
-        {/* Sidebar - Fixed to left edge of screen */}
-        <aside
-          className={`${
-            isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          } md:translate-x-0 fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 transition-transform duration-300 ease-in-out md:pt-[120px]`}
-        >
+      <div className="flex flex-1 pt-[120px] pb-20 md:pb-0">
+        {/* Desktop Sidebar Only */}
+        <aside className="hidden md:block fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 pt-[120px]">
           <div className="h-full overflow-y-auto">
             <div className="p-4">
               <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">Admin Panel</h2>
@@ -99,12 +82,7 @@ export default function AdminLayout({
           </div>
         </aside>
 
-        {/* Overlay for mobile when sidebar is open */}
-        {isMobileSidebarOpen && (
-          <div className="fixed inset-0 bg-black/50 z-10 md:hidden" onClick={() => setIsMobileSidebarOpen(false)} />
-        )}
-
-        {/* Main Content - with left margin to account for sidebar */}
+        {/* Main Content - with left margin to account for sidebar on desktop */}
         <main className="w-full md:ml-64 p-4 md:p-8">
           <motion.div
             key={currentTab}
@@ -116,6 +94,28 @@ export default function AdminLayout({
             {children}
           </motion.div>
         </main>
+      </div>
+
+      {/* Mobile Bottom Tab Bar - Primary mobile navigation */}
+      <div className="fixed bottom-0 left-0 right-0 bg-[var(--background)] border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] md:hidden z-30">
+        <nav className="flex justify-around items-center py-2">
+          {tabs.map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => handleTabClick(tab.id)}
+              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-0 flex-1 ${
+                currentTab === tab.id
+                  ? "text-[var(--primary)]"
+                  : "text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--foreground)]"
+              }`}
+            >
+              <span className="text-lg">{tab.icon}</span>
+              <span className="text-xs font-medium truncate w-full text-center">
+                {tab.id === "dashboard" ? "Dash" : tab.label}
+              </span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
   );
