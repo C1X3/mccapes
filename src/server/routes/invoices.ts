@@ -42,7 +42,18 @@ export const invoicesRouter = createTRPCRouter({
         });
       }
 
-      return invoice;
+      // Fetch coupon details if a coupon was used
+      let couponDetails = null;
+      if (invoice.couponUsed) {
+        couponDetails = await prisma.coupon.findUnique({
+          where: { code: invoice.couponUsed },
+        });
+      }
+
+      return {
+        ...invoice,
+        couponDetails,
+      };
     }),
 
   getByStatus: adminProcedure

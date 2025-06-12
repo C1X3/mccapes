@@ -121,16 +121,26 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Payment Method</span>
               <div className="flex items-center gap-2">
-                <span>{getPaymentMethodName(invoice.paymentType)}</span>
+                <span>
+                  {getPaymentMethodName(invoice.paymentType)}
+                  {invoice.paymentType === PaymentType.CRYPTO && invoice.Wallet?.[0]?.chain && 
+                    ` (${invoice.Wallet[0].chain})`
+                  }
+                </span>
                 {invoice.paymentType === PaymentType.STRIPE && (
                   <div className="w-6 h-6 bg-indigo-600 rounded-md flex items-center justify-center text-white text-xs">S</div>
                 )}
               </div>
-            </div>
-
-            <div className="flex justify-between border-b border-gray-200 pb-2">
+            </div>            <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Subtotal</span>
-              <span>${invoice.totalPrice ? invoice.totalPrice.toFixed(2) : "129.99"}</span>
+              <span>
+                ${invoice.totalPrice ? invoice.totalPrice.toFixed(2) : "129.99"}
+                {invoice.couponDetails && (
+                  <span className="text-green-600 ml-2">
+                    ({invoice.couponDetails.type === 'PERCENTAGE' ? `-${invoice.couponDetails.discount}%` : `-$${invoice.couponDetails.discount.toFixed(2)}`})
+                  </span>
+                )}
+              </span>
             </div>
 
             <div className="flex justify-between border-b border-gray-200 pb-2">
@@ -143,14 +153,16 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <span>${(invoice.totalPrice + invoice.paymentFee).toFixed(2)}</span>
             </div>
 
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Total Paid</span>
-              <span>-</span>
-            </div>
-
             {invoice.couponUsed && <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Coupon</span>
-              <span>{invoice.couponUsed}</span>
+              <span>
+                {invoice.couponUsed}
+                {invoice.couponDetails && (
+                  <span className="text-green-600 ml-2">
+                    ({invoice.couponDetails.type === 'PERCENTAGE' ? `${invoice.couponDetails.discount}% OFF` : `$${invoice.couponDetails.discount.toFixed(2)} off`})
+                  </span>
+                )}
+              </span>
             </div>}
 
             {invoice.paymentType === PaymentType.CRYPTO && <div className="flex justify-between border-b border-gray-200 pb-2">
