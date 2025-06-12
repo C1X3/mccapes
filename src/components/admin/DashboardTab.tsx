@@ -338,103 +338,6 @@ export default function DashboardTab() {
         </div>
       </div>
 
-      {/* Crypto Balances Section */}
-      <div className="bg-white p-6 rounded-xl shadow-sm">
-        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
-          <FaBitcoin />
-          Crypto Balances
-        </h3>
-
-        {cryptoBalances.isLoading ? (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="bg-gray-50 p-4 rounded-lg animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-24 mb-2"></div>
-                <div className="h-8 bg-gray-200 rounded w-16"></div>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {/* Bitcoin */}
-            <div className="bg-[#f7931a0d] p-4 rounded-lg border border-[#f7931a33]">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <FaBitcoin className="text-[#f7931a]" />
-                  <span className="font-medium">Bitcoin</span>
-                </div>
-              </div>
-              <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC
-              </p>
-              <button
-                onClick={() => handleOpenWithdraw(CryptoType.BITCOIN)}
-                className="w-full py-2 bg-[#f7931a] text-white rounded-md hover:bg-[#e27b0e] transition-colors"
-              >
-                Withdraw
-              </button>
-            </div>
-
-            {/* Ethereum */}
-            <div className="bg-[#62688f0d] p-4 rounded-lg border border-[#62688f33]">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <FaEthereum className="text-[#62688f]" />
-                  <span className="font-medium">Ethereum</span>
-                </div>
-              </div>
-              <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH
-              </p>
-              <button
-                onClick={() => handleOpenWithdraw(CryptoType.ETHEREUM)}
-                className="w-full py-2 bg-[#62688f] text-white rounded-md hover:bg-[#4e526f] transition-colors"
-              >
-                Withdraw
-              </button>
-            </div>
-
-            {/* Litecoin */}
-            <div className="bg-[#345d9d0d] p-4 rounded-lg border border-[#345d9d33]">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <SiLitecoin className="text-[#345d9d]" />
-                  <span className="font-medium">Litecoin</span>
-                </div>
-              </div>
-              <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC
-              </p>
-              <button
-                onClick={() => handleOpenWithdraw(CryptoType.LITECOIN)}
-                className="w-full py-2 bg-[#345d9d] text-white rounded-md hover:bg-[#264980] transition-colors"
-              >
-                Withdraw
-              </button>
-            </div>
-
-            {/* Solana */}
-            <div className="bg-[#14f1950d] p-4 rounded-lg border border-[#14f19533]">
-              <div className="flex justify-between items-start mb-2">
-                <div className="flex items-center gap-2">
-                  <SiSolana className="text-[#14f195]" />
-                  <span className="font-medium">Solana</span>
-                </div>
-              </div>
-              <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL
-              </p>
-              <button
-                onClick={() => handleOpenWithdraw(CryptoType.SOLANA)}
-                className="w-full py-2 bg-[#14f195] text-white rounded-md hover:bg-[#0dd07e] transition-colors"
-              >
-                Withdraw
-              </button>
-            </div>
-          </div>
-        )}
-      </div>
-
       {/* Chart */}
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
@@ -615,6 +518,103 @@ export default function DashboardTab() {
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* Crypto Balances Section */}
+      <div className="bg-white p-6 rounded-xl shadow-sm">
+        <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
+          <FaBitcoin />
+          Crypto Balances
+        </h3>
+
+        {cryptoBalances.isLoading ? (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="bg-gray-50 p-4 rounded-lg animate-pulse">
+                <div className="h-6 bg-gray-200 rounded w-24 mb-2"></div>
+                <div className="h-8 bg-gray-200 rounded w-16"></div>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Bitcoin */}
+            <div className="bg-[#f7931a0d] p-4 rounded-lg border border-[#f7931a33]">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <FaBitcoin className="text-[#f7931a]" />
+                  <span className="font-medium">Bitcoin</span>
+                </div>
+              </div>
+              <p className="text-2xl font-bold mb-3">
+                {formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC
+              </p>
+              <button
+                onClick={() => handleOpenWithdraw(CryptoType.BITCOIN)}
+                className="w-full py-2 bg-[#f7931a] text-white rounded-md hover:bg-[#e27b0e] transition-colors"
+              >
+                Withdraw
+              </button>
+            </div>
+
+            {/* Ethereum */}
+            <div className="bg-[#62688f0d] p-4 rounded-lg border border-[#62688f33]">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <FaEthereum className="text-[#62688f]" />
+                  <span className="font-medium">Ethereum</span>
+                </div>
+              </div>
+              <p className="text-2xl font-bold mb-3">
+                {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH
+              </p>
+              <button
+                onClick={() => handleOpenWithdraw(CryptoType.ETHEREUM)}
+                className="w-full py-2 bg-[#62688f] text-white rounded-md hover:bg-[#4e526f] transition-colors"
+              >
+                Withdraw
+              </button>
+            </div>
+
+            {/* Litecoin */}
+            <div className="bg-[#345d9d0d] p-4 rounded-lg border border-[#345d9d33]">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <SiLitecoin className="text-[#345d9d]" />
+                  <span className="font-medium">Litecoin</span>
+                </div>
+              </div>
+              <p className="text-2xl font-bold mb-3">
+                {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC
+              </p>
+              <button
+                onClick={() => handleOpenWithdraw(CryptoType.LITECOIN)}
+                className="w-full py-2 bg-[#345d9d] text-white rounded-md hover:bg-[#264980] transition-colors"
+              >
+                Withdraw
+              </button>
+            </div>
+
+            {/* Solana */}
+            <div className="bg-[#14f1950d] p-4 rounded-lg border border-[#14f19533]">
+              <div className="flex justify-between items-start mb-2">
+                <div className="flex items-center gap-2">
+                  <SiSolana className="text-[#14f195]" />
+                  <span className="font-medium">Solana</span>
+                </div>
+              </div>
+              <p className="text-2xl font-bold mb-3">
+                {formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL
+              </p>
+              <button
+                onClick={() => handleOpenWithdraw(CryptoType.SOLANA)}
+                className="w-full py-2 bg-[#14f195] text-white rounded-md hover:bg-[#0dd07e] transition-colors"
+              >
+                Withdraw
+              </button>
             </div>
           </div>
         )}

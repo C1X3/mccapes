@@ -2,7 +2,6 @@ import { ReactNode, useState } from "react";
 import { motion } from "framer-motion";
 import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaBars, FaTimes, FaNewspaper } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
-import Footer from "@/components/Footer";
 import { useRouter } from "next/navigation";
 
 interface TabItem {
@@ -29,7 +28,13 @@ export default function AdminLayout({
   const router = useRouter();
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
 
-  const tabs: TabItem[] = [{ id: "dashboard", label: "Dashboard", icon: <FaTachometerAlt /> }, { id: "products", label: "Products", icon: <FaBox /> }, { id: "articles", label: "Articles", icon: <FaNewspaper /> }, { id: "invoices", label: "Invoices", icon: <FaReceipt /> }, { id: "coupons", label: "Coupons", icon: <FaTicketAlt /> },];
+  const tabs: TabItem[] = [
+    { id: "dashboard", label: "Dashboard", icon: <FaTachometerAlt /> },
+    { id: "products", label: "Products", icon: <FaBox /> },
+    { id: "articles", label: "Articles", icon: <FaNewspaper /> },
+    { id: "invoices", label: "Invoices", icon: <FaReceipt /> },
+    { id: "coupons", label: "Coupons", icon: <FaTicketAlt /> },
+  ];
 
   const handleTabClick = (tabId: string) => {
     if (onTabChange) {
@@ -62,13 +67,14 @@ export default function AdminLayout({
         >
           {isMobileSidebarOpen ? <FaTimes /> : <FaBars />}
         </button>
-      </div >
+      </div>
 
       <div className="flex flex-1 pt-[120px]">
         {/* Sidebar - Fixed to left edge of screen */}
         <aside
-          className={`${isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
-            } md:translate-x-0 fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 transition-transform duration-300 ease-in-out md:pt-[120px]`}
+          className={`${
+            isMobileSidebarOpen ? "translate-x-0" : "-translate-x-full"
+          } md:translate-x-0 fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 transition-transform duration-300 ease-in-out md:pt-[120px]`}
         >
           <div className="h-full overflow-y-auto">
             <div className="p-4">
@@ -78,10 +84,11 @@ export default function AdminLayout({
                   <button
                     key={tab.id}
                     onClick={() => handleTabClick(tab.id)}
-                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left mb-3 transition-colors ${currentTab === tab.id
-                      ? "bg-[var(--primary)] text-white"
-                      : "text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
-                      }`}
+                    className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left mb-3 transition-colors ${
+                      currentTab === tab.id
+                        ? "bg-[var(--primary)] text-white"
+                        : "text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                    }`}
                   >
                     <span className="text-lg">{tab.icon}</span>
                     <span>{tab.label}</span>
@@ -93,14 +100,9 @@ export default function AdminLayout({
         </aside>
 
         {/* Overlay for mobile when sidebar is open */}
-        {
-          isMobileSidebarOpen && (
-            <div
-              className="fixed inset-0 bg-black/50 z-10 md:hidden"
-              onClick={() => setIsMobileSidebarOpen(false)}
-            />
-          )
-        }
+        {isMobileSidebarOpen && (
+          <div className="fixed inset-0 bg-black/50 z-10 md:hidden" onClick={() => setIsMobileSidebarOpen(false)} />
+        )}
 
         {/* Main Content - with left margin to account for sidebar */}
         <main className="w-full md:ml-64 p-4 md:p-8">
@@ -114,12 +116,7 @@ export default function AdminLayout({
             {children}
           </motion.div>
         </main>
-      </div >
-
-      {/* Footer */}
-      < div className="md:ml-64" >
-        <Footer />
-      </div >
-    </div >
+      </div>
+    </div>
   );
-} 
+}
