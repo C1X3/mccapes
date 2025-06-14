@@ -21,7 +21,22 @@ const CartPage = () => {
     const router = useRouter();
     const trpc = useTRPC();
 
-    const { items, totalItems, totalPrice, isLoading, updateQuantity, removeItem, clearCart, coupon: couponCode, discountAmount, discountedTotal, applyCoupon, removeCoupon, isCouponLoading } = useCart();
+    const {
+        items,
+        totalItems,
+        totalPrice,
+        isLoading,
+        updateQuantity,
+        removeItem,
+        clearCart,
+        coupon: couponCode,
+        discountAmount,
+        discountedTotal,
+        applyCoupon,
+        removeCoupon,
+        isCouponLoading
+    } = useCart();
+
     const [showPaymentOptions, setShowPaymentOptions] = useState(false);
     const [showCryptoOptions, setShowCryptoOptions] = useState(false);
     const [customerInfo, setCustomerInfo] = useState({ name: "", email: "", discord: "" });
@@ -31,7 +46,6 @@ const CartPage = () => {
     const [termsAccepted, setTermsAccepted] = useState(false);
     const [couponInput, setCouponInput] = useState("");
 
-    // Calculate fee and total with fee
     const paymentFee = useMemo(() => calculatePaymentFee(paymentType, discountedTotal), [paymentType, discountedTotal]);
     const totalWithFee = useMemo(() => calculateTotalWithFee(paymentType, discountedTotal), [paymentType, discountedTotal]);
 

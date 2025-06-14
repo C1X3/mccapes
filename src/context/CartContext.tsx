@@ -1,6 +1,6 @@
 "use client";
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import {
     CartItem,
     Product,
@@ -43,6 +43,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }: { children: ReactNode }) => {
     const trpc = useTRPC();
+
     const [items, setItems] = useState<CartItem[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [coupon, setCoupon] = useState<string | null>(null);
@@ -51,7 +52,6 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     const { mutateAsync: validateCoupon, isPending: isCouponLoading } = useMutation(trpc.coupon.validateCoupon.mutationOptions());
 
-    // Initialize cart from localStorage
     useEffect(() => {
         const loadCart = () => {
             const storedCart = getCart();
@@ -74,7 +74,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     // Calculate total price
     const totalPrice = items.reduce(
-        (total, item) => total + item.product.price * item.quantity,
+        (total, item) => total + (item.product.price * item.quantity),
         0
     );
 

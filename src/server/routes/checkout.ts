@@ -2,13 +2,14 @@ import { z } from 'zod';
 import { prisma } from '@/utils/prisma';
 import { adminProcedure, baseProcedure, createTRPCRouter } from '../init';
 import { TRPCError } from '@trpc/server';
-import { CryptoType, OrderStatus, PaymentType } from '@generated';
+import { CouponType, CryptoType, OrderStatus, PaymentType } from '@generated';
 import { createCheckoutSession as createStripeCheckout } from '../providers/stripe';
 import { createCheckoutSession as createPaypalCheckout } from '../providers/paypal';
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
 import { sendOrderCompleteEmail } from '@/utils/email';
 import { headers } from 'next/headers';
+import { getPaymentFee } from '@/utils/fees';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -37,11 +38,92 @@ export const checkoutRouter = createTRPCRouter({
         )
         .mutation(async ({ input }) => {
             try {
-                console.log(input);
-
                 const reqHeaders = await headers();
                 const ipAddress = reqHeaders.get('CF-Connecting-IP') || reqHeaders.get('X-Forwarded-For') || reqHeaders.get('X-Real-IP');
                 const useragent = reqHeaders.get('User-Agent');
+
+                let totalPrice = 0;
+
+                for (const item of input.items) {
+                    const product = await prisma.product.findUnique({
+                        where: {
+                            id: item.productId
+                        }
+                    });
+
+                    if (!product) {
+                        throw new TRPCError({
+                            code: 'NOT_FOUND',
+                            message: 'Product not found',
+                        });
+                    }
+
+                    totalPrice += product.price * item.quantity;
+                }
+
+                if (input.couponCode) {
+                    const coupon = await prisma.coupon.findUnique({
+                        where: {
+                            code: input.couponCode,
+                        }
+                    });
+
+                    if (!coupon) {
+                        throw new TRPCError({
+                            code: 'NOT_FOUND',
+                            message: 'Coupon not found',
+                        });
+                    }
+
+                    if (coupon.validUntil < new Date()) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Coupon expired',
+                        });
+                    }
+
+                    if (coupon.active === false) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Coupon is not active',
+                        });
+                    }
+
+                    if (coupon.usageCount >= coupon.usageLimit) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Coupon limit reached',
+                        });
+                    }
+
+                    if (coupon.validUntil < new Date()) {
+                        throw new TRPCError({
+                            code: 'BAD_REQUEST',
+                            message: 'Coupon expired',
+                        });
+                    }
+
+                    if (coupon.type === CouponType.FIXED) {
+                        totalPrice -= coupon.discount;
+                    } else {
+                        const discountAmount = (coupon.discount / 100) * totalPrice;
+                        totalPrice -= discountAmount;
+                    }
+                }
+
+                const paymentFeePercentage = getPaymentFee(input.paymentType);
+                const paymentFee = paymentFeePercentage * totalPrice;
+
+                totalPrice += paymentFee;
+
+                const frontendFinalPrice = input.totalPrice - (input.discountAmount || 0) + input.paymentFee;
+
+                if (Math.round(totalPrice * 100) / 100 !== Math.round(frontendFinalPrice * 100) / 100) {
+                    throw new TRPCError({
+                        code: 'BAD_REQUEST',
+                        message: 'Total price does not match, please try again!',
+                    });
+                }
 
                 const order = await prisma.order.create({
                     data: {
@@ -69,26 +151,6 @@ export const checkoutRouter = createTRPCRouter({
                         }
                     }
                 });
-
-                /*
-                    {
-                    items: [
-                        {
-                        productId: 'cmb1vh19m0000pn0k241fv1v3',
-                        quantity: 1,
-                        price: 129.99,
-                        name: 'Experience Cape Code'
-                        }
-                    ],
-                    customerInfo: { name: 'Test', email: 'test@gmail.com', discord: '@test' },
-                    paymentType: 'STRIPE',
-                    cryptoType: undefined,
-                    couponCode: 'JUDELOW',
-                    paymentFee: 4.939620000000001,
-                    totalPrice: 129.99,
-                    discountAmount: 6.499500000000001
-                    }
-                */
 
                 // 2. Generate payment link based on the selected payment method
                 let walletDetails: WalletDetails | undefined;

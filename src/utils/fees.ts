@@ -15,6 +15,10 @@ export function calculatePaymentFee(paymentType: PaymentType, subtotal: number):
   return subtotal * feePercentage;
 }
 
+export function getPaymentFee(paymentType: PaymentType): number {
+  return PAYMENT_METHOD_FEES[paymentType] || 0;
+}
+
 /**
  * Calculate total price with fee
  */
