@@ -1,5 +1,22 @@
 import { OrderStatus, PaymentType } from "@generated";
 
+// Type for invoice in utility functions
+type InvoiceWithWallet = {
+  paymentType: PaymentType;
+  Wallet?: Array<{
+    chain: string;
+  }>;
+};
+
+// Utility function to get payment method display name including specific crypto types
+export const getPaymentDisplayName = (invoice: InvoiceWithWallet): string => {
+  if (invoice.paymentType === PaymentType.CRYPTO && invoice.Wallet?.[0]?.chain) {
+    const cryptoType = invoice.Wallet[0].chain;
+    return cryptoType.charAt(0).toUpperCase() + cryptoType.slice(1).toLowerCase();
+  }
+  return getPaymentMethodName(invoice.paymentType);
+};
+
 // Utility function to get payment method display name
 export const getPaymentMethodName = (method: PaymentType): string => {
   switch (method) {

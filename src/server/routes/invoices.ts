@@ -15,6 +15,7 @@ export const invoicesRouter = createTRPCRouter({
             product: true,
           },
         },
+        Wallet: true,
       },
     });
   }),

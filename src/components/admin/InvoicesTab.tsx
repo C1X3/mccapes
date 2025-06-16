@@ -2,13 +2,39 @@ import { useTRPC } from "@/server/client";
 import { useQuery } from "@tanstack/react-query";
 import React, { useState, useMemo } from "react";
 import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import { OrderStatus } from "@generated";
+import { OrderStatus, PaymentType, CryptoType } from "@generated";
 import { useRouter } from "next/navigation";
 import InvoiceFilterModal from "./InvoiceFilterModal";
-import { getPaymentMethodName, getStatusBadgeClass, formatDate } from "@/utils/invoiceUtils";
+import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
 import { exportInvoicesToCSV } from "@/utils/csvExport";
 import { useInvoiceFilters } from "@/hooks/useInvoiceFilters";
 import { formatPrice } from "@/utils/formatting";
+import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
+
+// Type for invoice with related data
+type InvoiceWithRelations = {
+  id: string;
+  totalPrice: number;
+  paymentType: PaymentType;
+  status: OrderStatus;
+  createdAt: Date;
+  discountAmount: number;
+  customer: {
+    name: string;
+    email: string;
+    discord?: string | null;
+  } | null;
+  OrderItem: Array<{
+    product: {
+      name: string;
+    };
+    codes: string[];
+  }>;
+  Wallet?: Array<{
+    chain: CryptoType;
+  }>;
+  couponUsed?: string | null;
+};
 
 export default function InvoicesTab() {
   const trpc = useTRPC();
@@ -45,10 +71,49 @@ export default function InvoicesTab() {
   const navigateToInvoice = (invoiceId: string) => {
     router.push(`/admin/invoice/${invoiceId}`);
   };
+
+  // Helper function to check if search term matches crypto payment types
+  const matchesCryptoSearch = (invoice: InvoiceWithRelations, searchTerm: string): boolean => {
+    if (invoice.paymentType !== PaymentType.CRYPTO || !invoice.Wallet?.[0]?.chain) {
+      return false;
+    }
+
+    const lowerSearchTerm = searchTerm.toLowerCase();
+    const cryptoChain = invoice.Wallet[0].chain;
+
+    // Create mapping of search terms to crypto types
+    const cryptoMappings: Record<string, CryptoType> = {
+      // Bitcoin
+      'btc': CryptoType.BITCOIN,
+      'bitcoin': CryptoType.BITCOIN,
+      
+      // Ethereum  
+      'eth': CryptoType.ETHEREUM,
+      'ethereum': CryptoType.ETHEREUM,
+      
+      // Litecoin
+      'ltc': CryptoType.LITECOIN,
+      'litecoin': CryptoType.LITECOIN,
+      
+      // Solana
+      'sol': CryptoType.SOLANA,
+      'solana': CryptoType.SOLANA,
+    };
+
+    // Check if search term matches any crypto mapping
+    for (const [searchKey, cryptoType] of Object.entries(cryptoMappings)) {
+      if (lowerSearchTerm.includes(searchKey) && cryptoChain === cryptoType) {
+        return true;
+      }
+    }
+
+    return false;
+  };
+
   // Filter invoices based on all filters
   const filteredInvoices = useMemo(() => {
     return invoices.filter((invoice) => {
-      // 1) Search‐term filter (unchanged)
+      // 1) Search‐term filter (enhanced with crypto search)
       const matchesSearch =
         searchTerm === "" ||
         (invoice.id && invoice.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -58,6 +123,7 @@ export default function InvoicesTab() {
         (invoice.customer?.discord && invoice.customer.discord.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (invoice.paymentType && invoice.paymentType.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (invoice.couponUsed && invoice.couponUsed.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        matchesCryptoSearch(invoice, searchTerm) ||
         (invoice.OrderItem &&
           invoice.OrderItem.some((item) =>
         (item.product?.name && item.product.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -85,9 +151,23 @@ export default function InvoicesTab() {
         return invoice.status === filters.statusFilter;
       })();
 
-      // 3) Payment‐method filter (unchanged)
-      const matchesPayment =
-        filters.paymentFilter === "ALL" || invoice.paymentType === filters.paymentFilter;
+      // 3) Payment‐method filter (updated to handle individual crypto types)
+      const matchesPayment = (() => {
+        if (filters.paymentFilter === "ALL") return true;
+        
+        // Check if filter is a PaymentType (STRIPE, PAYPAL, CRYPTO)
+        if (Object.values(PaymentType).includes(filters.paymentFilter as PaymentType)) {
+          return invoice.paymentType === filters.paymentFilter;
+        }
+        
+        // Check if filter is a specific CryptoType (BITCOIN, ETHEREUM, etc.)
+        if (Object.values(CryptoType).includes(filters.paymentFilter as CryptoType)) {
+          return invoice.paymentType === PaymentType.CRYPTO && 
+                 invoice.Wallet?.[0]?.chain === filters.paymentFilter;
+        }
+        
+        return false;
+      })();
 
       // 4) Product‐name filter (unchanged)
       const matchesProduct =
@@ -370,7 +450,13 @@ export default function InvoicesTab() {
 
                   {/* Payment Method */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
-                    {getPaymentMethodName(invoice.paymentType)}
+                    <div className="flex items-center gap-2">
+                      <PaymentMethodLogo 
+                        paymentType={invoice.paymentType} 
+                        cryptoType={invoice.Wallet?.[0]?.chain} 
+                      />
+                      <span>{getPaymentDisplayName(invoice)}</span>
+                    </div>
                   </td>
 
                   {/* Email */}

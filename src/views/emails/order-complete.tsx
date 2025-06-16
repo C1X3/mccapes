@@ -81,19 +81,19 @@ export const OrderCompleteTemplate = ({
               <Section style={orderDetailsSection}>
                 <Text style={orderDetailTitle}>Order Details</Text>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Order ID:</Text>
+                  <Text style={orderDetailLabel}>Order ID</Text>
                   <Text style={orderDetailValue}>
-                    #{orderId.substring(0, 8)}
+                    <span style={orderDetailLabel}>: </span>#{orderId.substring(0, 8)}
                   </Text>
                 </div>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Order Date:</Text>
-                  <Text style={orderDetailValue}>{orderDate}</Text>
+                  <Text style={orderDetailLabel}>Order Date</Text>
+                  <Text style={orderDetailValue}><span style={orderDetailLabel}>: </span>{orderDate}</Text>
                 </div>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Payment Method:</Text>
+                  <Text style={orderDetailLabel}>Payment Method</Text>
                   <Text style={orderDetailValue}>
-                    {paymentType.replace("_", " ")}
+                    <span style={orderDetailLabel}>: </span>{paymentType.replace("_", " ")}
                   </Text>
                 </div>
               </Section>
@@ -105,14 +105,16 @@ export const OrderCompleteTemplate = ({
                   <div style={itemContainer}>
                     <div style={itemDetailsContainer}>
                       <Text style={itemName}>{item.name}</Text>
-                      <div style={itemPriceRow}>
-                        <Text style={itemPrice}>
-                          {formatPrice(item.price)} × {item.quantity}
-                        </Text>
-                        <Text style={itemTotal}>
-                          {formatPrice(item.price * item.quantity)}
-                        </Text>
-                      </div>
+                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                        <tr>
+                          <td style={{ ...itemPrice, width: "60%" }}>
+                            {formatPrice(item.price)} × {item.quantity}
+                          </td>
+                          <td style={{ ...itemTotal, width: "40%" }}>
+                            {formatPrice(item.price * item.quantity)}
+                          </td>
+                        </tr>
+                      </table>
                     </div>
                   </div>
 
@@ -135,24 +137,24 @@ export const OrderCompleteTemplate = ({
               {/* Order Summary */}
               <Section style={summarySection}>
                 <div style={summaryRow}>
-                  <Text style={summaryLabel}>Subtotal:</Text>
-                  <Text style={summaryValue}>{formatPrice(totalPrice)}</Text>
+                  <Text style={summaryLabel}>Subtotal</Text>
+                  <Text style={summaryValue}><span style={summaryLabel}>: </span>{formatPrice(totalPrice)}</Text>
                 </div>
                 {paymentFee > 0 && (
                   <div style={summaryRow}>
-                    <Text style={summaryLabel}>Payment Fee:</Text>
-                    <Text style={summaryValue}>{formatPrice(paymentFee)}</Text>
+                    <Text style={summaryLabel}>Payment Fee</Text>
+                    <Text style={summaryValue}><span style={summaryLabel}>: </span>{formatPrice(paymentFee)}</Text>
                   </div>
                 )}
                 <div style={totalRow}>
-                  <Text style={totalLabel}>Total Paid:</Text>
-                  <Text style={totalValue}>{formatPrice(totalWithFee)}</Text>
+                  <Text style={totalLabel}>Total Paid</Text>
+                  <Text style={totalValue}><span style={totalLabel}>: </span>{formatPrice(totalWithFee)}</Text>
                 </div>
               </Section>
             </Section>
 
             <Section style={nextStepsSection}>
-              <Text style={nextStepsTitle}>What&quot;s Next?</Text>
+              <Text style={nextStepsTitle}>What&apos;s Next?</Text>
               <Text style={nextStepsText}>
                 Please save your codes in a secure location. If you need any
                 assistance with your purchase, contact our support team with
@@ -355,12 +357,6 @@ const itemName = {
   margin: "0 0 8px",
   fontFamily:
     '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
-};
-
-const itemPriceRow = {
-  display: "flex",
-  justifyContent: "space-between",
-  width: "100%",
 };
 
 const itemPrice = {

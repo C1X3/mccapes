@@ -385,25 +385,45 @@ export const checkoutRouter = createTRPCRouter({
                 data: { status: OrderStatus.PAID },
             });
 
+            // Fetch the updated order with codes for email
+            const updatedOrder = await prisma.order.findUnique({
+                where: { id: input.orderId },
+                include: {
+                    customer: true,
+                    OrderItem: {
+                        include: {
+                            product: true,
+                        },
+                    },
+                },
+            });
+
+            if (!updatedOrder) {
+                throw new TRPCError({
+                    code: 'NOT_FOUND',
+                    message: 'Updated order not found',
+                });
+            }
+
             await sendOrderCompleteEmail({
-                customerName: order.customer.name,
-                customerEmail: order.customer.email,
-                orderId: order.id,
-                items: order.OrderItem.map(item => ({
+                customerName: updatedOrder.customer.name,
+                customerEmail: updatedOrder.customer.email,
+                orderId: updatedOrder.id,
+                items: updatedOrder.OrderItem.map(item => ({
                     name: item.product.name,
                     price: item.price,
                     quantity: item.quantity,
                     codes: item.codes,
                     image: item.product.image,
                 })),
-                totalPrice: order.totalPrice,
-                paymentFee: order.paymentFee,
-                totalWithFee: order.totalPrice + order.paymentFee,
-                paymentType: order.paymentType,
-                orderDate: order.createdAt.toISOString(),
+                totalPrice: updatedOrder.totalPrice,
+                paymentFee: updatedOrder.paymentFee,
+                totalWithFee: updatedOrder.totalPrice + updatedOrder.paymentFee,
+                paymentType: updatedOrder.paymentType,
+                orderDate: updatedOrder.createdAt.toISOString(),
             });
 
-            return { success: true, order };
+            return { success: true, order: updatedOrder };
         }),
 
     cancelInvoice: adminProcedure

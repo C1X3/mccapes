@@ -2,16 +2,19 @@
 
 import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import React from "react";
-import { FaBox, FaUser, FaShoppingBag, FaFileInvoice, FaTrash } from "react-icons/fa";
+import React, { useState } from "react";
+import { FaBox, FaUser, FaShoppingBag, FaFileInvoice, FaTrash, FaTimes, FaExclamationTriangle } from "react-icons/fa";
 import { OrderStatus, PaymentType } from "@generated";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
-import { getPaymentMethodName, getStatusBadgeClass, formatDate } from "@/utils/invoiceUtils";
+import { motion } from "framer-motion";
+import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
+import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
 
 export default function InvoiceDetailPage({ id }: { id: string }) {
   const trpc = useTRPC();
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
 
   const { data: invoice, isLoading, error } = useQuery(
     trpc.invoices.getById.queryOptions({
@@ -41,6 +44,11 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     }),
   );
   const handleManuallyProcessInvoice = () => {
+    setShowConfirmModal(true);
+  };
+
+  const confirmProcessInvoice = () => {
+    setShowConfirmModal(false);
     manuallyProcessInvoice({
       orderId: id as string,
     });
@@ -122,14 +130,13 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <span className="text-gray-600">Payment Method</span>
               <div className="flex items-center gap-2">
                 <span>
-                  {getPaymentMethodName(invoice.paymentType)}
-                  {invoice.paymentType === PaymentType.CRYPTO && invoice.Wallet?.[0]?.chain && 
-                    ` (${invoice.Wallet[0].chain})`
-                  }
+                  {getPaymentDisplayName(invoice)}
                 </span>
-                {invoice.paymentType === PaymentType.STRIPE && (
-                  <div className="w-6 h-6 bg-indigo-600 rounded-md flex items-center justify-center text-white text-xs">S</div>
-                )}
+                <PaymentMethodLogo 
+                  paymentType={invoice.paymentType} 
+                  cryptoType={invoice.Wallet?.[0]?.chain}
+                  size="md"
+                />
               </div>
             </div>            <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Subtotal</span>
@@ -264,6 +271,78 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+        >
+          <motion.div
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            exit={{ scale: 0.9, opacity: 0 }}
+            className="bg-[var(--background)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-yellow-100 rounded-full">
+                  <FaExclamationTriangle className="text-yellow-600" size={20} />
+                </div>
+                <h2 className="text-xl font-bold text-[var(--foreground)]">
+                  Confirm Manual Processing
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+              >
+                <FaTimes size={16} className="text-[var(--foreground)]" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="mb-6">
+              <p className="text-[var(--foreground)] mb-4">
+                Are you sure you want to manually process this invoice?
+              </p>
+              
+              <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg p-4 mb-4">
+                <p className="text-sm text-[var(--foreground)] font-medium mb-2">This action will:</p>
+                <ul className="text-sm text-[var(--foreground)] space-y-1">
+                  <li>• Allocate product codes to the order</li>
+                  <li>• Mark the order as paid</li>
+                  <li>• Send the completion email to the customer</li>
+                </ul>
+              </div>
+
+              <p className="text-sm text-red-400 font-medium">
+                ⚠️ This action cannot be undone.
+              </p>
+            </div>
+
+            {/* Actions */}
+            <div className="flex gap-3 justify-end">
+              <button
+                onClick={() => setShowConfirmModal(false)}
+                className="px-4 py-2 rounded-lg border border-gray-300 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={confirmProcessInvoice}
+                disabled={isManuallyProcessing}
+                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isManuallyProcessing ? "Processing..." : "Confirm Processing"}
+              </button>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 } 

@@ -1,9 +1,12 @@
-import { OrderStatus, PaymentType } from "@generated";
+import { OrderStatus, PaymentType, CryptoType } from "@generated";
+
+// Extended payment filter type that includes individual crypto types
+export type PaymentFilterType = PaymentType | CryptoType | "ALL";
 
 // Interface for invoice filter state
 export interface InvoiceFilters {
   statusFilter: OrderStatus | "ALL";
-  paymentFilter: PaymentType | "ALL";
+  paymentFilter: PaymentFilterType;
   productFilter: string;
   emailFilter: string;
   discordFilter: string;

@@ -1,8 +1,9 @@
 import React from "react";
 import { motion } from "framer-motion";
 import { FaTimes } from "react-icons/fa";
-import { OrderStatus, PaymentType } from "@generated";
+import { OrderStatus, PaymentType, CryptoType } from "@generated";
 import { getPaymentMethodName } from "@/utils/invoiceUtils";
+import { PaymentFilterType } from "@/types/invoiceFilters";
 
 interface InvoiceFilterModalProps {
   showFilterModal: boolean;
@@ -10,7 +11,7 @@ interface InvoiceFilterModalProps {
   tempEmailFilter: string;
   tempProductFilter: string;
   tempCouponFilter: string;
-  tempPaymentFilter: PaymentType | "ALL";
+  tempPaymentFilter: PaymentFilterType;
   tempDiscordFilter: string;
   tempCodeFilter: string;
   tempPaypalNoteFilter: string;
@@ -21,7 +22,7 @@ interface InvoiceFilterModalProps {
   setTempEmailFilter: (value: string) => void;
   setTempProductFilter: (value: string) => void;
   setTempCouponFilter: (value: string) => void;
-  setTempPaymentFilter: (value: PaymentType | "ALL") => void;
+  setTempPaymentFilter: (value: PaymentFilterType) => void;
   setTempDiscordFilter: (value: string) => void;
   setTempCodeFilter: (value: string) => void;
   setTempPaypalNoteFilter: (value: string) => void;
@@ -147,16 +148,18 @@ export default function InvoiceFilterModal({
               <select
                 id="paymentMethod"
                 value={tempPaymentFilter}
-                onChange={(e) => setTempPaymentFilter(e.target.value as PaymentType | "ALL")}
+                onChange={(e) => setTempPaymentFilter(e.target.value as PaymentFilterType)}
                 className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
                 style={{ minHeight: '48px' }}
               >
                 <option value="ALL">All Payment Methods</option>
-                {Object.values(PaymentType).map((method) => (
-                  <option key={method} value={method}>
-                    {getPaymentMethodName(method)}
-                  </option>
-                ))}
+                <option value={PaymentType.STRIPE}>{getPaymentMethodName(PaymentType.STRIPE)}</option>
+                <option value={PaymentType.PAYPAL}>{getPaymentMethodName(PaymentType.PAYPAL)}</option>
+                <option value={PaymentType.CRYPTO}>All Crypto</option>
+                <option value={CryptoType.BITCOIN}>Bitcoin</option>
+                <option value={CryptoType.ETHEREUM}>Ethereum</option>
+                <option value={CryptoType.LITECOIN}>Litecoin</option>
+                <option value={CryptoType.SOLANA}>Solana</option>
               </select>
             </div>
 

@@ -88,16 +88,16 @@ export const OrderPlacedTemplate = ({
               <Section style={orderDetailsSection}>
                 <Text style={orderDetailTitle}>Order Details</Text>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Order ID:</Text>
-                  <Text style={orderDetailValue}>#{orderId.substring(0, 8)}</Text>
+                  <Text style={orderDetailLabel}>Order ID</Text>
+                  <Text style={orderDetailValue}>: #{orderId.substring(0, 8)}</Text>
                 </div>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Order Date:</Text>
-                  <Text style={orderDetailValue}>{new Date().toLocaleDateString()}</Text>
+                  <Text style={orderDetailLabel}>Order Date</Text>
+                  <Text style={orderDetailValue}>: {new Date().toLocaleDateString()}</Text>
                 </div>
                 <div style={orderDetailRow}>
-                  <Text style={orderDetailLabel}>Payment Method:</Text>
-                  <Text style={orderDetailValue}>{paymentType.replace('_', ' ')}</Text>
+                  <Text style={orderDetailLabel}>Payment Method</Text>
+                  <Text style={orderDetailValue}>: {paymentType.replace('_', ' ')}</Text>
                 </div>
               </Section>
 
@@ -135,18 +135,18 @@ export const OrderPlacedTemplate = ({
               {/* Order Summary */}
               <Section style={summarySection}>
                 <div style={summaryRow}>
-                  <Text style={summaryLabel}>Subtotal:</Text>
-                  <Text style={summaryValue}>{formatPrice(totalPrice)}</Text>
+                  <Text style={summaryLabel}>Subtotal</Text>
+                  <Text style={summaryValue}>: {formatPrice(totalPrice)}</Text>
                 </div>
                 {paymentFee > 0 && (
                   <div style={summaryRow}>
-                    <Text style={summaryLabel}>Payment Fee:</Text>
-                    <Text style={summaryValue}>{formatPrice(paymentFee)}</Text>
+                    <Text style={summaryLabel}>Payment Fee</Text>
+                    <Text style={summaryValue}>: {formatPrice(paymentFee)}</Text>
                   </div>
                 )}
                 <div style={totalRow}>
-                  <Text style={totalLabel}>Total:</Text>
-                  <Text style={totalValue}>{formatPrice(totalWithFee)}</Text>
+                  <Text style={totalLabel}>Total</Text>
+                  <Text style={totalValue}>: {formatPrice(totalWithFee)}</Text>
                 </div>
               </Section>
             </Section>
