@@ -1,6 +1,6 @@
 import { useTRPC } from "@/server/client";
 import { useQuery, useMutation } from "@tanstack/react-query";
-import { format, parseISO, formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import {
@@ -153,7 +153,6 @@ export default function DashboardTab() {
   const revenue = revenueData.data || { amount: 0, percentChange: 0 };
   const orders = ordersData.data || { count: 0, percentChange: 0 };
   const chartData = chartDataQuery.data || [];
-  const recentOrders = recentOrdersData.data || [];
   const latestCompletedOrders = latestCompletedOrdersData.data || [];
   const topProducts = topProductsData.data || [];
   const topCustomers = topCustomersData.data || [];

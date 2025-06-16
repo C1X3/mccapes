@@ -108,16 +108,34 @@ export async function POST(request: NextRequest) {
             });
         }
 
+        // Fetch the updated order with codes for the email
+        const updatedOrder = await prisma.order.findUnique({
+            where: { id: order.id },
+            include: {
+                customer: true,
+                OrderItem: {
+                    include: {
+                        product: true
+                    }
+                }
+            }
+        });
+
+        if (!updatedOrder) {
+            console.log('Updated order not found');
+            return new NextResponse('Updated order not found', { status: 400 });
+        }
+
         await sendOrderCompleteEmail({
-            customerName: order.customer.name,
-            customerEmail: order.customer.email,
-            orderId: order.id,
-            totalPrice: order.totalPrice,
-            paymentFee: order.paymentFee,
-            totalWithFee: order.totalPrice + order.paymentFee,
-            paymentType: order.paymentType,
-            orderDate: order.createdAt.toISOString(),
-            items: order.OrderItem.map(i => ({
+            customerName: updatedOrder.customer.name,
+            customerEmail: updatedOrder.customer.email,
+            orderId: updatedOrder.id,
+            totalPrice: updatedOrder.totalPrice,
+            paymentFee: updatedOrder.paymentFee,
+            totalWithFee: updatedOrder.totalPrice + updatedOrder.paymentFee,
+            paymentType: updatedOrder.paymentType,
+            orderDate: updatedOrder.createdAt.toISOString(),
+            items: updatedOrder.OrderItem.map(i => ({
                 name: i.product.name,
                 price: i.price,
                 quantity: i.quantity,

@@ -104,16 +104,34 @@ export async function POST(request: Request) {
                     }
                 });
 
+                // Fetch the updated order with codes for the email
+                const updatedOrderDetails = await prisma.order.findUnique({
+                    where: { id: orderId },
+                    include: {
+                        customer: true,
+                        OrderItem: {
+                            include: {
+                                product: true
+                            }
+                        }
+                    }
+                });
+
+                if (!updatedOrderDetails) {
+                    console.log('Updated order not found');
+                    return NextResponse.json({ error: 'Updated order not found' }, { status: 400 });
+                }
+
                 await sendOrderCompleteEmail({
-                    customerName: fullOrderDetails.customer.name,
-                    customerEmail: fullOrderDetails.customer.email,
-                    orderId: fullOrderDetails.id,
-                    totalPrice: fullOrderDetails.totalPrice,
-                    paymentFee: fullOrderDetails.paymentFee,
-                    totalWithFee: fullOrderDetails.totalPrice + fullOrderDetails.paymentFee,
-                    paymentType: fullOrderDetails.paymentType,
-                    orderDate: fullOrderDetails.createdAt.toISOString(),
-                    items: fullOrderDetails.OrderItem.map(i => ({
+                    customerName: updatedOrderDetails.customer.name,
+                    customerEmail: updatedOrderDetails.customer.email,
+                    orderId: updatedOrderDetails.id,
+                    totalPrice: updatedOrderDetails.totalPrice,
+                    paymentFee: updatedOrderDetails.paymentFee,
+                    totalWithFee: updatedOrderDetails.totalPrice + updatedOrderDetails.paymentFee,
+                    paymentType: updatedOrderDetails.paymentType,
+                    orderDate: updatedOrderDetails.createdAt.toISOString(),
+                    items: updatedOrderDetails.OrderItem.map(i => ({
                         name: i.product.name,
                         price: i.price,
                         quantity: i.quantity,

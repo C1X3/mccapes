@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { prisma } from "@/utils/prisma";
-import { adminProcedure, baseProcedure, createTRPCRouter } from "../init";
+import { adminProcedure, createTRPCRouter } from "../init";
 import { TRPCError } from "@trpc/server";
 import { OrderStatus } from "@generated";
 
