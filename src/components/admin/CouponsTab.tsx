@@ -123,12 +123,22 @@ export default function CouponsTab() {
                   <td className="py-4 px-2">
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
-                        coupon.active
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                        !coupon.active
+                          ? "bg-red-100 text-red-800"
+                          : coupon.usageCount >= coupon.usageLimit
+                          ? "bg-orange-100 text-orange-800"
+                          : new Date(coupon.validUntil) < new Date()
+                          ? "bg-gray-100 text-gray-800"
+                          : "bg-green-100 text-green-800"
                       }`}
                     >
-                      {coupon.active ? "Active" : "Inactive"}
+                      {!coupon.active
+                        ? "Inactive"
+                        : coupon.usageCount >= coupon.usageLimit
+                        ? "Max Uses Reached"
+                        : new Date(coupon.validUntil) < new Date()
+                        ? "Expired"
+                        : "Active"}
                     </span>
                   </td>
                   <td className="py-4 px-2 text-right">
