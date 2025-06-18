@@ -11,84 +11,6 @@ import { sendOrderCompleteEmail } from '@/utils/email';
 import { headers } from 'next/headers';
 import { getPaymentFee } from '@/utils/fees';
 
-// 2) Decouple Code Assignment Until Payment Success
-// Function to assign cape codes to order after payment confirmation
-async function assignCapeCodeToOrder(orderId: string) {
-    const order = await prisma.order.findUnique({
-        where: { id: orderId },
-        include: {
-            OrderItem: {
-                include: {
-                    product: true,
-                },
-            },
-        },
-    });
-
-    if (!order) {
-        throw new TRPCError({
-            code: 'NOT_FOUND',
-            message: 'Order not found for code assignment',
-        });
-    }
-
-    // Only assign codes if payment is confirmed
-    if (order.status !== OrderStatus.PAID) {
-        throw new TRPCError({
-            code: 'BAD_REQUEST',
-            message: 'Cannot assign codes to unpaid order',
-        });
-    }
-
-    for (const item of order.OrderItem) {
-        // Skip if codes already assigned
-        if (item.codes && item.codes.length > 0) {
-            continue;
-        }
-
-        const product = await prisma.product.findUnique({
-            where: { id: item.productId },
-            select: {
-                stock: true,
-            }
-        });
-
-        if (!product) {
-            throw new TRPCError({
-                code: 'NOT_FOUND',
-                message: 'Product not found for code assignment',
-            });
-        }
-
-        if (product.stock.length < item.quantity) {
-            throw new TRPCError({
-                code: 'BAD_REQUEST',
-                message: 'Not enough stock for code assignment',
-            });
-        }
-
-        // Assign codes from stock
-        const oldestStock = product.stock.slice(0, item.quantity);
-        const filteredStock = product.stock.filter(stock => !oldestStock.includes(stock));
-        
-        // Update product stock
-        await prisma.product.update({
-            where: { id: item.productId },
-            data: { stock: filteredStock },
-        });
-
-        // Assign codes to order item
-        await prisma.orderItem.update({
-            where: { id: item.id },
-            data: {
-                codes: item.codes.concat(oldestStock),
-            }
-        });
-    }
-
-    return { success: true, codesAssigned: true };
-}
-
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
         .input(
@@ -313,48 +235,13 @@ export const checkoutRouter = createTRPCRouter({
             }
 
             return wallet;
-        }),    getOrderStatus: baseProcedure
-        .input(z.object({ 
-            orderId: z.string(),
-            customerEmail: z.string().email().optional() // For order ownership verification
-        }))        .query(async ({ input }) => {
-            const order = await prisma.order.findUnique({
-                where: { id: input.orderId },
-                select: {
-                    id: true,
-                    status: true,
-                    createdAt: true,
-                    paymentType: true,
-                    paymentFee: true,
-                    totalPrice: true,
-                    paypalNote: true,
-                    couponUsed: true,
-                    discountAmount: true,
-                    customer: {
-                        select: {
-                            id: true,
-                            name: true,
-                            email: true,
-                            discord: true,
-                        }
-                    },
-                }
-            });            if (!order) {
-                throw new TRPCError({
-                    code: 'NOT_FOUND',
-                    message: 'Order not found',
-                });
-            }            // 4) Backend-side Authorization Check: Verify order ownership if email provided
-            if (input.customerEmail && order.customer.email !== input.customerEmail) {
-                throw new TRPCError({
-                    code: 'FORBIDDEN',
-                    message: 'Access denied. Order does not belong to the requester.',
-                });
-            }            // 1) Restrict Access Based on Payment Status
-            // 3) Sanitize API Response - Don't return codes unless PAID, but show basic order info
-            if (order.status !== OrderStatus.PAID && order.status !== OrderStatus.DELIVERED) {
-                // Get order items but WITHOUT codes for unpaid orders
-                const orderWithBasicItems = await prisma.order.findUnique({
+        }),
+        getOrderStatus: baseProcedure
+            .input(z.object({
+                orderId: z.string(),
+                customerEmail: z.string().email().optional() // For order ownership verification
+            })).query(async ({ input }) => {
+                const order = await prisma.order.findUnique({
                     where: { id: input.orderId },
                     select: {
                         id: true,
@@ -374,93 +261,131 @@ export const checkoutRouter = createTRPCRouter({
                                 discord: true,
                             }
                         },
+                    }
+                });
+                if (!order) {
+                    throw new TRPCError({
+                        code: 'NOT_FOUND',
+                        message: 'Order not found',
+                    });
+                }            // 4) Backend-side Authorization Check: Verify order ownership if email provided
+                if (input.customerEmail && order.customer.email !== input.customerEmail) {
+                    throw new TRPCError({
+                        code: 'FORBIDDEN',
+                        message: 'Access denied. Order does not belong to the requester.',
+                    });
+                }            // 1) Restrict Access Based on Payment Status
+                // 3) Sanitize API Response - Don't return codes unless PAID, but show basic order info
+                if (order.status !== OrderStatus.PAID && order.status !== OrderStatus.DELIVERED) {
+                    // Get order items but WITHOUT codes for unpaid orders
+                    const orderWithBasicItems = await prisma.order.findUnique({
+                        where: { id: input.orderId },
+                        select: {
+                            id: true,
+                            status: true,
+                            createdAt: true,
+                            paymentType: true,
+                            paymentFee: true,
+                            totalPrice: true,
+                            paypalNote: true,
+                            couponUsed: true,
+                            discountAmount: true,
+                            customer: {
+                                select: {
+                                    id: true,
+                                    name: true,
+                                    email: true,
+                                    discord: true,
+                                }
+                            },
+                            OrderItem: {
+                                select: {
+                                    id: true,
+                                    quantity: true,
+                                    price: true,
+                                    product: {
+                                        select: {
+                                            id: true,
+                                            name: true,
+                                            image: true,
+                                        }
+                                    },
+                                    // Explicitly exclude codes field
+                                }
+                            },
+                        }
+                    });
+
+                    return {
+                        ...orderWithBasicItems,
+                        orderId: orderWithBasicItems?.id,
+                        paymentStatus: orderWithBasicItems?.status,
+                        // Add empty codes array to each order item to maintain type consistency
+                        OrderItem: orderWithBasicItems?.OrderItem.map(item => ({
+                            ...item,
+                            codes: [] // Always empty for unpaid orders
+                        })) || [],
+                    };
+                }
+                
+                const fullOrder = await prisma.order.findUnique({
+                    where: { id: input.orderId },
+                    select: {
+                        id: true,
+                        status: true,
+                        createdAt: true,
+                        paymentType: true,
+                        paymentFee: true,
+                        totalPrice: true,
+                        paypalNote: true,
+                        couponUsed: true,
+                        discountAmount: true,
                         OrderItem: {
                             select: {
                                 id: true,
+                                orderId: true,
+                                productId: true,
                                 quantity: true,
                                 price: true,
+                                codes: true,
+                                createdAt: true,
+                                updatedAt: true,
                                 product: {
                                     select: {
                                         id: true,
                                         name: true,
+                                        description: true,
+                                        price: true,
                                         image: true,
+                                        slug: true,
+                                        additionalImages: true,
+                                        category: true,
+                                        rating: true,
+                                        badge: true,
+                                        features: true,
+                                        order: true,
+                                        stripeProductName: true,
+                                        slashPrice: true,
+                                        hideHomePage: true,
+                                        hideProductPage: true,
+                                        isFeatured: true,
+                                        stripeId: true,
+                                        createdAt: true,
+                                        updatedAt: true,
                                     }
-                                },
-                                // Explicitly exclude codes field
-                            }
-                        },
-                    }
-                });
-                
-                return {
-                    ...orderWithBasicItems,
-                    orderId: orderWithBasicItems?.id,
-                    paymentStatus: orderWithBasicItems?.status,
-                    // Add empty codes array to each order item to maintain type consistency
-                    OrderItem: orderWithBasicItems?.OrderItem.map(item => ({
-                        ...item,
-                        codes: [] // Always empty for unpaid orders
-                    })) || [],
-                };            }            // Only return full order details with OrderItems if payment is completed AND authorized
-            const fullOrder = await prisma.order.findUnique({
-                where: { id: input.orderId },
-                select: {
-                    id: true,
-                    status: true,
-                    createdAt: true,
-                    paymentType: true,
-                    paymentFee: true,
-                    totalPrice: true,
-                    paypalNote: true,
-                    couponUsed: true,
-                    discountAmount: true,
-                    OrderItem: {
-                        select: {
-                            id: true,
-                            orderId: true,
-                            productId: true,
-                            quantity: true,
-                            price: true,
-                            codes: true,
-                            createdAt: true,
-                            updatedAt: true,
-                            product: {
-                                select: {
-                                    id: true,
-                                    name: true,
-                                    description: true,
-                                    price: true,
-                                    image: true,
-                                    slug: true,
-                                    additionalImages: true,
-                                    category: true,
-                                    rating: true,
-                                    badge: true,
-                                    features: true,
-                                    order: true,
-                                    stripeProductName: true,
-                                    slashPrice: true,
-                                    hideHomePage: true,
-                                    hideProductPage: true,
-                                    isFeatured: true,
-                                    stripeId: true,
-                                    createdAt: true,
-                                    updatedAt: true,
-                                    // Explicitly exclude stock field
                                 }
                             }
-                        }
+                        },
+                        customer: true,
                     },
-                    customer: true,
-                },
-            });
+                });
 
-            return {
-                ...fullOrder,
-                orderId: fullOrder?.id,
-                paymentStatus: fullOrder?.status,
-            };
-        }),
+                return {
+                    ...fullOrder,
+                    orderId: fullOrder?.id,
+                    paymentStatus: fullOrder?.status,
+                };
+            }),
 
     updateOrderStatus: baseProcedure
         .input(
@@ -646,22 +571,8 @@ export const checkoutRouter = createTRPCRouter({
             await prisma.order.update({
                 where: { id: order.id },
                 data: { status: OrderStatus.CANCELLED },
-            });            return { success: true, order };
-        }),
-
-    // Payment confirmation endpoint - automatically assign codes when payment is confirmed  
-    confirmPayment: baseProcedure
-        .input(z.object({ orderId: z.string() }))
-        .mutation(async ({ input }) => {
-            // Update order status to PAID
-            await prisma.order.update({
-                where: { id: input.orderId },
-                data: { status: OrderStatus.PAID },
             });
 
-            // 2) Decouple Code Assignment: Only assign codes AFTER payment confirmation
-            await assignCapeCodeToOrder(input.orderId);
-
-            return { success: true, paymentConfirmed: true };
+            return { success: true, order };
         }),
 });
