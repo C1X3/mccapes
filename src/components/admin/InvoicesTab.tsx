@@ -67,6 +67,39 @@ export default function InvoicesTab() {
   const [itemsPerPage, setItemsPerPage] = useState(15);
 
   const { data: invoices = [] } = useQuery(trpc.invoices.getAll.queryOptions());
+  const { data: currentProducts = [] } = useQuery(trpc.product.getAllWithStock.queryOptions());
+  
+  // Compute product options for the dropdown
+  const productOptions = useMemo(() => {
+    // Get all unique product names from current products
+    const currentProductNames = new Set(currentProducts.map(p => p.name));
+    
+    // Get all unique product names that have been sold
+    const allSoldProductNames = new Set<string>();
+    invoices.forEach(invoice => {
+      invoice.OrderItem?.forEach(item => {
+        if (item.product?.name) {
+          allSoldProductNames.add(item.product.name);
+        }
+      });
+    });
+    
+    // Separate current products and discontinued products
+    const activeProducts = Array.from(allSoldProductNames)
+      .filter(name => currentProductNames.has(name))
+      .sort();
+    
+    const discontinuedProducts = Array.from(allSoldProductNames)
+      .filter(name => !currentProductNames.has(name))
+      .sort();
+    
+    return {
+      activeProducts,
+      discontinuedProducts,
+      hasDiscontinued: discontinuedProducts.length > 0
+    };
+  }, [currentProducts, invoices]);
+  
   // Navigate to invoice detail page
   const navigateToInvoice = (invoiceId: string) => {
     router.push(`/admin/invoice/${invoiceId}`);
@@ -169,12 +202,23 @@ export default function InvoicesTab() {
         return false;
       })();
 
-      // 4) Product‐name filter (unchanged)
-      const matchesProduct =
-        filters.productFilter === "" ||
-        invoice.OrderItem?.some((item) =>
-          item.product.name.toLowerCase().includes(filters.productFilter.toLowerCase())
+      // 4) Product‐name filter (updated to handle "Other" option)
+      const matchesProduct = (() => {
+        if (filters.productFilter === "" || filters.productFilter === "ALL") return true;
+        
+        if (filters.productFilter === "OTHER") {
+          // Match products that are discontinued (not in current products list)
+          return invoice.OrderItem?.some((item) => {
+            const productName = item.product.name;
+            return productOptions.discontinuedProducts.includes(productName);
+          });
+        }
+        
+        // Exact match for specific product
+        return invoice.OrderItem?.some((item) =>
+          item.product.name === filters.productFilter
         );
+      })();
 
       // 5) Email filter (new)
       const matchesEmail =
@@ -298,6 +342,7 @@ export default function InvoicesTab() {
         tempPaypalNoteFilter={tempFilters.paypalNoteFilter}
         tempInvoiceIdFilter={tempFilters.invoiceIdFilter}
         tempDateProcessedFilter={tempFilters.dateProcessedFilter}
+        productOptions={productOptions}
         setTempDateProcessedFilter={setTempDateProcessedFilter}
         setTempInvoiceIdFilter={setTempInvoiceIdFilter}
         setTempStatusFilter={setTempStatusFilter}

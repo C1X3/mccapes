@@ -17,6 +17,11 @@ interface InvoiceFilterModalProps {
   tempPaypalNoteFilter: string;
   tempInvoiceIdFilter: string;
   tempDateProcessedFilter: string;
+  productOptions: {
+    activeProducts: string[];
+    discontinuedProducts: string[];
+    hasDiscontinued: boolean;
+  };
   setTempInvoiceIdFilter: (value: string) => void;
   setTempStatusFilter: (value: OrderStatus | "ALL") => void;
   setTempEmailFilter: (value: string) => void;
@@ -44,6 +49,7 @@ export default function InvoiceFilterModal({
   tempPaypalNoteFilter,
   tempInvoiceIdFilter,
   tempDateProcessedFilter,
+  productOptions,
   setTempInvoiceIdFilter,
   setTempStatusFilter,
   setTempEmailFilter,
@@ -197,15 +203,23 @@ export default function InvoiceFilterModal({
               <label htmlFor="product" className="block text-[var(--foreground)] mb-2">
                 Product Name
               </label>
-              <input
-                name="product"
-                type="text"
+              <select
                 id="product"
-                placeholder="Product Name"
                 value={tempProductFilter}
                 onChange={(e) => setTempProductFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
-              />
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                style={{ minHeight: '48px' }}
+              >
+                <option value="">All Products</option>
+                {productOptions.activeProducts.map((productName) => (
+                  <option key={productName} value={productName}>
+                    {productName}
+                  </option>
+                ))}
+                {productOptions.hasDiscontinued && (
+                  <option value="OTHER">Other/Discontinued</option>
+                )}
+              </select>
             </div>
             <div>
               <label htmlFor="paypalNote" className="block text-[var(--foreground)] mb-2">
