@@ -4,7 +4,6 @@ import axios from 'axios';
 
 export async function getTotalLitecoinBalance(): Promise<number> {
   const LITOSHI_PER_LTC = 1e8;
-  const BATCH_SIZE = 50;  // BlockCypher limit per request
 
   // 1) Fetch all unpaid LTC wallets
   const unpaid = await prisma.order.findMany({
@@ -31,18 +30,20 @@ export async function getTotalLitecoinBalance(): Promise<number> {
 
   let totalLitoshis = 0;
 
-  // 3) Batch‐fetch via BlockCypher
-  for (let i = 0; i < uniqueAddrs.length; i += BATCH_SIZE) {
-    const batch = uniqueAddrs.slice(i, i + BATCH_SIZE);
-    const path = batch.join(';');
-    const url = `https://api.blockcypher.com/v1/ltc/main/addrs/${path}/balance`;
-
-    // BlockCypher returns array if >1 addr, else object
-    const resp = await axios.get(url);
-    const data = Array.isArray(resp.data) ? resp.data : [resp.data];
-
-    for (const addrInfo of data) {
-      totalLitoshis += addrInfo.final_balance;
+  // 3) Fetch balances via SoChain API (FREE, generous rate limits)
+  for (const address of uniqueAddrs) {
+    try {
+      const url = `https://sochain.com/api/v2/get_address_balance/LTC/${address}`;
+      const resp = await axios.get(url);
+      
+      if (resp.data.status === 'success') {
+        // SoChain returns balance as string in LTC, convert to litoshis
+        const balanceLTC = parseFloat(resp.data.data.confirmed_balance);
+        totalLitoshis += Math.round(balanceLTC * LITOSHI_PER_LTC);
+      }
+    } catch (error) {
+      console.error(`Error fetching Litecoin balance for ${address}:`, error);
+      // Continue to next address instead of failing completely
     }
   }
 

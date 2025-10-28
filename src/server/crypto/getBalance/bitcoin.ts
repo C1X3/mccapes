@@ -4,7 +4,6 @@ import axios from 'axios';
 
 export async function getTotalBitcoinBalance(): Promise<number> {
     const SATOSHIS_PER_BTC = 1e8;
-    const BATCH_SIZE = 50;   // BlockCypher allows up to ~50 addrs per request
 
     // 1) Pull all unpaid BTC‐chain wallets
     const unpaid = await prisma.order.findMany({
@@ -31,19 +30,22 @@ export async function getTotalBitcoinBalance(): Promise<number> {
 
     let totalSats = 0;
 
-    // 3) Batch‐fetch via BlockCypher
-    for (let i = 0; i < uniqueAddrs.length; i += BATCH_SIZE) {
-        const batch = uniqueAddrs.slice(i, i + BATCH_SIZE);
-        const path = batch.join(';');
-        const url = `https://api.blockcypher.com/v1/btc/main/addrs/${path}/balance`;
-
-        // returns either a single object (1 addr) or an array (multi-addr)
-        const resp = await axios.get(url);
-        const data = Array.isArray(resp.data) ? resp.data : [resp.data];
-
-        // final_balance is in satoshis
-        for (const addrInfo of data) {
-            totalSats += addrInfo.final_balance;
+    // 3) Fetch balances via Blockstream API (FREE, no rate limits!)
+    // Must fetch individually, but no rate limit issues
+    for (const address of uniqueAddrs) {
+        try {
+            const url = `https://blockstream.info/api/address/${address}`;
+            const resp = await axios.get(url);
+            
+            // Blockstream returns: { chain_stats: { funded_txo_sum, spent_txo_sum }, ... }
+            const funded = resp.data.chain_stats.funded_txo_sum || 0;
+            const spent = resp.data.chain_stats.spent_txo_sum || 0;
+            const balance = funded - spent;
+            
+            totalSats += balance;
+        } catch (error) {
+            console.error(`Error fetching Bitcoin balance for ${address}:`, error);
+            // Continue to next address instead of failing completely
         }
     }
 

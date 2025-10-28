@@ -4,18 +4,6 @@ import axios from 'axios';
 import { formatEther } from 'ethers';
 
 export async function getTotalEthereumBalance(): Promise<number> {
-    const BLOCKCYPHER_TOKEN = process.env.BLOCKCYPHER_TOKEN!;
-    const BLOCKCYPHER_BASE_URL = 'https://api.blockcypher.com/v1/eth/main/addrs';
-    const ADDRS_PER_REQUEST = 20;
-
-    function chunkArray<T>(arr: T[], size: number): T[][] {
-        const chunks: T[][] = [];
-        for (let i = 0; i < arr.length; i += size) {
-            chunks.push(arr.slice(i, i + size));
-        }
-        return chunks;
-    }
-
     const unpaid = await prisma.order.findMany({
         where: {
             status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
@@ -38,18 +26,28 @@ export async function getTotalEthereumBalance(): Promise<number> {
     const allAddrs = unpaid.flatMap(o => o.Wallet.map(w => w.address));
     const uniqueAddrs = Array.from(new Set(allAddrs));
 
-    // 3) Batch-fetch via BlockCypher and sum using BigInt
+    // 3) Fetch balances via public Ethereum RPC (FREE, no rate limits on public nodes)
     let totalWei = BigInt(0);
-    const batches = chunkArray(uniqueAddrs, ADDRS_PER_REQUEST);
 
-    for (const batch of batches) {
-        const path = batch.join(';');
-        const url = `${BLOCKCYPHER_BASE_URL}/${path}/balance?token=${BLOCKCYPHER_TOKEN}`;
-        const resp = await axios.get(url);
-        const data = Array.isArray(resp.data) ? resp.data : [resp.data];
+    for (const address of uniqueAddrs) {
+        try {
+            // Using Cloudflare's public Ethereum node (no auth required, generous limits)
+            const url = 'https://cloudflare-eth.com';
+            const resp = await axios.post(url, {
+                jsonrpc: '2.0',
+                method: 'eth_getBalance',
+                params: [address, 'latest'],
+                id: 1
+            });
 
-        for (const addrInfo of data) {
-            totalWei = totalWei + BigInt(addrInfo.final_balance);
+            if (resp.data.result) {
+                // Result is hex string, convert to BigInt
+                const balance = BigInt(resp.data.result);
+                totalWei += balance;
+            }
+        } catch (error) {
+            console.error(`Error fetching Ethereum balance for ${address}:`, error);
+            // Continue to next address instead of failing completely
         }
     }
 
