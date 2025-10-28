@@ -30,11 +30,14 @@ export async function getTotalLitecoinBalance(): Promise<number> {
 
   let totalLitoshis = 0;
 
-  // 3) Fetch balances via SoChain API (FREE, generous rate limits)
+  // 3) Fetch balances with timeout and fallback to BlockCypher if SoChain fails
   for (const address of uniqueAddrs) {
     try {
+      // Try SoChain first (free, no rate limits)
       const url = `https://sochain.com/api/v2/get_address_balance/LTC/${address}`;
-      const resp = await axios.get(url);
+      const resp = await axios.get(url, {
+        timeout: 3000 // 3 second timeout
+      });
       
       if (resp.data.status === 'success') {
         // SoChain returns balance as string in LTC, convert to litoshis
@@ -42,8 +45,17 @@ export async function getTotalLitecoinBalance(): Promise<number> {
         totalLitoshis += Math.round(balanceLTC * LITOSHI_PER_LTC);
       }
     } catch (error) {
-      console.error(`Error fetching Litecoin balance for ${address}:`, error);
-      // Continue to next address instead of failing completely
+      // Fallback to BlockCypher if SoChain fails
+      try {
+        const bcUrl = `https://api.blockcypher.com/v1/ltc/main/addrs/${address}/balance`;
+        const bcResp = await axios.get(bcUrl, {
+          timeout: 3000
+        });
+        totalLitoshis += bcResp.data.final_balance || 0;
+      } catch (fallbackError) {
+        console.error(`Error fetching Litecoin balance for ${address} (both APIs failed):`, error);
+        // Continue to next address instead of failing completely
+      }
     }
   }
 

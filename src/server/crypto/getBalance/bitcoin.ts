@@ -35,7 +35,9 @@ export async function getTotalBitcoinBalance(): Promise<number> {
     for (const address of uniqueAddrs) {
         try {
             const url = `https://blockstream.info/api/address/${address}`;
-            const resp = await axios.get(url);
+            const resp = await axios.get(url, {
+                timeout: 3000 // 3 second timeout
+            });
             
             // Blockstream returns: { chain_stats: { funded_txo_sum, spent_txo_sum }, ... }
             const funded = resp.data.chain_stats.funded_txo_sum || 0;

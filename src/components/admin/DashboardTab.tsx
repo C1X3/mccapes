@@ -70,9 +70,12 @@ export default function DashboardTab() {
   // Check authentication first
   const authQuery = useQuery(trpc.auth.isAuthenticated.queryOptions());
 
+  // Load crypto balances SEPARATELY (slow, don't block other data)
   const cryptoBalances = useQuery({
     ...trpc.crypto.getCryptoBalance.queryOptions(),
     enabled: authQuery.data === true,
+    staleTime: 30000, // Cache for 30 seconds
+    retry: 1, // Only retry once if it fails
   });
 
   const revenueData = useQuery({
@@ -776,7 +779,10 @@ export default function DashboardTab() {
                 </div>
               </div>
               <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC
+                {formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC{" "}
+                <span className="text-base font-normal text-gray-500">
+                  (${(cryptoBalances.data?.usdValues?.bitcoin || 0).toFixed(2)})
+                </span>
               </p>
               <button
                 onClick={() => handleOpenWithdraw(CryptoType.BITCOIN)}
@@ -795,7 +801,10 @@ export default function DashboardTab() {
                 </div>
               </div>
               <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH
+                {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH{" "}
+                <span className="text-base font-normal text-gray-500">
+                  (${(cryptoBalances.data?.usdValues?.ethereum || 0).toFixed(2)})
+                </span>
               </p>
               <button
                 onClick={() => handleOpenWithdraw(CryptoType.ETHEREUM)}
@@ -814,7 +823,10 @@ export default function DashboardTab() {
                 </div>
               </div>
               <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC
+                {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC{" "}
+                <span className="text-base font-normal text-gray-500">
+                  (${(cryptoBalances.data?.usdValues?.litecoin || 0).toFixed(2)})
+                </span>
               </p>
               <button
                 onClick={() => handleOpenWithdraw(CryptoType.LITECOIN)}
@@ -833,7 +845,10 @@ export default function DashboardTab() {
                 </div>
               </div>
               <p className="text-2xl font-bold mb-3">
-                {formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL
+                {formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL{" "}
+                <span className="text-base font-normal text-gray-500">
+                  (${(cryptoBalances.data?.usdValues?.solana || 0).toFixed(2)})
+                </span>
               </p>
               <button
                 onClick={() => handleOpenWithdraw(CryptoType.SOLANA)}

@@ -2,7 +2,7 @@
 
 import type { QueryClient } from "@tanstack/react-query";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCClient, httpBatchLink, httpLink, splitLink } from "@trpc/client";
 import { createTRPCContext } from "@trpc/tanstack-react-query";
 import { useState } from "react";
 import SuperJSON from "superjson";
@@ -46,9 +46,19 @@ export function TRPCReactProvider(
   const [trpcClient] = useState(() =>
     createTRPCClient<AppRouter>({
       links: [
-        httpBatchLink({
-          transformer: SuperJSON,
-          url: getUrl(),
+        splitLink({
+          // Separate crypto.getCryptoBalance - don't batch it with other queries
+          condition: (op) => op.path === 'crypto.getCryptoBalance',
+          // Crypto queries go through httpLink (no batching)
+          true: httpLink({
+            transformer: SuperJSON,
+            url: getUrl(),
+          }),
+          // All other queries use batch link (faster)
+          false: httpBatchLink({
+            transformer: SuperJSON,
+            url: getUrl(),
+          }),
         }),
       ],
     })

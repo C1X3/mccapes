@@ -38,6 +38,8 @@ export async function getTotalEthereumBalance(): Promise<number> {
                 method: 'eth_getBalance',
                 params: [address, 'latest'],
                 id: 1
+            }, {
+                timeout: 3000 // 3 second timeout
             });
 
             if (resp.data.result) {
