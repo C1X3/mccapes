@@ -25,12 +25,18 @@ export async function sendSolanaBalance(destination: string): Promise<void> {
             },
         },
         select: {
+            id: true,
             Wallet: {
                 where: { chain: CryptoType.SOLANA, withdrawn: false },
                 select: { address: true, depositIndex: true },
             },
         },
     });
+
+    if (unpaid.length === 0) {
+        console.log('No unswept SOL wallets found.');
+        return;
+    }
 
     // 2) Flatten & dedupe derive-indexes
     const indexes = Array.from(
@@ -78,13 +84,15 @@ export async function sendSolanaBalance(destination: string): Promise<void> {
         await connection.confirmTransaction(sig, 'confirmed');
 
         console.log(
-            `Sent ${(lamportsToSend / LAMPORTS_PER_SOL).toFixed(6)} SOL from index ${idx} — tx ${sig}`
+            `Sent ${(lamportsToSend / LAMPORTS_PER_SOL).toFixed(6)} SOL from index ${idx.index} — tx ${sig}`
         );
 
         // mark withdrawn in DB
         await prisma.wallet.updateMany({
             where: { chain: CryptoType.SOLANA, address: idx.address },
-            data: { withdrawn: true }
+            data: { withdrawn: true, txHash: sig }
         });
     }
+
+    console.log('All addresses marked as swept.');
 }

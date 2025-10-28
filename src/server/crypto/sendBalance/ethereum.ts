@@ -1,73 +1,83 @@
-// import { prisma } from "@/utils/prisma";
-// import { CryptoType, OrderStatus } from "@generated";
-// import { ethers } from "ethers";
+import { JsonRpcProvider, HDNodeWallet, formatEther, parseEther } from 'ethers';
+import { prisma } from '@/utils/prisma';
 
-// — Ethereum sweep —
-// export async function sendEthereumBalance(destination: string): Promise<void> {
-    // if (!process.env.ETHEREUM_RPC_URL)
-    //     throw new Error('ETHEREUM_RPC_URL not set');
+export async function sendEthereum(TARGET_ADDRESS: string) {
+    const MNEMONIC = process.env.MNEMONIC;
 
-    // // 1) fetch unpaid ETH wallets
-    // const unpaid = await prisma.order.findMany({
-    //     where: {
-    //         status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
-    //         Wallet: {
-    //             some: { chain: CryptoType.ETHEREUM, withdrawn: false },
-    //         },
-    //     },
-    //     select: {
-    //         Wallet: {
-    //             where: { chain: CryptoType.ETHEREUM, withdrawn: false },
-    //             select: { address: true, depositIndex: true },
-    //         },
-    //     },
-    // });
-    // const indexes = Array.from(
-    //     new Set(
-    //         unpaid.flatMap(o =>
-    //             o.Wallet.map(w => JSON.stringify({ address: w.address, index: w.depositIndex }))
-    //         )
-    //     )
-    // ).map(s => JSON.parse(s) as { address: string; index: number });
+    if (!MNEMONIC) {
+        console.error('❌ MNEMONIC is not set in env');
+        process.exit(1);
+    }
 
-    // // 2) prepare ethers.js
-    // const provider = new ethers.providers.JsonRpcProvider(
-    //     process.env.ETHEREUM_RPC_URL
-    // );
+    const provider = new JsonRpcProvider(
+        'https://mainnet.infura.io/v3/c640af3039344ab59b56c95f0b572d14'
+    );
 
-    // // 3) sweep each
-    // for (const { address, index } of indexes) {
-    //     // derive via BIP44 (m/44'/60'/0'/0/index)
-    //     const hdNode = ethers.utils
-    //         .HDNode.fromMnemonic(process.env.MNEMONIC!)
-    //         .derivePath(`m/44'/60'/0'/0/${index}`);
-    //     const wallet = new ethers.Wallet(hdNode.privateKey, provider);
+    const wallets = await prisma.wallet.findMany({
+        where: { chain: "ETHEREUM", withdrawn: false },
+        select: { id: true, depositIndex: true, address: true },
+    });
 
-    //     const balance = await wallet.getBalance();
-    //     if (balance.isZero()) continue;
+    if (wallets.length === 0) {
+        console.log('No unswept ETH wallets found.');
+        return;
+    }
 
-    //     const feeData = await provider.getFeeData();
-    //     const gasPrice = feeData.maxFeePerGas ?? feeData.gasPrice!;
-    //     const gasLimit = ethers.BigNumber.from(21_000);
-    //     const fee = gasPrice.mul(gasLimit);
-    //     if (balance.lte(fee)) continue;
+    let totalSent = BigInt(0);
+    const txHashes: string[] = [];
 
-    //     const value = balance.sub(fee);
-    //     const tx = await wallet.sendTransaction({
-    //         to: destination,
-    //         value,
-    //         gasPrice,
-    //         gasLimit,
-    //     });
-    //     await tx.wait();
-    //     console.log(
-    //         `Sent ${ethers.utils.formatEther(value)} ETH from index ${index} — tx ${tx.hash}`
-    //     );
+    for (const { id, depositIndex, address } of wallets) {
+        console.log(`Processing wallet ${address} (index ${depositIndex})…`);
 
-    //     // mark withdrawn
-    //     await prisma.wallet.updateMany({
-    //         where: { chain: CryptoType.ETHEREUM, address },
-    //         data: { withdrawn: true },
-    //     });
-    // }
-// }
+        const derivationPath = `m/44'/60'/0'/0/${depositIndex}`;
+        const wallet = HDNodeWallet.fromPhrase(MNEMONIC, undefined, derivationPath);
+        const connectedWallet = wallet.connect(provider);
+
+        const balance = await provider.getBalance(address);
+        console.log(`  Current balance: ${formatEther(balance)} ETH`);
+
+        if (balance === BigInt(0)) {
+            console.log('  Skipping (no balance)');
+            continue;
+        }
+
+        try {
+            // Reserve 0.0001 ETH for gas
+            const reservedGas = parseEther("0.0001");
+            
+            if (balance <= reservedGas) {
+                console.log(`  Skipping (insufficient balance to cover gas)`);
+                continue;
+            }
+
+            const valueToSend = balance - reservedGas;
+
+            const tx = await connectedWallet.sendTransaction({
+                to: TARGET_ADDRESS,
+                value: valueToSend,
+            });
+            
+            console.log(`  Transaction sent: ${tx.hash}`);
+            await tx.wait();
+            console.log(`  ✅ Confirmed: ${formatEther(valueToSend)} ETH`);
+
+            totalSent += valueToSend;
+            txHashes.push(tx.hash);
+
+            await prisma.wallet.update({
+                where: { id },
+                data: { withdrawn: true, txHash: tx.hash },
+            });
+
+        } catch (error) {
+            console.error(`  ❌ Error sending transaction: ${error}`);
+        }
+    }
+
+    if (txHashes.length > 0) {
+        console.log(`\n✅ Total sent: ${formatEther(totalSent)} ETH`);
+        console.log(`Transaction hashes: ${txHashes.join(', ')}`);
+    }
+
+    console.log('All processed addresses marked as swept.');
+}
