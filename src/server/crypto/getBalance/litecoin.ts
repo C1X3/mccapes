@@ -52,7 +52,7 @@ export async function getTotalLitecoinBalance(): Promise<number> {
           timeout: 3000
         });
         totalLitoshis += bcResp.data.final_balance || 0;
-      } catch (fallbackError) {
+      } catch {
         console.error(`Error fetching Litecoin balance for ${address} (both APIs failed):`, error);
         // Continue to next address instead of failing completely
       }
