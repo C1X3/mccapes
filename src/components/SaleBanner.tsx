@@ -31,6 +31,7 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-[60] text-white overflow-hidden"
     >
+      <div className="absolute inset-0 bg-white" />
       <div
         className="absolute inset-0 opacity-70"
         style={{
