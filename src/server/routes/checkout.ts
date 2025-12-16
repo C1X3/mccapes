@@ -8,8 +8,10 @@ import { createCheckoutSession as createPaypalCheckout } from '../providers/payp
 import { createWalletDetails as createCryptoCheckout } from '../providers/crypto';
 import { WalletDetails } from '../providers/types';
 import { sendOrderCompleteEmail } from '@/utils/email';
-import { headers } from 'next/headers';
+import { headers, cookies } from 'next/headers';
 import { getPaymentFee } from '@/utils/fees';
+
+const AFFILIATE_COOKIE_NAME = 'mccapes_affiliate';
 
 export const checkoutRouter = createTRPCRouter({
     processPayment: baseProcedure
@@ -39,8 +41,21 @@ export const checkoutRouter = createTRPCRouter({
         .mutation(async ({ input }) => {
             try {
                 const reqHeaders = await headers();
+                const reqCookies = await cookies();
                 const ipAddress = reqHeaders.get('CF-Connecting-IP') || reqHeaders.get('X-Forwarded-For') || reqHeaders.get('X-Real-IP');
                 const useragent = reqHeaders.get('User-Agent');
+                
+                const affiliateCookie = reqCookies.get(AFFILIATE_COOKIE_NAME);
+                let affiliateId: string | null = null;
+                
+                if (affiliateCookie?.value) {
+                    const affiliate = await prisma.affiliate.findFirst({
+                        where: { code: affiliateCookie.value.toLowerCase(), active: true },
+                    });
+                    if (affiliate) {
+                        affiliateId = affiliate.id;
+                    }
+                }
 
                 let totalPrice = 0;
 
@@ -140,6 +155,7 @@ export const checkoutRouter = createTRPCRouter({
                                 discord: input.customerInfo.discord,
                                 ipAddress,
                                 useragent,
+                                affiliateId,
                             }
                         },
                         OrderItem: {

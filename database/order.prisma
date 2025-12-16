@@ -39,6 +39,9 @@ model CustomerInformation {
 
   discord String?
   order   Order?
+
+  affiliateId String?
+  affiliate   Affiliate? @relation(fields: [affiliateId], references: [id], onDelete: SetNull)
 }
 
 model Order {

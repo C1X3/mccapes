@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaNewspaper } from "react-icons/fa";
+import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaNewspaper, FaUsers } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import { useRouter } from "next/navigation";
 
@@ -33,6 +33,7 @@ export default function AdminLayout({
     { id: "articles", label: "Articles", icon: <FaNewspaper /> },
     { id: "invoices", label: "Invoices", icon: <FaReceipt /> },
     { id: "coupons", label: "Coupons", icon: <FaTicketAlt /> },
+    { id: "affiliates", label: "Affiliates", icon: <FaUsers /> },
   ];
 
   const handleTabClick = (tabId: string) => {

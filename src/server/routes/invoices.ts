@@ -9,7 +9,11 @@ export const invoicesRouter = createTRPCRouter({
     return await prisma.order.findMany({
       orderBy: { createdAt: "desc" },
       include: {
-        customer: true,
+        customer: {
+          include: {
+            affiliate: true,
+          },
+        },
         OrderItem: {
           include: {
             product: true,
@@ -26,7 +30,11 @@ export const invoicesRouter = createTRPCRouter({
       const invoice = await prisma.order.findUnique({
         where: { id: input.orderId },
         include: {
-          customer: true,
+          customer: {
+            include: {
+              affiliate: true,
+            },
+          },
           OrderItem: {
             include: {
               product: true,

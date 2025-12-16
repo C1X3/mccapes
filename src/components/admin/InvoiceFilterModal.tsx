@@ -10,7 +10,7 @@ interface InvoiceFilterModalProps {
   tempStatusFilter: OrderStatus | "ALL";
   tempEmailFilter: string;
   tempProductFilter: string;
-  tempCouponFilter: string;
+  tempAffiliateFilter: string;
   tempPaymentFilter: PaymentFilterType;
   tempDiscordFilter: string;
   tempCodeFilter: string;
@@ -26,7 +26,7 @@ interface InvoiceFilterModalProps {
   setTempStatusFilter: (value: OrderStatus | "ALL") => void;
   setTempEmailFilter: (value: string) => void;
   setTempProductFilter: (value: string) => void;
-  setTempCouponFilter: (value: string) => void;
+  setTempAffiliateFilter: (value: string) => void;
   setTempPaymentFilter: (value: PaymentFilterType) => void;
   setTempDiscordFilter: (value: string) => void;
   setTempCodeFilter: (value: string) => void;
@@ -42,7 +42,7 @@ export default function InvoiceFilterModal({
   tempStatusFilter,
   tempEmailFilter,
   tempProductFilter,
-  tempCouponFilter,
+  tempAffiliateFilter,
   tempPaymentFilter,
   tempDiscordFilter,
   tempCodeFilter,
@@ -54,7 +54,7 @@ export default function InvoiceFilterModal({
   setTempStatusFilter,
   setTempEmailFilter,
   setTempProductFilter,
-  setTempCouponFilter,
+  setTempAffiliateFilter,
   setTempPaymentFilter,
   setTempDiscordFilter,
   setTempCodeFilter,
@@ -236,18 +236,18 @@ export default function InvoiceFilterModal({
               />
             </div>
 
-            {/* Row 5: Coupon Code, Deliverable Code */}
+            {/* Row 5: Affiliate Code, Deliverable Code */}
             <div>
-              <label htmlFor="coupon" className="block text-[var(--foreground)] mb-2">
-                Coupon Code
+              <label htmlFor="affiliate" className="block text-[var(--foreground)] mb-2">
+                Affiliate Code
               </label>
               <input
-                name="coupon"
+                name="affiliate"
                 type="text"
-                id="coupon"
-                placeholder="Coupon Code"
-                value={tempCouponFilter}
-                onChange={(e) => setTempCouponFilter(e.target.value)}
+                id="affiliate"
+                placeholder="Affiliate Code"
+                value={tempAffiliateFilter}
+                onChange={(e) => setTempAffiliateFilter(e.target.value)}
                 className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
               />
             </div>

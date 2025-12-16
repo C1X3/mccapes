@@ -10,7 +10,7 @@ export interface InvoiceFilters {
   productFilter: string;
   emailFilter: string;
   discordFilter: string;
-  couponFilter: string;
+  affiliateFilter: string;
   codeFilter: string;
   paypalNoteFilter: string;
   invoiceIdFilter: string;
@@ -24,7 +24,7 @@ export const defaultFilters: InvoiceFilters = {
   productFilter: "",
   emailFilter: "",
   discordFilter: "",
-  couponFilter: "",
+  affiliateFilter: "",
   codeFilter: "",
   paypalNoteFilter: "",
   invoiceIdFilter: "",

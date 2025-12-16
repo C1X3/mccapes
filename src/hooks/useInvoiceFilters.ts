@@ -24,8 +24,8 @@ export const useInvoiceFilters = () => {
   const setTempDiscordFilter = (value: InvoiceFilters["discordFilter"]) =>
     setTempFilters(prev => ({ ...prev, discordFilter: value }));
   
-  const setTempCouponFilter = (value: InvoiceFilters["couponFilter"]) =>
-    setTempFilters(prev => ({ ...prev, couponFilter: value }));
+  const setTempAffiliateFilter = (value: InvoiceFilters["affiliateFilter"]) =>
+    setTempFilters(prev => ({ ...prev, affiliateFilter: value }));
   
   const setTempCodeFilter = (value: InvoiceFilters["codeFilter"]) =>
     setTempFilters(prev => ({ ...prev, codeFilter: value }));
@@ -70,7 +70,7 @@ export const useInvoiceFilters = () => {
     setTempProductFilter,
     setTempEmailFilter,
     setTempDiscordFilter,
-    setTempCouponFilter,
+    setTempAffiliateFilter,
     setTempCodeFilter,
     setTempPaypalNoteFilter,
     setTempInvoiceIdFilter,

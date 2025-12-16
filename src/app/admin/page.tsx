@@ -5,6 +5,7 @@ import ProductsTab from "@/components/admin/ProductsTab";
 import ArticlesTab from "@/components/admin/ArticlesTab";
 import InvoicesTab from "@/components/admin/InvoicesTab";
 import CouponsTab from "@/components/admin/CouponsTab";
+import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import AdminWrapper from "@/components/AdminWrapper";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
@@ -42,6 +43,8 @@ export default function AdminPage() {
                 return <InvoicesTab />;
             case "coupons":
                 return <CouponsTab />;
+            case "affiliates":
+                return <AffiliatesTab />;
             default:
                 return <DashboardTab />;
         }

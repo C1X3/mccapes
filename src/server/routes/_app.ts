@@ -8,6 +8,7 @@ import { productRouter } from "./product";
 import { invoicesRouter } from "./invoices";
 import { articleRouter } from "./article";
 import { cryptoRouter } from "./crypto";
+import { affiliateRouter } from "./affiliate";
 
 export const appRouter = createTRPCRouter({
   product: productRouter,
@@ -18,6 +19,7 @@ export const appRouter = createTRPCRouter({
   invoices: invoicesRouter,
   article: articleRouter,
   crypto: cryptoRouter,
+  affiliate: affiliateRouter,
 });
 
 export type AppRouter = typeof appRouter;

@@ -375,6 +375,15 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <span className="text-gray-600">Discord Username</span>
               <span>{invoice.customer?.discord || "Not provided"}</span>
             </div>
+
+            {invoice.customer?.affiliate && (
+              <div className="flex justify-between pb-2">
+                <span className="text-gray-600">Affiliate</span>
+                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                  {invoice.customer.affiliate.name} ({invoice.customer.affiliate.code})
+                </span>
+              </div>
+            )}
           </div>
         </div>
       </div>

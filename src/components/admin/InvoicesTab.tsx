@@ -23,6 +23,10 @@ type InvoiceWithRelations = {
     name: string;
     email: string;
     discord?: string | null;
+    affiliate?: {
+      code: string;
+      name: string;
+    } | null;
   } | null;
   OrderItem: Array<{
     product: {
@@ -34,6 +38,7 @@ type InvoiceWithRelations = {
     chain: CryptoType;
   }>;
   couponUsed?: string | null;
+  paypalNote?: string | null;
 };
 
 export default function InvoicesTab() {
@@ -49,7 +54,7 @@ export default function InvoicesTab() {
     setTempProductFilter,
     setTempEmailFilter,
     setTempDiscordFilter,
-    setTempCouponFilter,
+    setTempAffiliateFilter,
     setTempCodeFilter,
     setTempPaypalNoteFilter,
     setTempInvoiceIdFilter,
@@ -146,7 +151,7 @@ export default function InvoicesTab() {
   // Filter invoices based on all filters
   const filteredInvoices = useMemo(() => {
     return invoices.filter((invoice) => {
-      // 1) Search‐term filter (enhanced with crypto search)
+      // 1) Search‐term filter
       const matchesSearch =
         searchTerm === "" ||
         (invoice.id && invoice.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
@@ -156,6 +161,7 @@ export default function InvoicesTab() {
         (invoice.customer?.discord && invoice.customer.discord.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (invoice.paymentType && invoice.paymentType.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (invoice.couponUsed && invoice.couponUsed.toLowerCase().includes(searchTerm.toLowerCase())) ||
+        (invoice.paypalNote && invoice.paypalNote.toLowerCase().includes(searchTerm.toLowerCase())) ||
         matchesCryptoSearch(invoice, searchTerm) ||
         (invoice.OrderItem &&
           invoice.OrderItem.some((item) =>
@@ -228,9 +234,11 @@ export default function InvoicesTab() {
       const matchesDiscord =
         filters.discordFilter === "" || (invoice.customer?.discord && invoice.customer.discord.toLowerCase().includes(filters.discordFilter.toLowerCase()));
 
-      // 7) Coupon filter (new)
-      const matchesCoupon =
-        filters.couponFilter === "" || invoice.couponUsed?.toLowerCase().includes(filters.couponFilter.toLowerCase());
+      // 7) Affiliate filter
+      const matchesAffiliate =
+        filters.affiliateFilter === "" || 
+        (invoice.customer?.affiliate?.code.toLowerCase().includes(filters.affiliateFilter.toLowerCase()) ||
+         invoice.customer?.affiliate?.name.toLowerCase().includes(filters.affiliateFilter.toLowerCase()));
 
       // 8) Code filter (new)
       const matchesCode =
@@ -257,7 +265,7 @@ export default function InvoicesTab() {
         (invoice.updatedAt && new Date(invoice.updatedAt).toISOString().split('T')[0] === filters.dateProcessedFilter);
 
       return matchesSearch && matchesStatus && matchesPayment && matchesProduct && 
-             matchesEmail && matchesDiscord && matchesCoupon && matchesCode && matchesPaypalNote && matchesInvoiceId && matchesDateProcessed;
+             matchesEmail && matchesDiscord && matchesAffiliate && matchesCode && matchesPaypalNote && matchesInvoiceId && matchesDateProcessed;
     });
   }, [invoices, searchTerm, filters]);
 
@@ -335,7 +343,7 @@ export default function InvoicesTab() {
         tempStatusFilter={tempFilters.statusFilter}
         tempEmailFilter={tempFilters.emailFilter}
         tempProductFilter={tempFilters.productFilter}
-        tempCouponFilter={tempFilters.couponFilter}
+        tempAffiliateFilter={tempFilters.affiliateFilter}
         tempPaymentFilter={tempFilters.paymentFilter}
         tempDiscordFilter={tempFilters.discordFilter}
         tempCodeFilter={tempFilters.codeFilter}
@@ -348,7 +356,7 @@ export default function InvoicesTab() {
         setTempStatusFilter={setTempStatusFilter}
         setTempEmailFilter={setTempEmailFilter}
         setTempProductFilter={setTempProductFilter}
-        setTempCouponFilter={setTempCouponFilter}
+        setTempAffiliateFilter={setTempAffiliateFilter}
         setTempPaymentFilter={setTempPaymentFilter}
         setTempDiscordFilter={setTempDiscordFilter}
         setTempCodeFilter={setTempCodeFilter}
