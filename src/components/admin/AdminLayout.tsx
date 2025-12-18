@@ -104,16 +104,14 @@ export default function AdminLayout({
             <button
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
-              className={`flex flex-col items-center gap-1 px-3 py-2 rounded-lg transition-colors min-w-0 flex-1 ${
+              className={`flex items-center justify-center px-3 py-2 rounded-lg transition-colors min-w-0 flex-1 ${
+              
                 currentTab === tab.id
                   ? "text-[var(--primary)]"
                   : "text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--foreground)]"
               }`}
             >
-              <span className="text-lg">{tab.icon}</span>
-              <span className="text-xs font-medium truncate w-full text-center">
-                {tab.id === "dashboard" ? "Dash" : tab.label}
-              </span>
+              <span className="text-2xl">{tab.icon}</span>
             </button>
           ))}
         </nav>
