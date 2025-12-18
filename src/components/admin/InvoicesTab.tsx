@@ -1,7 +1,7 @@
 import { useTRPC } from "@/server/client";
-import { useQuery } from "@tanstack/react-query";
-import React, { useState, useMemo } from "react";
-import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight } from "react-icons/fa";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useState, useMemo, useEffect } from "react";
+import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight, FaSpinner } from "react-icons/fa";
 import { OrderStatus, PaymentType, CryptoType } from "@generated";
 import { useRouter } from "next/navigation";
 import InvoiceFilterModal from "./InvoiceFilterModal";
@@ -31,6 +31,7 @@ type InvoiceWithRelations = {
   OrderItem: Array<{
     product: {
       name: string;
+      price?: number;
     };
     codes: string[];
   }>;
@@ -65,226 +66,85 @@ export default function InvoicesTab() {
   } = useInvoiceFilters();
 
   const [searchTerm, setSearchTerm] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showFilterModal, setShowFilterModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
 
-  const { data: invoices = [] } = useQuery(trpc.invoices.getAll.queryOptions());
+  const queryClient = useQueryClient();
+
+  // Debounce search input
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(searchTerm);
+      setCurrentPage(1);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  // Export filtered invoices function
+  const handleExportAll = async () => {
+    setIsExporting(true);
+    try {
+      const filteredInvoices = await queryClient.fetchQuery(
+        trpc.invoices.getFiltered.queryOptions({
+          search: debouncedSearch || undefined,
+          status: filters.statusFilter !== "ALL" ? filters.statusFilter : undefined,
+          paymentType: filters.paymentFilter !== "ALL" ? filters.paymentFilter : undefined,
+        })
+      );
+      exportInvoicesToCSV(filteredInvoices);
+    } catch (error) {
+      console.error('Failed to export invoices:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
+
+  // Get stats (lightweight aggregate query with filters)
+  const { data: stats } = useQuery(
+    trpc.invoices.getStats.queryOptions({
+      search: debouncedSearch || undefined,
+      status: filters.statusFilter !== "ALL" ? filters.statusFilter : undefined,
+      paymentType: filters.paymentFilter !== "ALL" ? filters.paymentFilter : undefined,
+    })
+  );
+
+  // Get paginated invoices (only fetches current page)
+  const { data: paginatedData, isLoading } = useQuery(
+    trpc.invoices.getPaginated.queryOptions({
+      page: currentPage,
+      limit: itemsPerPage,
+      search: debouncedSearch || undefined,
+      status: filters.statusFilter !== "ALL" ? filters.statusFilter : undefined,
+      paymentType: filters.paymentFilter !== "ALL" ? filters.paymentFilter : undefined,
+    })
+  );
+
   const { data: currentProducts = [] } = useQuery(trpc.product.getAllWithStock.queryOptions());
   
   // Compute product options for the dropdown
   const productOptions = useMemo(() => {
-    // Get all unique product names from current products
     const currentProductNames = new Set(currentProducts.map(p => p.name));
     
-    // Get all unique product names that have been sold
-    const allSoldProductNames = new Set<string>();
-    invoices.forEach(invoice => {
-      invoice.OrderItem?.forEach(item => {
-        if (item.product?.name) {
-          allSoldProductNames.add(item.product.name);
-        }
-      });
-    });
-    
-    // Separate current products and discontinued products
-    const activeProducts = Array.from(allSoldProductNames)
-      .filter(name => currentProductNames.has(name))
-      .sort();
-    
-    const discontinuedProducts = Array.from(allSoldProductNames)
-      .filter(name => !currentProductNames.has(name))
-      .sort();
-    
     return {
-      activeProducts,
-      discontinuedProducts,
-      hasDiscontinued: discontinuedProducts.length > 0
+      activeProducts: Array.from(currentProductNames).sort(),
+      discontinuedProducts: [] as string[],
+      hasDiscontinued: false
     };
-  }, [currentProducts, invoices]);
+  }, [currentProducts]);
   
   // Navigate to invoice detail page
   const navigateToInvoice = (invoiceId: string) => {
     router.push(`/admin/invoice/${invoiceId}`);
   };
 
-  // Helper function to check if search term matches crypto payment types
-  const matchesCryptoSearch = (invoice: InvoiceWithRelations, searchTerm: string): boolean => {
-    if (invoice.paymentType !== PaymentType.CRYPTO || !invoice.Wallet?.[0]?.chain) {
-      return false;
-    }
-
-    const lowerSearchTerm = searchTerm.toLowerCase();
-    const cryptoChain = invoice.Wallet[0].chain;
-
-    // Create mapping of search terms to crypto types
-    const cryptoMappings: Record<string, CryptoType> = {
-      // Bitcoin
-      'btc': CryptoType.BITCOIN,
-      'bitcoin': CryptoType.BITCOIN,
-      
-      // Ethereum  
-      'eth': CryptoType.ETHEREUM,
-      'ethereum': CryptoType.ETHEREUM,
-      
-      // Litecoin
-      'ltc': CryptoType.LITECOIN,
-      'litecoin': CryptoType.LITECOIN,
-      
-      // Solana
-      'sol': CryptoType.SOLANA,
-      'solana': CryptoType.SOLANA,
-    };
-
-    // Check if search term matches any crypto mapping
-    for (const [searchKey, cryptoType] of Object.entries(cryptoMappings)) {
-      if (lowerSearchTerm.includes(searchKey) && cryptoChain === cryptoType) {
-        return true;
-      }
-    }
-
-    return false;
-  };
-
-  // Filter invoices based on all filters
-  const filteredInvoices = useMemo(() => {
-    return invoices.filter((invoice) => {
-      // 1) Search‐term filter
-      const matchesSearch =
-        searchTerm === "" ||
-        (invoice.id && invoice.id.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.status && invoice.status.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.customer?.name && invoice.customer.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.customer?.email && invoice.customer.email.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.customer?.discord && invoice.customer.discord.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.paymentType && invoice.paymentType.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.couponUsed && invoice.couponUsed.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (invoice.paypalNote && invoice.paypalNote.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        matchesCryptoSearch(invoice, searchTerm) ||
-        (invoice.OrderItem &&
-          invoice.OrderItem.some((item) =>
-        (item.product?.name && item.product.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (Array.isArray(item.codes) &&
-          item.codes.some((code: string) =>
-            code && code.toLowerCase().includes(searchTerm.toLowerCase())
-          )
-        )
-          )
-        );
-
-      // 2) Status filter (updated)
-      const matchesStatus = (() => {
-        if (filters.statusFilter === "ALL") {
-          return true;
-        }
-        if (filters.statusFilter === OrderStatus.DELIVERED) {
-          // when "DELIVERED" is selected, include both PAID and DELIVERED
-          return (
-            invoice.status === OrderStatus.DELIVERED ||
-            invoice.status === OrderStatus.PAID
-          );
-        }
-        // any other status (e.g. "PENDING" or "CANCELLED") must match exactly
-        return invoice.status === filters.statusFilter;
-      })();
-
-      // 3) Payment‐method filter (updated to handle individual crypto types)
-      const matchesPayment = (() => {
-        if (filters.paymentFilter === "ALL") return true;
-        
-        // Check if filter is a PaymentType (STRIPE, PAYPAL, CRYPTO)
-        if (Object.values(PaymentType).includes(filters.paymentFilter as PaymentType)) {
-          return invoice.paymentType === filters.paymentFilter;
-        }
-        
-        // Check if filter is a specific CryptoType (BITCOIN, ETHEREUM, etc.)
-        if (Object.values(CryptoType).includes(filters.paymentFilter as CryptoType)) {
-          return invoice.paymentType === PaymentType.CRYPTO && 
-                 invoice.Wallet?.[0]?.chain === filters.paymentFilter;
-        }
-        
-        return false;
-      })();
-
-      // 4) Product‐name filter (updated to handle "Other" option)
-      const matchesProduct = (() => {
-        if (filters.productFilter === "" || filters.productFilter === "ALL") return true;
-        
-        if (filters.productFilter === "OTHER") {
-          // Match products that are discontinued (not in current products list)
-          return invoice.OrderItem?.some((item) => {
-            const productName = item.product.name;
-            return productOptions.discontinuedProducts.includes(productName);
-          });
-        }
-        
-        // Exact match for specific product
-        return invoice.OrderItem?.some((item) =>
-          item.product.name === filters.productFilter
-        );
-      })();
-
-      // 5) Email filter (new)
-      const matchesEmail =
-        filters.emailFilter === "" || invoice.customer?.email.toLowerCase().includes(filters.emailFilter.toLowerCase());
-
-      // 6) Discord filter (new)
-      const matchesDiscord =
-        filters.discordFilter === "" || (invoice.customer?.discord && invoice.customer.discord.toLowerCase().includes(filters.discordFilter.toLowerCase()));
-
-      // 7) Affiliate filter
-      const matchesAffiliate =
-        filters.affiliateFilter === "" || 
-        (invoice.customer?.affiliate?.code.toLowerCase().includes(filters.affiliateFilter.toLowerCase()) ||
-         invoice.customer?.affiliate?.name.toLowerCase().includes(filters.affiliateFilter.toLowerCase()));
-
-      // 8) Code filter (new)
-      const matchesCode =
-        filters.codeFilter === "" ||
-        (invoice.OrderItem &&
-          invoice.OrderItem.some((item) =>
-            Array.isArray(item.codes) &&
-            item.codes.some((code: string) =>
-              code && code.toLowerCase().includes(filters.codeFilter.toLowerCase())
-            )
-          )
-        );
-
-      // 9) PayPal note filter (new)
-      const matchesPaypalNote =
-        filters.paypalNoteFilter === "" || (invoice.paypalNote && invoice.paypalNote.toLowerCase().includes(filters.paypalNoteFilter.toLowerCase()));
-
-      // 10) Invoice ID filter (new)
-      const matchesInvoiceId =
-        filters.invoiceIdFilter === "" || invoice.id?.toLowerCase().includes(filters.invoiceIdFilter.toLowerCase());
-
-      // 11) Date processed filter (new)
-      const matchesDateProcessed = !filters.dateProcessedFilter || 
-        (invoice.updatedAt && new Date(invoice.updatedAt).toISOString().split('T')[0] === filters.dateProcessedFilter);
-
-      return matchesSearch && matchesStatus && matchesPayment && matchesProduct && 
-             matchesEmail && matchesDiscord && matchesAffiliate && matchesCode && matchesPaypalNote && matchesInvoiceId && matchesDateProcessed;
-    });
-  }, [invoices, searchTerm, filters]);
-
-  // Pagination logic
-  const totalItems = filteredInvoices.length;
-  const totalPages = Math.max(1, Math.ceil(totalItems / itemsPerPage));
-  
-  // Ensure current page is valid
-  const safeCurrentPage = Math.min(Math.max(1, currentPage), totalPages);
-  if (safeCurrentPage !== currentPage) {
-    setCurrentPage(safeCurrentPage);
-  }
-  
-  // Get current page's invoices
-  const currentInvoices = useMemo(() => {
-    const startIndex = (safeCurrentPage - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return filteredInvoices.slice(startIndex, endIndex);
-  }, [filteredInvoices, safeCurrentPage, itemsPerPage]);
+  const currentInvoices = paginatedData?.invoices || [];
+  const totalItems = paginatedData?.totalCount || 0;
+  const totalPages = paginatedData?.totalPages || 1;
 
   // Pagination controls
   const goToPage = (page: number) => {
@@ -298,23 +158,6 @@ export default function InvoicesTab() {
     goToPage(currentPage + 1);
   };
 
-  // Calculate stats
-  const totalSales = filteredInvoices.reduce((sum, invoice) =>
-    invoice.status === OrderStatus.PAID || invoice.status === OrderStatus.DELIVERED
-      ? sum + (invoice.totalPrice - invoice.discountAmount)
-      : sum, 0
-  );
-
-  const pendingCount = filteredInvoices.filter(
-    (invoice) => invoice.status === OrderStatus.PENDING
-  ).length;
-
-  const completedCount = filteredInvoices.filter(
-    (invoice) =>
-      invoice.status === OrderStatus.PAID ||
-      invoice.status === OrderStatus.DELIVERED
-  ).length;
-
   // Initialize the temporary filters with the current filter values
   const openFilterModal = () => {
     initializeTempFilters();
@@ -325,7 +168,6 @@ export default function InvoicesTab() {
   const handleApplyFilters = () => {
     applyFilters();
     setShowFilterModal(false);
-    // Reset to first page when applying new filters
     setCurrentPage(1);
   };
 
@@ -373,12 +215,13 @@ export default function InvoicesTab() {
         </h2>        <div className="flex gap-3 items-center flex-wrap">
           {/* Export to CSV button - hidden on mobile */}
           <button
-            onClick={() => exportInvoicesToCSV(filteredInvoices)}
-            className="hidden md:flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors"
-            title="Export to CSV"
+            onClick={handleExportAll}
+            disabled={isExporting}
+            className="hidden md:flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors disabled:opacity-50"
+            title="Export all invoices to CSV"
             >
-            <FaDownload className="size-4" />
-            Export to CSV
+            {isExporting ? <FaSpinner className="size-4 animate-spin" /> : <FaDownload className="size-4" />}
+            {isExporting ? "Exporting..." : "Export to CSV"}
             </button>
 
             <button
@@ -417,19 +260,19 @@ export default function InvoicesTab() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
             <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Sales</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{formatPrice(totalSales)}</p>
+            <p className="text-2xl font-bold text-[var(--foreground)]">{formatPrice(stats?.totalSales || 0)}</p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
             <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Invoices</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{filteredInvoices.length}</p>
+            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.totalCount || 0}</p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
             <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Pending</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{pendingCount}</p>
+            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.pendingCount || 0}</p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
             <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Completed</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{completedCount}</p>
+            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.completedCount || 0}</p>
           </div>
         </div>
       </div>
@@ -462,9 +305,21 @@ export default function InvoicesTab() {
             </tr>
           </thead>
           <tbody>
-            {currentInvoices.length === 0 ? (
+            {isLoading ? (
+              Array.from({ length: itemsPerPage }).map((_, i) => (
+                <tr key={i} className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] animate-pulse">
+                  <td className="py-4 px-2"><div className="h-6 w-20 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-24 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-32 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-16 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-20 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-40 bg-gray-200 rounded"></div></td>
+                  <td className="py-4 px-2"><div className="h-4 w-24 bg-gray-200 rounded"></div></td>
+                </tr>
+              ))
+            ) : currentInvoices.length === 0 ? (
               <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] text-center">
-                <td colSpan={8} className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                <td colSpan={7} className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                   No invoices found
                 </td>
               </tr>
@@ -492,13 +347,12 @@ export default function InvoicesTab() {
                   {/* Products */}
                   <td className="py-4 px-2 text-[var(--foreground)] max-w-[250px]">
                     {invoice.OrderItem && invoice.OrderItem.length > 0 ? (() => {
-                      const sortedItems = [...invoice.OrderItem].sort((a, b) => b.product.price - a.product.price);
-                      const mostExpensive = sortedItems[0];
-                      const extraCount = sortedItems.length - 1;
+                      const firstItem = invoice.OrderItem[0];
+                      const extraCount = invoice.OrderItem.length - 1;
 
                       return (
                         <div>
-                          {mostExpensive.product.name}
+                          {firstItem.product.name}
                           {extraCount > 0 && ` +${extraCount} more`}
                         </div>
                       );
