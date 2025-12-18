@@ -10,11 +10,13 @@ export async function POST(request: NextRequest) {
     }
     
     const affiliate = await prisma.affiliate.findFirst({
-      where: { code: code.toLowerCase(), active: true },
+      where: { 
+        code: { equals: code, mode: 'insensitive' }, 
+        active: true 
+      },
     });
     
     if (!affiliate) {
-      console.log(`Affiliate not found for code: ${code.toLowerCase()}`);
       return NextResponse.json({ error: 'Affiliate not found' }, { status: 404 });
     }
     
@@ -25,7 +27,6 @@ export async function POST(request: NextRequest) {
       },
     });
     
-    console.log(`Click tracked for affiliate: ${affiliate.name} (${affiliate.code})`);
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error('Error tracking affiliate click:', error);

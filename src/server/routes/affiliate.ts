@@ -284,8 +284,8 @@ export const affiliateRouter = createTRPCRouter({
       })
     )
     .mutation(async ({ input }) => {
-      const existingAffiliate = await prisma.affiliate.findUnique({
-        where: { code: input.code.toLowerCase() },
+      const existingAffiliate = await prisma.affiliate.findFirst({
+        where: { code: { equals: input.code, mode: 'insensitive' } },
       });
 
       if (existingAffiliate) {
@@ -323,7 +323,7 @@ export const affiliateRouter = createTRPCRouter({
       if (data.code) {
         const existingAffiliate = await prisma.affiliate.findFirst({
           where: {
-            code: data.code.toLowerCase(),
+            code: { equals: data.code, mode: 'insensitive' },
             id: { not: id },
           },
         });

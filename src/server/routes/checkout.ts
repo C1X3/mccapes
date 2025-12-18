@@ -50,7 +50,10 @@ export const checkoutRouter = createTRPCRouter({
                 
                 if (affiliateCookie?.value) {
                     const affiliate = await prisma.affiliate.findFirst({
-                        where: { code: affiliateCookie.value.toLowerCase(), active: true },
+                        where: { 
+                            code: { equals: affiliateCookie.value, mode: 'insensitive' }, 
+                            active: true 
+                        },
                     });
                     if (affiliate) {
                         affiliateId = affiliate.id;
