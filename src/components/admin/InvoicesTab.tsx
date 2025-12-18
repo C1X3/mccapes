@@ -2,7 +2,6 @@ import { useTRPC } from "@/server/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect } from "react";
 import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight, FaSpinner } from "react-icons/fa";
-import { OrderStatus, PaymentType } from "@generated";
 import { useRouter } from "next/navigation";
 import InvoiceFilterModal from "./InvoiceFilterModal";
 import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
