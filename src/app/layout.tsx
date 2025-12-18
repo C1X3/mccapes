@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { TRPCReactProvider } from "@/server/client";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { ClickTracker } from "@/components/ClickTracker";
 
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -46,6 +47,7 @@ export default function RootLayout({
         <GoogleAnalytics gaId="G-HJ43T34FHX" />
         <Toaster position="top-right" />
 
+        <ClickTracker />
         <TRPCReactProvider>
           <CartProvider>
             {children}
