@@ -74,7 +74,7 @@ export const invoicesRouter = createTRPCRouter({
       cryptoType: z.string().optional(),
     }))
     .query(async ({ input }) => {
-      const { page, limit, search, status, paymentType, cryptoType } = input;
+      const { page, limit, search, status, paymentType } = input;
       const skip = (page - 1) * limit;
 
       const where: Record<string, unknown> = {};

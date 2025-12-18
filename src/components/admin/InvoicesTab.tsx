@@ -2,7 +2,7 @@ import { useTRPC } from "@/server/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect } from "react";
 import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight, FaSpinner } from "react-icons/fa";
-import { OrderStatus, PaymentType, CryptoType } from "@generated";
+import { OrderStatus, PaymentType } from "@generated";
 import { useRouter } from "next/navigation";
 import InvoiceFilterModal from "./InvoiceFilterModal";
 import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
@@ -10,37 +10,6 @@ import { exportInvoicesToCSV } from "@/utils/csvExport";
 import { useInvoiceFilters } from "@/hooks/useInvoiceFilters";
 import { formatPrice } from "@/utils/formatting";
 import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
-
-// Type for invoice with related data
-type InvoiceWithRelations = {
-  id: string;
-  totalPrice: number;
-  paymentType: PaymentType;
-  status: OrderStatus;
-  createdAt: Date;
-  discountAmount: number;
-  customer: {
-    name: string;
-    email: string;
-    discord?: string | null;
-    affiliate?: {
-      code: string;
-      name: string;
-    } | null;
-  } | null;
-  OrderItem: Array<{
-    product: {
-      name: string;
-      price?: number;
-    };
-    codes: string[];
-  }>;
-  Wallet?: Array<{
-    chain: CryptoType;
-  }>;
-  couponUsed?: string | null;
-  paypalNote?: string | null;
-};
 
 export default function InvoicesTab() {
   const trpc = useTRPC();
