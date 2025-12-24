@@ -4,7 +4,6 @@ import { CartProvider } from "@/context/CartContext";
 import { TRPCReactProvider } from "@/server/client";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import { ClickTracker } from "@/components/ClickTracker";
-import ChristmasSaleModal from "@/components/ChristmasSaleModal";
 
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -49,7 +48,6 @@ export default function RootLayout({
         <Toaster position="top-right" />
 
         <ClickTracker />
-        <ChristmasSaleModal />
         <TRPCReactProvider>
           <CartProvider>
             {children}

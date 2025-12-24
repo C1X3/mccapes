@@ -2,6 +2,7 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar";
+import ChristmasSaleModal from "@/components/ChristmasSaleModal";
 import { useTRPC } from "@/server/client";
 import ArticleSlider from "@/views/homepage/ArticleSlider";
 import HeroSection from "@/views/homepage/HeroSection";
@@ -17,6 +18,7 @@ const HomePage = () => {
 
   return (
     <div className="min-h-screen bg-[var(--background)]">
+      <ChristmasSaleModal />
       {/* 1. Header with clean, light design */}
       <header className="py-8 flex items-center justify-center relative flex-col">
         <Navbar />
