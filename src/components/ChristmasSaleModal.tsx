@@ -104,7 +104,7 @@ export default function ChristmasSaleModal() {
 
           <div className="space-y-4">
             <h2 className="text-4xl font-bold text-red-600 drop-shadow-lg">
-              Christmas Eve Sale
+              Christmas Sale
             </h2>
 
             <div className="text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-red-600 via-green-600 to-red-600 drop-shadow-2xl animate-pulse-slow">
