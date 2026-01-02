@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { FaGift, FaSnowflake } from "react-icons/fa";
+import { FaStar } from "react-icons/fa6";
 import { HiX } from "react-icons/hi";
 
 interface SaleBannerProps {
@@ -14,11 +14,11 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
 
   const messageContent = (
     <div className="flex items-center gap-3 whitespace-nowrap">
-      <FaGift className="text-yellow-300" size={16} />
-      <span className="font-bold">🎄 HOLIDAY SALE!</span>
+      <FaStar className="text-yellow-300" size={16} />
+      <span className="font-bold">NEW YEARS SALE!</span>
       <span className="text-yellow-300 font-semibold">UP TO 30% OFF</span>
-      <span>✨ Limited Time Only! ✨</span>
-      <FaGift className="text-yellow-300" size={16} />
+      <span>Limited Time Only!</span>
+      <FaStar className="text-yellow-300" size={16} />
       <span className="mx-8">•</span>
     </div>
   );
@@ -31,19 +31,18 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
       transition={{ duration: 0.5 }}
       className="fixed top-0 left-0 right-0 z-[60] text-white overflow-hidden"
     >
-      <div className="absolute inset-0 bg-white" />
       <div
-        className="absolute inset-0 opacity-70"
+        className="absolute inset-0"
         style={{
-          background: "repeating-linear-gradient(-45deg, #dc2626, #dc2626 80px, #16a34a 80px, #16a34a 160px)",
+          background: "repeating-linear-gradient(-45deg, #06b6d4, #06b6d4 80px, #facc15 80px, #facc15 160px)",
         }}
       />
       <div className="relative py-2">
-        <div className="absolute inset-0 overflow-hidden opacity-20 pointer-events-none">
+        <div className="absolute inset-0 overflow-hidden opacity-40 pointer-events-none">
           {Array.from({ length: 15 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute"
+              className="absolute text-yellow-300"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,
@@ -51,15 +50,16 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
               animate={{
                 y: [0, -20, 0],
                 rotate: [0, 360],
-                scale: [1, 1.2, 1],
+                scale: [1, 1.5, 1],
+                opacity: [0.4, 1, 0.4],
               }}
               transition={{
-                duration: 3 + Math.random() * 2,
+                duration: 2 + Math.random() * 2,
                 repeat: Infinity,
                 delay: Math.random() * 2,
               }}
             >
-              <FaSnowflake size={10} />
+              <FaStar size={10} />
             </motion.div>
           ))}
         </div>
