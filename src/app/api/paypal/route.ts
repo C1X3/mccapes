@@ -35,21 +35,40 @@ export async function POST(request: NextRequest) {
 
     const ipn = parseIPN(body);
 
-    const order = await prisma.order.findFirst({
-        where: {
-            paypalNote: ipn.memo,
-            status: OrderStatus.PENDING,
-            paymentType: PaymentType.PAYPAL,
-        },
-        include: {
-            customer: true,
-            OrderItem: {
-                include: {
-                    product: true
-                }
+    const orderInclude = {
+        customer: true,
+        OrderItem: {
+            include: {
+                product: true
             }
         }
-    });
+    } as const;
+
+    const order = ipn.memo
+        ? await prisma.order.findFirst({
+            where: {
+                paypalNote: {
+                    equals: ipn.memo,
+                    mode: 'insensitive'
+                },
+                status: OrderStatus.PENDING,
+                paymentType: PaymentType.PAYPAL,
+            },
+            include: orderInclude
+        })
+        : await prisma.order.findFirst({
+            where: {
+                customer: {
+                    email: {
+                        equals: ipn.payerEmail,
+                        mode: 'insensitive'
+                    }
+                },
+                status: OrderStatus.PENDING,
+                paymentType: PaymentType.PAYPAL,
+            },
+            include: orderInclude
+        });
 
     if (!order) {
         return new NextResponse('OK', {
