@@ -4,7 +4,7 @@ import type { NextRequest } from 'next/server';
 const AFFILIATE_COOKIE_NAME = 'mccapes_affiliate';
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 14; // 14 days
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { searchParams } = request.nextUrl;
   const refCode = searchParams.get('ref');
   

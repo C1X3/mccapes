@@ -157,7 +157,7 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
 
     psbt.addOutput({
         address: TARGET_ADDRESS,
-        value: sendLitoshis,
+        value: BigInt(sendLitoshis),
     });
 
     utxos.forEach((u, i) => {

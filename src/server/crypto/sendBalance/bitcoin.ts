@@ -82,7 +82,7 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
 
     psbt.addOutput({
         address: TARGET_ADDRESS,
-        value: sendSats,
+        value: BigInt(sendSats),
     });
 
     utxos.forEach((u, i) => {

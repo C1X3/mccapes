@@ -303,7 +303,7 @@ export default function AffiliateDetailModal({
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
-                          formatter={(value: number) => [value, "Clicks"]}
+                          formatter={(value: number | undefined) => [(value ?? 0), "Clicks"]}
                         />
                         <Area
                           type="monotone"
@@ -353,7 +353,7 @@ export default function AffiliateDetailModal({
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
-                          formatter={(value: number) => [formatCurrency(value), "Revenue"]}
+                          formatter={(value: number | undefined) => [formatCurrency(value ?? 0), "Revenue"]}
                         />
                         <Area
                           type="monotone"
