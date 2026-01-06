@@ -13,8 +13,7 @@ import SaleBanner from "../SaleBanner";
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [bannerVisible, setBannerVisible] = useState(true);
-  const pathname = usePathname();
+  const [, setBannerVisible] = useState(true);
 
   useEffect(() => {
     const savedBannerState = sessionStorage.getItem("saleBannerVisible");
