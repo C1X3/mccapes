@@ -37,10 +37,7 @@ const Navbar = () => {
     sessionStorage.setItem("saleBannerVisible", "false");
   };
 
-  const shouldShowBanner = bannerVisible && 
-    !pathname?.startsWith('/admin') && 
-    !pathname?.startsWith('/order') && 
-    !pathname?.startsWith('/cart');
+  const shouldShowBanner = false;
 
   return (
     <>
