@@ -5,6 +5,7 @@ import { formatPrice } from "@/utils/formatting";
 import { formatFeePercentage } from "@/utils/fees";
 import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
+import FAQSection from "@/components/FAQSection";
 import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -658,6 +659,19 @@ const OrderPage = ({ id }: { id: string }) => {
                                 </Link>
                             </div>
                         </div>
+                    </div>
+
+                    {/* FAQ Section */}
+                    <div className="mt-16">
+                        <div className="text-center mb-12">
+                            <h2 className="text-3xl font-bold mb-2">
+                                <span className="gradient-text">Frequently Asked Questions</span>
+                            </h2>
+                            <p className="text-gray-600">
+                                Find answers to common questions about our services
+                            </p>
+                        </div>
+                        <FAQSection showTitle={false} showContactButtons={true} />
                     </div>
                 </div>
             </div>

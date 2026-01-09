@@ -59,6 +59,7 @@ const Footer = () => {
               Company
             </h5>            <ul className="space-y-2">
               {[
+                { label: "FAQ", href: "/faq" },
                 { label: "Privacy Policy", href: "/privacy" },
                 { label: "Terms of Service", href: "/terms" },
               ].map((item) => (

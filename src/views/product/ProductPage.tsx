@@ -2,6 +2,7 @@
 
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar";
+import FAQSection from "@/components/FAQSection";
 import { Product } from "@generated";
 import { motion } from "framer-motion";
 import Image from "next/image";
@@ -287,37 +288,45 @@ const ProductPage = ({ product, stockCount }: { product?: Product, stockCount?: 
 
             {/* Customer Stats Section */}
             <div className="container mx-auto px-4 pb-16">
-                <div className="text-center mb-3">
-                    <span className="inline-block px-4 py-1.5 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] text-sm font-medium rounded-full mb-4">
-                        The #1 Minecraft cape store
-                    </span>
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold mb-2">
+                        <span className="gradient-text">Our Customers</span>
+                    </h2>
+                    <p className="text-gray-600">
+                        Join thousands of satisfied Minecraft players worldwide
+                    </p>
                 </div>
                 
-                <h2 className="text-3xl font-bold text-center text-[var(--foreground)] mb-3">Our Customers</h2>
-                <p className="text-center text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-10">
-                    Here are some of our key stats that show our success!
-                </p>
-                
-                {/* Stats Card */}
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-3xl p-8 mb-12 shadow-sm border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                        <div className="text-center p-4 bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#fff_5%)] to-[color-mix(in_srgb,var(--background),#333_5%)] rounded-2xl">
-                            <div className="text-4xl font-bold text-[var(--foreground)]">4,189</div>
-                            <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Products Sold</div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div className="glass-effect rounded-xl p-8 text-center">
+                        <div className="text-5xl font-bold text-[var(--foreground)] mb-2">4,189</div>
+                        <div className="text-gray-600 font-medium">Products Sold</div>
+                    </div>
+                    <div className="glass-effect rounded-xl p-8 text-center">
+                        <div className="text-5xl font-bold text-[var(--foreground)] mb-2">4,189</div>
+                        <div className="text-gray-600 font-medium">Happy Customers</div>
+                    </div>
+                    <div className="glass-effect rounded-xl p-8 text-center">
+                        <div className="flex items-center justify-center mb-2">
+                            <span className="text-5xl font-bold text-[var(--foreground)] mr-2">4.99</span>
+                            <FaStar className="text-yellow-400" size={28} />
                         </div>
-                        <div className="text-center p-4 bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#fff_5%)] to-[color-mix(in_srgb,var(--background),#333_5%)] rounded-2xl">
-                            <div className="text-4xl font-bold text-[var(--foreground)]">4,189</div>
-                            <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Happy Customers</div>
-                        </div>
-                        <div className="text-center p-4 bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#fff_5%)] to-[color-mix(in_srgb,var(--background),#333_5%)] rounded-2xl">
-                            <div className="flex items-center justify-center">
-                                <span className="text-4xl font-bold text-[var(--foreground)] mr-2">4.99</span>
-                                <FaStar className="text-yellow-400" size={24} />
-                            </div>
-                            <div className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Average Rating</div>
-                        </div>
+                        <div className="text-gray-600 font-medium">Average Rating</div>
                     </div>
                 </div>
+            </div>
+
+            {/* FAQ Section */}
+            <div className="container mx-auto px-4 pb-16">
+                <div className="text-center mb-12">
+                    <h2 className="text-3xl font-bold mb-2">
+                        <span className="gradient-text">Frequently Asked Questions</span>
+                    </h2>
+                    <p className="text-gray-600">
+                        Find answers to common questions about our services
+                    </p>
+                </div>
+                <FAQSection showTitle={false} showContactButtons={false} />
             </div>
 
             <Footer />

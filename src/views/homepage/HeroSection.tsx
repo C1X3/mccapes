@@ -75,8 +75,8 @@ const HeroSection = () => {
                 className="text-sm md:text-base mb-6 text-gray-600 max-w-md"
                 variants={{ hidden: {}, visible: {} }}
               >
-                Premium capes, skins, and accessories… all handcrafted and brought to life
-                with dynamic animations, so your avatar never blends into the crowd.
+                Premium capes that are no longer obtainable anywhere else… grab these
+                exclusive, limited-edition capes to make your Minecraft character stand out.
               </motion.p>
 
               <motion.div
