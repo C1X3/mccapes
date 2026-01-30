@@ -3,6 +3,7 @@
 import { motion, easeOut } from "framer-motion";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
+import { Route } from "next";
 
 // Animations
 const fadeInUp = {
@@ -27,7 +28,7 @@ const staggerContainer = {
   },
 };
 
-const items = [
+const items: { label: string; href: Route; external?: boolean }[] = [
   {
     label: "Home",
     href: "/",

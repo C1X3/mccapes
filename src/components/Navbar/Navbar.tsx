@@ -9,6 +9,7 @@ import { HiMenuAlt3, HiX } from "react-icons/hi";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 import SaleBanner from "../SaleBanner";
+import { Route } from "next";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -113,7 +114,7 @@ const Navbar = () => {
 
 // Mobile Nav Menu Component
 const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
-  const menuItems = [
+  const menuItems: { label: string; href: Route; external?: boolean }[] = [
     { label: "Home", href: "/" },
     { label: "Shop", href: "/shop" },
     { label: "Videos", href: "/videos" },
