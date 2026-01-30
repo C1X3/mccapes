@@ -154,21 +154,30 @@ export default function DashboardTab() {
   });
 
   // Add the mutation for sending crypto balance
-  const sendBalanceMutation = useMutation(trpc.crypto.sendBalance.mutationOptions({
-    onSuccess: () => {
-      setIsWithdrawDialogOpen(false);
-      setDestinationAddress("");
-      cryptoBalances.refetch(); // Refresh balances after withdrawal
-    },
-    onError: (error) => {
-      setWithdrawalError(error.message || "Failed to send funds. Please try again.");
-    },
-  }));
+  const sendBalanceMutation = useMutation(
+    trpc.crypto.sendBalance.mutationOptions({
+      onSuccess: () => {
+        setIsWithdrawDialogOpen(false);
+        setDestinationAddress("");
+        cryptoBalances.refetch(); // Refresh balances after withdrawal
+      },
+      onError: (error) => {
+        setWithdrawalError(
+          error.message || "Failed to send funds. Please try again.",
+        );
+      },
+    }),
+  );
 
   // Use API data or fallback to empty array if loading
   const revenue = revenueData.data || { amount: 0, percentChange: 0 };
   const orders = ordersData.data || { count: 0, percentChange: 0 };
-  const clickStats = clickStatsData.data || { clicks: 0, clicksPercentChange: 0, conversionRate: 0, conversionPercentChange: 0 };
+  const clickStats = clickStatsData.data || {
+    clicks: 0,
+    clicksPercentChange: 0,
+    conversionRate: 0,
+    conversionPercentChange: 0,
+  };
   const chartData = chartDataQuery.data || [];
   const latestCompletedOrders = latestCompletedOrdersData.data || [];
   const topProducts = topProductsData.data || [];
@@ -463,7 +472,6 @@ export default function DashboardTab() {
           </div>
         </div>
       </div>
-
       {/* Chart */}
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
@@ -514,9 +522,18 @@ export default function DashboardTab() {
                     if (active && payload && payload.length) {
                       return (
                         <div className="bg-white p-3 border border-gray-200 rounded shadow-sm">
-                          <p className="font-medium">{payload[0].payload.time}</p>
-                          <p className="text-[#8884d8]">Revenue: ${formatCurrency(Number(payload[0].value || 0)).replace('$', '')}</p>
-                          <p className="text-[#82ca9d]">Orders: {payload[1].value}</p>
+                          <p className="font-medium">
+                            {payload[0].payload.time}
+                          </p>
+                          <p className="text-[#8884d8]">
+                            Revenue: $
+                            {formatCurrency(
+                              Number(payload[0].value || 0),
+                            ).replace("$", "")}
+                          </p>
+                          <p className="text-[#82ca9d]">
+                            Orders: {payload[1].value}
+                          </p>
                         </div>
                       );
                     }
@@ -558,19 +575,29 @@ export default function DashboardTab() {
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-100">
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Products</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Products
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Price</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Price
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Payment Method</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Payment Method
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">E-mail</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      E-mail
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Time</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Time
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -578,28 +605,47 @@ export default function DashboardTab() {
                 {latestCompletedOrdersData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-16"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-40"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-32"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-16"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-24"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-40"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </td>
                     </tr>
                   ))
                 ) : latestCompletedOrders.length === 0 ? (
                   <tr>
-                    <td colSpan={5} className="px-3 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={5}
+                      className="px-3 py-12 text-center text-gray-500"
+                    >
                       No completed orders found
                     </td>
                   </tr>
                 ) : (
                   latestCompletedOrders.map((order) => (
-                    <tr key={order.id} className="hover:bg-gray-50 cursor-pointer" onClick={() => router.push(`/admin/invoice/${order.id}`)}>
+                    <tr
+                      key={order.id}
+                      className="hover:bg-gray-50 cursor-pointer"
+                      onClick={() => router.push(`/admin/invoice/${order.id}`)}
+                    >
                       <td className="p-0 first-of-type:ps-1 last-of-type:pe-1 sm:first-of-type:ps-3 sm:last-of-type:pe-3">
                         <div className="grid w-full gap-y-1 px-3 py-4">
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{order.products}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {order.products}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -624,17 +670,19 @@ export default function DashboardTab() {
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
                                 <span className="inline-flex items-center gap-2 text-sm text-[var(--foreground)]">
-                                  <PaymentMethodLogo 
-                                    paymentType={order.paymentType} 
+                                  <PaymentMethodLogo
+                                    paymentType={order.paymentType}
                                     cryptoType={order.cryptoType || undefined}
                                     size="sm"
                                   />
-                                  {order.paymentType === PaymentType.CRYPTO && order.cryptoType ? 
-                                    `${order.cryptoType.charAt(0).toUpperCase() + order.cryptoType.slice(1).toLowerCase()}` :
-                                    order.paymentType === PaymentType.STRIPE ? 'Stripe' :
-                                    order.paymentType === PaymentType.PAYPAL ? 'PayPal' :
-                                    order.paymentType
-                                  }
+                                  {order.paymentType === PaymentType.CRYPTO &&
+                                  order.cryptoType
+                                    ? `${order.cryptoType.charAt(0).toUpperCase() + order.cryptoType.slice(1).toLowerCase()}`
+                                    : order.paymentType === PaymentType.STRIPE
+                                      ? "Stripe"
+                                      : order.paymentType === PaymentType.PAYPAL
+                                        ? "PayPal"
+                                        : order.paymentType}
                                 </span>
                               </div>
                             </div>
@@ -646,7 +694,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{order.email}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {order.email}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -658,7 +708,10 @@ export default function DashboardTab() {
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
                                 <span className="text-sm text-[var(--foreground)]">
-                                  {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                                  {formatDistanceToNow(
+                                    new Date(order.createdAt),
+                                    { addSuffix: true },
+                                  )}
                                 </span>
                               </div>
                             </div>
@@ -673,7 +726,6 @@ export default function DashboardTab() {
           </div>
         </div>
       </div>
-
       {/* Top Products and Top Customers */}
       <div className="mb-4 grid grid-cols-1 gap-6 md:mb-6 md:grid-cols-2">
         {/* Top 5 Products */}
@@ -687,13 +739,19 @@ export default function DashboardTab() {
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-100">
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Product</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Product
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Total Sales</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Total Sales
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Total Revenue</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Total Revenue
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -701,14 +759,23 @@ export default function DashboardTab() {
                 {topProductsData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-48"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-48"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </td>
                     </tr>
                   ))
                 ) : topProducts.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-3 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={3}
+                      className="px-3 py-12 text-center text-gray-500"
+                    >
                       No product data found
                     </td>
                   </tr>
@@ -733,7 +800,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{product.totalSales}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {product.totalSales}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -744,7 +813,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{formatCurrency(product.totalRevenue)}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {formatCurrency(product.totalRevenue)}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -769,13 +840,19 @@ export default function DashboardTab() {
               <thead>
                 <tr className="border-b border-gray-200 bg-gray-100">
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Customer Email</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Customer Email
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Total Orders</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Total Orders
+                    </span>
                   </th>
                   <th className="px-3 py-3.5 text-left">
-                    <span className="text-sm font-semibold text-[var(--foreground)]">Total Spent</span>
+                    <span className="text-sm font-semibold text-[var(--foreground)]">
+                      Total Spent
+                    </span>
                   </th>
                 </tr>
               </thead>
@@ -783,14 +860,23 @@ export default function DashboardTab() {
                 {topCustomersData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-40"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-12"></div></td>
-                      <td className="px-3 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-40"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-12"></div>
+                      </td>
+                      <td className="px-3 py-4">
+                        <div className="h-4 bg-gray-200 rounded w-20"></div>
+                      </td>
                     </tr>
                   ))
                 ) : topCustomers.length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="px-3 py-12 text-center text-gray-500">
+                    <td
+                      colSpan={3}
+                      className="px-3 py-12 text-center text-gray-500"
+                    >
                       No customer data found
                     </td>
                   </tr>
@@ -802,7 +888,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{customer.email}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {customer.email}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -813,7 +901,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{customer.totalOrders}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {customer.totalOrders}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -824,7 +914,9 @@ export default function DashboardTab() {
                           <div className="flex">
                             <div className="flex max-w-max">
                               <div className="inline-flex items-center gap-1.5">
-                                <span className="text-sm text-[var(--foreground)]">{formatCurrency(customer.totalSpent)}</span>
+                                <span className="text-sm text-[var(--foreground)]">
+                                  {formatCurrency(customer.totalSpent)}
+                                </span>
                               </div>
                             </div>
                           </div>
@@ -838,7 +930,6 @@ export default function DashboardTab() {
           </div>
         </div>
       </div>
-
       {/* Crypto Balances Section */}
       <div className="bg-white p-6 rounded-xl shadow-sm">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
@@ -890,7 +981,8 @@ export default function DashboardTab() {
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH{" "}
                 <span className="text-base font-normal text-gray-500">
-                  (${(cryptoBalances.data?.usdValues?.ethereum || 0).toFixed(2)})
+                  (${(cryptoBalances.data?.usdValues?.ethereum || 0).toFixed(2)}
+                  )
                 </span>
               </p>
               <button
@@ -912,7 +1004,8 @@ export default function DashboardTab() {
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC{" "}
                 <span className="text-base font-normal text-gray-500">
-                  (${(cryptoBalances.data?.usdValues?.litecoin || 0).toFixed(2)})
+                  (${(cryptoBalances.data?.usdValues?.litecoin || 0).toFixed(2)}
+                  )
                 </span>
               </p>
               <button
@@ -947,21 +1040,31 @@ export default function DashboardTab() {
           </div>
         )}
       </div>
-
       {/* Withdrawal Dialog */}
       {isWithdrawDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              {selectedCrypto === CryptoType.BITCOIN && <FaBitcoin className="text-[#f7931a]" />}
-              {selectedCrypto === CryptoType.ETHEREUM && <FaEthereum className="text-[#62688f]" />}
-              {selectedCrypto === CryptoType.LITECOIN && <SiLitecoin className="text-[#345d9d]" />}
-              {selectedCrypto === CryptoType.SOLANA && <SiSolana className="text-[#14f195]" />}
+              {selectedCrypto === CryptoType.BITCOIN && (
+                <FaBitcoin className="text-[#f7931a]" />
+              )}
+              {selectedCrypto === CryptoType.ETHEREUM && (
+                <FaEthereum className="text-[#62688f]" />
+              )}
+              {selectedCrypto === CryptoType.LITECOIN && (
+                <SiLitecoin className="text-[#345d9d]" />
+              )}
+              {selectedCrypto === CryptoType.SOLANA && (
+                <SiSolana className="text-[#14f195]" />
+              )}
               Withdraw {selectedCrypto?.toLowerCase()}
             </h3>
 
             <div className="mb-4">
-              <label htmlFor="destination" className="block text-sm font-medium mb-1 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+              <label
+                htmlFor="destination"
+                className="block text-sm font-medium mb-1 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+              >
                 Destination Address
               </label>
               <input
@@ -981,10 +1084,19 @@ export default function DashboardTab() {
             <div className="text-sm mb-4 p-2 bg-gray-50 rounded">
               <p className="font-medium mb-1">Withdrawal Details:</p>
               <p>
-                Amount: {selectedCrypto === CryptoType.BITCOIN && formatCryptoBalance(cryptoBalances.data?.bitcoin || 0) + " BTC"}
-                {selectedCrypto === CryptoType.ETHEREUM && formatCryptoBalance(cryptoBalances.data?.ethereum || 0) + " ETH"}
-                {selectedCrypto === CryptoType.LITECOIN && formatCryptoBalance(cryptoBalances.data?.litecoin || 0) + " LTC"}
-                {selectedCrypto === CryptoType.SOLANA && formatCryptoBalance(cryptoBalances.data?.solana || 0) + " SOL"}
+                Amount:{" "}
+                {selectedCrypto === CryptoType.BITCOIN &&
+                  formatCryptoBalance(cryptoBalances.data?.bitcoin || 0) +
+                    " BTC"}
+                {selectedCrypto === CryptoType.ETHEREUM &&
+                  formatCryptoBalance(cryptoBalances.data?.ethereum || 0) +
+                    " ETH"}
+                {selectedCrypto === CryptoType.LITECOIN &&
+                  formatCryptoBalance(cryptoBalances.data?.litecoin || 0) +
+                    " LTC"}
+                {selectedCrypto === CryptoType.SOLANA &&
+                  formatCryptoBalance(cryptoBalances.data?.solana || 0) +
+                    " SOL"}
               </p>
               <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                 Network fees will be deducted automatically

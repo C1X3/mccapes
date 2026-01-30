@@ -31,11 +31,7 @@ const PartnerScroller = () => {
   if (channels.length === 0) return null;
 
   return (
-    <Marquee
-      gradient={false}
-      speed={30}
-      className="py-4 overflow-hidden"
-    >
+    <Marquee gradient={false} speed={30} className="py-4 overflow-hidden">
       {channels.map((channel) => (
         <div
           key={channel.id}

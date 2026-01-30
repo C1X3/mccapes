@@ -6,8 +6,8 @@ const Page = () => {
 
 export const metadata = {
   title: "MCCapes",
-  description: "Frequently asked questions about MCCapes Minecraft capes and our services.",
+  description:
+    "Frequently asked questions about MCCapes Minecraft capes and our services.",
 };
 
 export default Page;
-

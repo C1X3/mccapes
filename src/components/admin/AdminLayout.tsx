@@ -1,6 +1,13 @@
 import { ReactNode } from "react";
 import { motion } from "framer-motion";
-import { FaBox, FaReceipt, FaTicketAlt, FaTachometerAlt, FaNewspaper, FaUsers } from "react-icons/fa";
+import {
+  FaBox,
+  FaReceipt,
+  FaTicketAlt,
+  FaTachometerAlt,
+  FaNewspaper,
+  FaUsers,
+} from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import { useRouter } from "next/navigation";
 
@@ -62,7 +69,9 @@ export default function AdminLayout({
         <aside className="hidden md:block fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 pt-[120px]">
           <div className="h-full overflow-y-auto">
             <div className="p-4">
-              <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">Admin Panel</h2>
+              <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">
+                Admin Panel
+              </h2>
               <nav>
                 {tabs.map((tab) => (
                   <button
@@ -105,7 +114,6 @@ export default function AdminLayout({
               key={tab.id}
               onClick={() => handleTabClick(tab.id)}
               className={`flex items-center justify-center px-3 py-2 rounded-lg transition-colors min-w-0 flex-1 ${
-              
                 currentTab === tab.id
                   ? "text-[var(--primary)]"
                   : "text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--foreground)]"

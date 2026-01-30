@@ -1,4 +1,10 @@
-import { FaMousePointer, FaShoppingCart, FaDollarSign, FaChartLine, FaCopy } from "react-icons/fa";
+import {
+  FaMousePointer,
+  FaShoppingCart,
+  FaDollarSign,
+  FaChartLine,
+  FaCopy,
+} from "react-icons/fa";
 import toast from "react-hot-toast";
 
 interface AffiliateCardProps {
@@ -16,9 +22,15 @@ interface AffiliateCardProps {
   onClick: () => void;
 }
 
-export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps) {
-  const maxClicks = Math.max(...affiliate.clicksLast7Days.map((d) => d.clicks), 1);
-  
+export default function AffiliateCard({
+  affiliate,
+  onClick,
+}: AffiliateCardProps) {
+  const maxClicks = Math.max(
+    ...affiliate.clicksLast7Days.map((d) => d.clicks),
+    1,
+  );
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat("en-US", {
       style: "currency",
@@ -26,7 +38,9 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
     }).format(amount);
   };
 
-  const todaysClicks = affiliate.clicksLast7Days[affiliate.clicksLast7Days.length - 1]?.clicks || 0;
+  const todaysClicks =
+    affiliate.clicksLast7Days[affiliate.clicksLast7Days.length - 1]?.clicks ||
+    0;
 
   const copyAffiliateLink = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -43,7 +57,9 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
         <div>
-          <h3 className="text-lg font-semibold text-[var(--foreground)]">{affiliate.name}</h3>
+          <h3 className="text-lg font-semibold text-[var(--foreground)]">
+            {affiliate.name}
+          </h3>
           <div className="flex items-center gap-1.5">
             <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
               ?ref={affiliate.code}
@@ -53,7 +69,10 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
               className="p-1 hover:bg-[color-mix(in_srgb,var(--background),#333_20%)] rounded transition-colors"
               title="Copy affiliate link"
             >
-              <FaCopy size={11} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
+              <FaCopy
+                size={11}
+                className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+              />
             </button>
           </div>
         </div>
@@ -69,7 +88,7 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
           </span>
           {todaysClicks > 0 && (
             <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
-              {todaysClicks} click{todaysClicks !== 1 ? 's' : ''} today
+              {todaysClicks} click{todaysClicks !== 1 ? "s" : ""} today
             </span>
           )}
         </div>
@@ -92,11 +111,15 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
               <div className="h-12 w-full flex items-end">
                 <div
                   className="w-full bg-[var(--primary)] rounded-t-sm min-h-[4px] transition-all"
-                  style={{ height: `${Math.max((day.clicks / maxClicks) * 100, 8)}%` }}
+                  style={{
+                    height: `${Math.max((day.clicks / maxClicks) * 100, 8)}%`,
+                  }}
                 />
               </div>
               <span className="text-[10px] text-[color-mix(in_srgb,var(--foreground),#888_60%)]">
-                {new Date(day.date).toLocaleDateString("en-US", { weekday: "short" }).charAt(0)}
+                {new Date(day.date)
+                  .toLocaleDateString("en-US", { weekday: "short" })
+                  .charAt(0)}
               </span>
             </div>
           ))}
@@ -108,7 +131,9 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
         <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaMousePointer className="text-blue-500" size={12} />
-            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">Clicks</span>
+            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
+              Clicks
+            </span>
           </div>
           <p className="text-lg font-bold text-[var(--foreground)]">
             {affiliate.totalClicks.toLocaleString()}
@@ -117,7 +142,9 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
         <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaShoppingCart className="text-green-500" size={12} />
-            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">Orders</span>
+            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
+              Orders
+            </span>
           </div>
           <p className="text-lg font-bold text-[var(--foreground)]">
             {affiliate.totalOrders.toLocaleString()}
@@ -126,7 +153,9 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
         <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaDollarSign className="text-amber-500" size={12} />
-            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">Revenue</span>
+            <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
+              Revenue
+            </span>
           </div>
           <p className="text-lg font-bold text-[var(--foreground)]">
             {formatCurrency(affiliate.totalRevenue)}
@@ -140,21 +169,30 @@ export default function AffiliateCard({ affiliate, onClick }: AffiliateCardProps
           <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
             Conversion Rate
           </span>
-          <span className={`text-sm font-semibold ${
-            affiliate.conversionRate >= 5 ? "text-green-500" : 
-            affiliate.conversionRate >= 2 ? "text-amber-500" : "text-[var(--foreground)]"
-          }`}>
+          <span
+            className={`text-sm font-semibold ${
+              affiliate.conversionRate >= 5
+                ? "text-green-500"
+                : affiliate.conversionRate >= 2
+                  ? "text-amber-500"
+                  : "text-[var(--foreground)]"
+            }`}
+          >
             {affiliate.conversionRate.toFixed(2)}%
           </span>
         </div>
         <div className="mt-2 h-2 bg-[color-mix(in_srgb,var(--background),#333_20%)] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${
-              affiliate.conversionRate >= 5 ? "bg-green-500" : 
-              affiliate.conversionRate >= 2 ? "bg-amber-500" : 
-              "bg-[var(--primary)]"
+              affiliate.conversionRate >= 5
+                ? "bg-green-500"
+                : affiliate.conversionRate >= 2
+                  ? "bg-amber-500"
+                  : "bg-[var(--primary)]"
             }`}
-            style={{ width: `${Math.min(affiliate.conversionRate * 10, 100)}%` }}
+            style={{
+              width: `${Math.min(affiliate.conversionRate * 10, 100)}%`,
+            }}
           />
         </div>
       </div>

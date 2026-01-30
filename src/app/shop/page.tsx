@@ -3,19 +3,19 @@ import ShopPage from "@/views/shop/ShopPage";
 import { Suspense } from "react";
 
 const Page = async () => {
-    prefetch(
-        trpc.product.getAll.queryOptions({
-            isProductPage: true,
-        })
-    );
+  prefetch(
+    trpc.product.getAll.queryOptions({
+      isProductPage: true,
+    }),
+  );
 
-    return (
-        <HydrateClient>
-            <Suspense>
-                <ShopPage />
-            </Suspense>
-        </HydrateClient>
-    );
+  return (
+    <HydrateClient>
+      <Suspense>
+        <ShopPage />
+      </Suspense>
+    </HydrateClient>
+  );
 };
 
 export const dynamic = "force-dynamic";

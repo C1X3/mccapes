@@ -1,15 +1,32 @@
-'use client';
+"use client";
 
 import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { useState, useEffect } from "react";
-import { FaBox, FaUser, FaShoppingBag, FaFileInvoice, FaTrash, FaTimes, FaTimesCircle, FaExclamationTriangle, FaEye, FaCopy, FaSync, FaExternalLinkAlt } from "react-icons/fa";
+import {
+  FaBox,
+  FaUser,
+  FaShoppingBag,
+  FaFileInvoice,
+  FaTrash,
+  FaTimes,
+  FaTimesCircle,
+  FaExclamationTriangle,
+  FaEye,
+  FaCopy,
+  FaSync,
+  FaExternalLinkAlt,
+} from "react-icons/fa";
 import { OrderStatus, PaymentType } from "@generated/browser";
 import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
+import {
+  getStatusBadgeClass,
+  formatDate,
+  getPaymentDisplayName,
+} from "@/utils/invoiceUtils";
 import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
 
 export default function InvoiceDetailPage({ id }: { id: string }) {
@@ -29,9 +46,16 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     codeIndex: number;
     oldCode: string;
   } | null>(null);
-  const [countryInfo, setCountryInfo] = useState<{ code: string; name: string } | null>(null);
+  const [countryInfo, setCountryInfo] = useState<{
+    code: string;
+    name: string;
+  } | null>(null);
 
-  const { data: invoice, isLoading, error } = useQuery(
+  const {
+    data: invoice,
+    isLoading,
+    error,
+  } = useQuery(
     trpc.invoices.getById.queryOptions({
       orderId: id as string,
     }),
@@ -42,44 +66,51 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     if (invoice?.customer?.ipAddress) {
       // Check if IP is localhost/private
       const ip = invoice.customer.ipAddress;
-      if (ip === '127.0.0.1' || ip === 'localhost' || ip.startsWith('192.168.') || ip.startsWith('10.') || ip.startsWith('172.16.')) {
-        setCountryInfo({ code: 'UNAVAIL', name: 'Unavailable (Local IP)' });
+      if (
+        ip === "127.0.0.1" ||
+        ip === "localhost" ||
+        ip.startsWith("192.168.") ||
+        ip.startsWith("10.") ||
+        ip.startsWith("172.16.")
+      ) {
+        setCountryInfo({ code: "UNAVAIL", name: "Unavailable (Local IP)" });
         return;
       }
-      
+
       fetch(`https://ipapi.co/${invoice.customer.ipAddress}/json/`)
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
           if (data.country_code && data.country_name) {
             setCountryInfo({
               code: data.country_code,
-              name: data.country_name
+              name: data.country_name,
             });
           } else {
             // If the API returns data but no country info
-            setCountryInfo({ code: 'UNAVAIL', name: 'Unavailable' });
+            setCountryInfo({ code: "UNAVAIL", name: "Unavailable" });
           }
         })
-        .catch(err => {
+        .catch((err) => {
           console.error("Error fetching country info:", err);
-          setCountryInfo({ code: 'UNAVAIL', name: 'Unavailable' });
+          setCountryInfo({ code: "UNAVAIL", name: "Unavailable" });
         });
     } else {
       // No IP address provided
-      setCountryInfo({ code: 'UNAVAIL', name: 'Unavailable (No IP)' });
+      setCountryInfo({ code: "UNAVAIL", name: "Unavailable (No IP)" });
     }
   }, [invoice?.customer?.ipAddress]);
 
-  const { mutate: manuallyProcessInvoice, isPending: isManuallyProcessing } = useMutation(
-    trpc.checkout.manuallyProcessInvoice.mutationOptions({
-      onSuccess: () => {
-        toast.success("Invoice manually processed");
-      },
-      onError: () => {
-        toast.error("Failed to manually process invoice");
-      },
-    }),
-  );
+  const { mutate: manuallyProcessInvoice, isPending: isManuallyProcessing } =
+    useMutation(
+      trpc.checkout.manuallyProcessInvoice.mutationOptions({
+        onSuccess: () => {
+          toast.success("Invoice manually processed");
+        },
+        onError: () => {
+          toast.error("Failed to manually process invoice");
+        },
+      }),
+    );
 
   const { mutate: cancelInvoice, isPending: isCancelling } = useMutation(
     trpc.checkout.cancelInvoice.mutationOptions({
@@ -118,12 +149,18 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     }),
   );
 
-  const handleReplaceCode = async (itemId: string, codeIndex: number, oldCode: string) => {
+  const handleReplaceCode = async (
+    itemId: string,
+    codeIndex: number,
+    oldCode: string,
+  ) => {
     // Check if this is the same code that's pending confirmation
-    if (pendingReplaceCode && 
-        pendingReplaceCode.itemId === itemId && 
-        pendingReplaceCode.codeIndex === codeIndex &&
-        pendingReplaceCode.oldCode === oldCode) {
+    if (
+      pendingReplaceCode &&
+      pendingReplaceCode.itemId === itemId &&
+      pendingReplaceCode.codeIndex === codeIndex &&
+      pendingReplaceCode.oldCode === oldCode
+    ) {
       // This is the second click, perform the actual replacement
       replaceCode({
         itemId,
@@ -136,17 +173,19 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       setPendingReplaceCode({
         itemId,
         codeIndex,
-        oldCode
+        oldCode,
       });
-      
+
       // Automatically clear the pending state after 5 seconds
       setTimeout(() => {
         setPendingReplaceCode((current) => {
           // Only clear if it's still the same pending replacement
-          if (current && 
-              current.itemId === itemId && 
-              current.codeIndex === codeIndex &&
-              current.oldCode === oldCode) {
+          if (
+            current &&
+            current.itemId === itemId &&
+            current.codeIndex === codeIndex &&
+            current.oldCode === oldCode
+          ) {
             return null;
           }
           return current;
@@ -196,7 +235,10 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       <div className="bg-red-100 text-red-800 p-4 rounded-lg">
         <h3 className="font-bold">Error loading invoice</h3>
         <p>{error?.message || "Invoice not found"}</p>
-        <Link href="/admin?tab=invoices" className="text-blue-600 underline mt-2 inline-block">
+        <Link
+          href="/admin?tab=invoices"
+          className="text-blue-600 underline mt-2 inline-block"
+        >
           Return to invoices
         </Link>
       </div>
@@ -208,25 +250,34 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       <div className="mb-4 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-semibold">Invoice Details</h1>
-          <p className="text-gray-400 text-sm">View the details of the invoice.</p>
+          <p className="text-gray-400 text-sm">
+            View the details of the invoice.
+          </p>
         </div>
         <div className="flex gap-2">
-          {(invoice.status === OrderStatus.PENDING || invoice.status === OrderStatus.CANCELLED) && (
+          {(invoice.status === OrderStatus.PENDING ||
+            invoice.status === OrderStatus.CANCELLED) && (
             <button
               className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
               onClick={handleManuallyProcessInvoice}
             >
-              <FaFileInvoice /> {isManuallyProcessing ? "Processing..." : "Manually Process Invoice"}
+              <FaFileInvoice />{" "}
+              {isManuallyProcessing
+                ? "Processing..."
+                : "Manually Process Invoice"}
             </button>
           )}
-          {invoice.status == OrderStatus.PENDING && <div className="flex gap-2">
-            <button
-              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
-              onClick={handleCancelInvoice}
-            >
-              <FaTimesCircle /> {isCancelling ? "Cancelling..." : "Cancel Invoice"}
-            </button>
-          </div>}
+          {invoice.status == OrderStatus.PENDING && (
+            <div className="flex gap-2">
+              <button
+                className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                onClick={handleCancelInvoice}
+              >
+                <FaTimesCircle />{" "}
+                {isCancelling ? "Cancelling..." : "Cancel Invoice"}
+              </button>
+            </div>
+          )}
           <Link
             href={`/order/${invoice.id}`}
             className="px-4 py-2 flex items-center gap-2 bg-transparent border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-colors"
@@ -255,73 +306,99 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <span className="text-gray-600">ID</span>
               <span>{invoice.id}</span>
             </div>
-
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Status</span>
-              <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}>
+              <span
+                className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
+              >
                 {invoice.status === "PAID" ? "COMPLETED" : invoice.status}
               </span>
             </div>
-
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Payment Method</span>
               <div className="flex items-center gap-2">
-                <span>
-                  {getPaymentDisplayName(invoice)}
-                </span>
-                <PaymentMethodLogo 
-                  paymentType={invoice.paymentType} 
+                <span>{getPaymentDisplayName(invoice)}</span>
+                <PaymentMethodLogo
+                  paymentType={invoice.paymentType}
                   cryptoType={invoice.Wallet?.[0]?.chain}
                   size="md"
                 />
               </div>
-            </div>            <div className="flex justify-between border-b border-gray-200 pb-2">
+            </div>{" "}
+            <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Subtotal</span>
               <span>
-                ${(invoice.totalPrice - (invoice.couponDetails?.type === 'PERCENTAGE' ? (invoice.totalPrice * invoice.couponDetails.discount / 100) : invoice.couponDetails?.discount || 0)).toFixed(2) || "N/A"}
+                $
+                {(
+                  invoice.totalPrice -
+                  (invoice.couponDetails?.type === "PERCENTAGE"
+                    ? (invoice.totalPrice * invoice.couponDetails.discount) /
+                      100
+                    : invoice.couponDetails?.discount || 0)
+                ).toFixed(2) || "N/A"}
                 {invoice.couponDetails && (
                   <span className="text-green-600 ml-2">
-                    ({invoice.couponDetails.type === 'PERCENTAGE' ? `-${invoice.couponDetails.discount}%` : `-$${invoice.couponDetails.discount.toFixed(2)}`})
+                    (
+                    {invoice.couponDetails.type === "PERCENTAGE"
+                      ? `-${invoice.couponDetails.discount}%`
+                      : `-$${invoice.couponDetails.discount.toFixed(2)}`}
+                    )
                   </span>
                 )}
               </span>
             </div>
-
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Gateway Fee</span>
-              <span>${invoice.paymentFee ? invoice.paymentFee.toFixed(2) : "0.00"}</span>
+              <span>
+                ${invoice.paymentFee ? invoice.paymentFee.toFixed(2) : "0.00"}
+              </span>
             </div>
-
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">Total Price</span>
-              <span>${(invoice.totalPrice - (invoice.couponDetails?.type === 'PERCENTAGE' ? (invoice.totalPrice * invoice.couponDetails.discount / 100) : invoice.couponDetails?.discount || 0) + invoice.paymentFee).toFixed(2)}</span>
-            </div>
-
-            {invoice.couponUsed && <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Coupon</span>
               <span>
-                {invoice.couponUsed}
-                {invoice.couponDetails && (
-                  <span className="text-green-600 ml-2">
-                    ({invoice.couponDetails.type === 'PERCENTAGE' ? `${invoice.couponDetails.discount}% OFF` : `$${invoice.couponDetails.discount.toFixed(2)} off`})
-                  </span>
-                )}
+                $
+                {(
+                  invoice.totalPrice -
+                  (invoice.couponDetails?.type === "PERCENTAGE"
+                    ? (invoice.totalPrice * invoice.couponDetails.discount) /
+                      100
+                    : invoice.couponDetails?.discount || 0) +
+                  invoice.paymentFee
+                ).toFixed(2)}
               </span>
-            </div>}
-
-            {invoice.paymentType === PaymentType.CRYPTO && <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Transaction ID</span>
-              <span>{invoice.Wallet?.[0]?.txHash || "N/A"}</span>
-            </div>}
-
-            {invoice.paymentType === PaymentType.PAYPAL && <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Paypal Note</span>
-              <span>{invoice.paypalNote || "N/A"}</span>
-            </div>}
-
+            </div>
+            {invoice.couponUsed && (
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Coupon</span>
+                <span>
+                  {invoice.couponUsed}
+                  {invoice.couponDetails && (
+                    <span className="text-green-600 ml-2">
+                      (
+                      {invoice.couponDetails.type === "PERCENTAGE"
+                        ? `${invoice.couponDetails.discount}% OFF`
+                        : `$${invoice.couponDetails.discount.toFixed(2)} off`}
+                      )
+                    </span>
+                  )}
+                </span>
+              </div>
+            )}
+            {invoice.paymentType === PaymentType.CRYPTO && (
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Transaction ID</span>
+                <span>{invoice.Wallet?.[0]?.txHash || "N/A"}</span>
+              </div>
+            )}
+            {invoice.paymentType === PaymentType.PAYPAL && (
+              <div className="flex justify-between border-b border-gray-200 pb-2">
+                <span className="text-gray-600">Paypal Note</span>
+                <span>{invoice.paypalNote || "N/A"}</span>
+              </div>
+            )}
             <div className="flex justify-between pb-2">
               <span className="text-gray-600">Created At</span>
-              <span>{formatDate(invoice.createdAt, 'long')}</span>
+              <span>{formatDate(invoice.createdAt, "long")}</span>
             </div>
           </div>
         </div>
@@ -350,13 +427,13 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 {countryInfo ? (
                   <>
                     <span>{countryInfo.name}</span>
-                    {countryInfo.code !== 'UNAVAIL' && (
-                      <Image 
-                        src={`https://flagsapi.com/${countryInfo.code}/flat/64.png`} 
-                        alt={countryInfo.code} 
-                        className="w-6 h-4" 
-                        width={64} 
-                        height={64} 
+                    {countryInfo.code !== "UNAVAIL" && (
+                      <Image
+                        src={`https://flagsapi.com/${countryInfo.code}/flat/64.png`}
+                        alt={countryInfo.code}
+                        className="w-6 h-4"
+                        width={64}
+                        height={64}
                       />
                     )}
                   </>
@@ -368,7 +445,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
             <div className="flex justify-between border-b border-gray-200 pb-2">
               <span className="text-gray-600">User Agent</span>
-              <span className="text-sm truncate max-w-[300px]">{invoice.customer?.useragent || "N/A"}</span>
+              <span className="text-sm truncate max-w-[300px]">
+                {invoice.customer?.useragent || "N/A"}
+              </span>
             </div>
 
             <div className="flex justify-between border-b border-gray-200 pb-2">
@@ -399,29 +478,47 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           <table className="w-full">
             <thead className="border-b border-gray-200">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Status</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Product & Variant</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Quantity</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Total Price</th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">Deliverable</th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Status
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Product & Variant
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Quantity
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Total Price
+                </th>
+                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                  Deliverable
+                </th>
               </tr>
             </thead>
             <tbody>
               {invoice.OrderItem.map((item) => (
                 <tr className="border-b border-gray-100" key={item.id}>
                   <td className="py-3 px-4">
-                    <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}>
-                      {invoice.status === OrderStatus.PAID ? "COMPLETED" : invoice.status}
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
+                    >
+                      {invoice.status === OrderStatus.PAID
+                        ? "COMPLETED"
+                        : invoice.status}
                     </span>
                   </td>
                   <td className="py-3 px-4">
                     <div>
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-gray-500">{item.product.slug}</p>
+                      <p className="text-sm text-gray-500">
+                        {item.product.slug}
+                      </p>
                     </div>
                   </td>
                   <td className="py-3 px-4">{item.quantity}</td>
-                  <td className="py-3 px-4">${(item.price * item.quantity).toFixed(2)}</td>
+                  <td className="py-3 px-4">
+                    ${(item.price * item.quantity).toFixed(2)}
+                  </td>
                   <td className="py-3 px-4">
                     {item.codes && item.codes.length > 0 ? (
                       <button
@@ -435,7 +532,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                         View
                       </button>
                     ) : (
-                      <span className="text-gray-500 text-xs px-3 py-1 bg-gray-200 rounded-md">None</span>
+                      <span className="text-gray-500 text-xs px-3 py-1 bg-gray-200 rounded-md">
+                        None
+                      </span>
                     )}
                   </td>
                 </tr>
@@ -463,7 +562,10 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="p-2 bg-yellow-100 rounded-full">
-                  <FaExclamationTriangle className="text-yellow-600" size={20} />
+                  <FaExclamationTriangle
+                    className="text-yellow-600"
+                    size={20}
+                  />
                 </div>
                 <h2 className="text-xl font-bold text-[var(--foreground)]">
                   Confirm Manual Processing
@@ -482,9 +584,11 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <p className="text-[var(--foreground)] mb-4">
                 Are you sure you want to manually process this invoice?
               </p>
-              
+
               <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg p-4 mb-4">
-                <p className="text-sm text-[var(--foreground)] font-medium mb-2">This action will:</p>
+                <p className="text-sm text-[var(--foreground)] font-medium mb-2">
+                  This action will:
+                </p>
                 <ul className="text-sm text-[var(--foreground)] space-y-1">
                   <li>• Allocate product codes to the order</li>
                   <li>• Mark the order as paid</li>
@@ -554,18 +658,24 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               <p className="text-[var(--foreground)] mb-4">
                 Are you sure you want to permanently delete this invoice?
               </p>
-              
+
               <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg p-4 mb-4">
-                <p className="text-sm text-[var(--foreground)] font-medium mb-2">This action will:</p>
+                <p className="text-sm text-[var(--foreground)] font-medium mb-2">
+                  This action will:
+                </p>
                 <ul className="text-sm text-[var(--foreground)] space-y-1">
-                  <li>• Permanently delete the invoice #{invoice.id.substring(0, 8)}</li>
+                  <li>
+                    • Permanently delete the invoice #
+                    {invoice.id.substring(0, 8)}
+                  </li>
                   <li>• Remove all associated order items</li>
                   <li>• Remove all invoice data from the system</li>
                 </ul>
               </div>
 
               <p className="text-sm text-red-400 font-medium">
-                ⚠️ THIS ACTION CANNOT BE UNDONE. The invoice will be permanently lost.
+                ⚠️ THIS ACTION CANNOT BE UNDONE. The invoice will be permanently
+                lost.
               </p>
             </div>
 
@@ -632,58 +742,72 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {/* Content */}
             <div className="flex-1 overflow-hidden">
               <div className="space-y-3 overflow-y-auto max-h-[40vh] pr-2">
-                {selectedItem.codes && selectedItem.codes.map((code: string, index: number) => (
-                  <div key={index} className="bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
-                    <div className="flex items-center justify-between gap-4">
-                      <div className="bg-[color-mix(in_srgb,var(--background),#333_25%)] rounded-md border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] px-3 py-2 flex-1">
-                        <p className="text-sm font-mono text-[var(--foreground)] break-all select-all">
-                          {code}
-                        </p>
-                      </div>
-                      <div className="flex gap-2">
-                        <button 
-                          onClick={() => {
-                            navigator.clipboard.writeText(code);
-                            toast.success("Code copied to clipboard!");
-                          }}
-                          className="px-3 py-2 bg-gray-600 text-white text-xs rounded-md hover:bg-gray-700 transition-colors flex items-center gap-2"
-                        >
-                          <FaCopy size={12} />
-                          Copy
-                        </button>
-                        <button 
-                          onClick={() => handleReplaceCode(selectedItem.id, index, code)}
-                          disabled={isReplacingCode}
-                          className={`px-3 py-2 text-white text-xs rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 
-                            ${pendingReplaceCode && 
-                             pendingReplaceCode.itemId === selectedItem.id && 
-                             pendingReplaceCode.codeIndex === index &&
-                             pendingReplaceCode.oldCode === code 
-                              ? 'bg-red-600 hover:bg-red-700' 
-                              : 'bg-blue-600 hover:bg-blue-700'}`}
-                        >
-                          <FaSync className={`${isReplacingCode ? 'animate-spin' : ''}`} size={12} />
-                          {isReplacingCode 
-                            ? 'Replacing...' 
-                            : (pendingReplaceCode && 
-                               pendingReplaceCode.itemId === selectedItem.id && 
-                               pendingReplaceCode.codeIndex === index &&
-                               pendingReplaceCode.oldCode === code)
-                              ? 'Confirm replace' 
-                              : 'Replace'
-                          }
-                        </button>
+                {selectedItem.codes &&
+                  selectedItem.codes.map((code: string, index: number) => (
+                    <div
+                      key={index}
+                      className="bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    >
+                      <div className="flex items-center justify-between gap-4">
+                        <div className="bg-[color-mix(in_srgb,var(--background),#333_25%)] rounded-md border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] px-3 py-2 flex-1">
+                          <p className="text-sm font-mono text-[var(--foreground)] break-all select-all">
+                            {code}
+                          </p>
+                        </div>
+                        <div className="flex gap-2">
+                          <button
+                            onClick={() => {
+                              navigator.clipboard.writeText(code);
+                              toast.success("Code copied to clipboard!");
+                            }}
+                            className="px-3 py-2 bg-gray-600 text-white text-xs rounded-md hover:bg-gray-700 transition-colors flex items-center gap-2"
+                          >
+                            <FaCopy size={12} />
+                            Copy
+                          </button>
+                          <button
+                            onClick={() =>
+                              handleReplaceCode(selectedItem.id, index, code)
+                            }
+                            disabled={isReplacingCode}
+                            className={`px-3 py-2 text-white text-xs rounded-md disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center gap-2 
+                            ${
+                              pendingReplaceCode &&
+                              pendingReplaceCode.itemId === selectedItem.id &&
+                              pendingReplaceCode.codeIndex === index &&
+                              pendingReplaceCode.oldCode === code
+                                ? "bg-red-600 hover:bg-red-700"
+                                : "bg-blue-600 hover:bg-blue-700"
+                            }`}
+                          >
+                            <FaSync
+                              className={`${isReplacingCode ? "animate-spin" : ""}`}
+                              size={12}
+                            />
+                            {isReplacingCode
+                              ? "Replacing..."
+                              : pendingReplaceCode &&
+                                  pendingReplaceCode.itemId ===
+                                    selectedItem.id &&
+                                  pendingReplaceCode.codeIndex === index &&
+                                  pendingReplaceCode.oldCode === code
+                                ? "Confirm replace"
+                                : "Replace"}
+                          </button>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  ))}
               </div>
             </div>
 
             {/* Footer */}
             <div className="mt-6 pt-4 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
               <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                Status: {invoice.status === OrderStatus.DELIVERED ? "Delivered" : "Not Delivered"}
+                Status:{" "}
+                {invoice.status === OrderStatus.DELIVERED
+                  ? "Delivered"
+                  : "Not Delivered"}
               </p>
             </div>
           </motion.div>

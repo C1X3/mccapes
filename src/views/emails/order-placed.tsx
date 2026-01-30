@@ -81,7 +81,8 @@ export const OrderPlacedTemplate = ({
               </div>
               <Hr style={messageDivider} />
               <Text style={messageText}>
-                Thank you for your purchase! Your order has been received and is being processed.
+                Thank you for your purchase! Your order has been received and is
+                being processed.
               </Text>
 
               {/* Order Details */}
@@ -89,15 +90,21 @@ export const OrderPlacedTemplate = ({
                 <Text style={orderDetailTitle}>Order Details</Text>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Order ID</Text>
-                  <Text style={orderDetailValue}>: #{orderId.substring(0, 8)}</Text>
+                  <Text style={orderDetailValue}>
+                    : #{orderId.substring(0, 8)}
+                  </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Order Date</Text>
-                  <Text style={orderDetailValue}>: {new Date().toLocaleDateString()}</Text>
+                  <Text style={orderDetailValue}>
+                    : {new Date().toLocaleDateString()}
+                  </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Payment Method</Text>
-                  <Text style={orderDetailValue}>: {paymentType.replace('_', ' ')}</Text>
+                  <Text style={orderDetailValue}>
+                    : {paymentType.replace("_", " ")}
+                  </Text>
                 </div>
               </Section>
 
@@ -110,7 +117,9 @@ export const OrderPlacedTemplate = ({
                     {/* Item Image */}
                     <Column style={itemImageColumn}>
                       <Img
-                        src={item.image || "https://mccapes.net/placeholder.png"}
+                        src={
+                          item.image || "https://mccapes.net/placeholder.png"
+                        }
                         width="64"
                         height="64"
                         alt={item.name}
@@ -123,8 +132,12 @@ export const OrderPlacedTemplate = ({
                       <Text style={itemName}>{item.name}</Text>
                       <div style={itemPriceContainer}>
                         <div style={itemPriceRow}>
-                          <Text style={itemPrice}>{formatPrice(item.price)} × {item.quantity}</Text>
-                          <Text style={itemTotal}>{formatPrice(item.price * item.quantity)}</Text>
+                          <Text style={itemPrice}>
+                            {formatPrice(item.price)} × {item.quantity}
+                          </Text>
+                          <Text style={itemTotal}>
+                            {formatPrice(item.price * item.quantity)}
+                          </Text>
                         </div>
                       </div>
                     </Column>
@@ -141,7 +154,9 @@ export const OrderPlacedTemplate = ({
                 {paymentFee > 0 && (
                   <div style={summaryRow}>
                     <Text style={summaryLabel}>Payment Fee</Text>
-                    <Text style={summaryValue}>: {formatPrice(paymentFee)}</Text>
+                    <Text style={summaryValue}>
+                      : {formatPrice(paymentFee)}
+                    </Text>
                   </div>
                 )}
                 <div style={totalRow}>
@@ -154,7 +169,7 @@ export const OrderPlacedTemplate = ({
             {/* Payment Instructions */}
             <Section style={paymentInstructionsSection}>
               <Text style={paymentTypeHeading}>
-                Payment Method: {paymentType.replace('_', ' ')}
+                Payment Method: {paymentType.replace("_", " ")}
               </Text>
 
               {paymentType === PaymentType.PAYPAL && (
@@ -171,7 +186,9 @@ export const OrderPlacedTemplate = ({
                     </div>
                   )}
                   <Text style={paymentInstructionText}>
-                    Please complete your payment by sending {formatPrice(totalWithFee)} via PayPal using the &quot;Friends and Family&quot; option to:
+                    Please complete your payment by sending{" "}
+                    {formatPrice(totalWithFee)} via PayPal using the
+                    &quot;Friends and Family&quot; option to:
                   </Text>
                   <Text style={paymentAddressText}>
                     {paymentDetails?.address || "payment@example.com"}
@@ -181,13 +198,12 @@ export const OrderPlacedTemplate = ({
                       <Text style={paymentInstructionText}>
                         Important: Include this exact note with your payment:
                       </Text>
-                      <Text style={paymentNoteText}>
-                        {paymentDetails.note}
-                      </Text>
+                      <Text style={paymentNoteText}>{paymentDetails.note}</Text>
                     </>
                   )}
                   <Text style={paymentWarningText}>
-                    Your order will NOT be processed if payment is not sent using the &quot;Friends and Family&quot; option.
+                    Your order will NOT be processed if payment is not sent
+                    using the &quot;Friends and Family&quot; option.
                   </Text>
                 </>
               )}
@@ -206,13 +222,16 @@ export const OrderPlacedTemplate = ({
                     </div>
                   )}
                   <Text style={paymentInstructionText}>
-                    Please complete your payment by sending {formatPrice(totalWithFee)} worth of {paymentDetails?.cryptoType || "cryptocurrency"} to:
+                    Please complete your payment by sending{" "}
+                    {formatPrice(totalWithFee)} worth of{" "}
+                    {paymentDetails?.cryptoType || "cryptocurrency"} to:
                   </Text>
                   <Text style={paymentAddressText}>
                     {paymentDetails?.address || "crypto_address_here"}
                   </Text>
                   <Text style={paymentInstructionText}>
-                    Once your payment is confirmed, your order will be processed.
+                    Once your payment is confirmed, your order will be
+                    processed.
                   </Text>
                 </>
               )}
@@ -234,7 +253,8 @@ export const OrderPlacedTemplate = ({
 const main = {
   backgroundColor: "#F8FAFC",
   padding: "40px 0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const container = {
@@ -272,7 +292,8 @@ const heading = {
   color: "#2C3245",
   margin: "24px 0",
   textAlign: "center" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const messageCard = {
@@ -292,14 +313,16 @@ const senderName = {
   fontWeight: "600",
   color: "#5897FB",
   margin: "0 0 4px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const senderEmail = {
   fontSize: "14px",
   color: "#64748B",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const messageDivider = {
@@ -309,7 +332,8 @@ const messageDivider = {
 
 const messageText = {
   fontSize: "16px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
   color: "#2C3245",
   lineHeight: "26px",
   margin: "16px 0",
@@ -329,7 +353,8 @@ const orderDetailTitle = {
   fontWeight: "600",
   color: "#2C3245",
   margin: "0 0 12px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const orderDetailRow = {
@@ -342,7 +367,8 @@ const orderDetailLabel = {
   fontSize: "14px",
   color: "#64748B",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const orderDetailValue = {
@@ -350,7 +376,8 @@ const orderDetailValue = {
   color: "#2C3245",
   fontWeight: "500",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const sectionHeading = {
@@ -358,7 +385,8 @@ const sectionHeading = {
   fontWeight: "600",
   color: "#2C3245",
   margin: "24px 0 12px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const itemSection = {
@@ -391,7 +419,8 @@ const itemName = {
   fontWeight: "600",
   color: "#10B981",
   margin: "0 0 8px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const itemPriceContainer = {
@@ -409,7 +438,8 @@ const itemPrice = {
   fontSize: "14px",
   color: "#64748B",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const itemTotal = {
@@ -418,7 +448,8 @@ const itemTotal = {
   color: "#2C3245",
   margin: "0",
   textAlign: "right" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const summarySection = {
@@ -438,7 +469,8 @@ const summaryLabel = {
   fontSize: "14px",
   color: "#64748B",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const summaryValue = {
@@ -446,7 +478,8 @@ const summaryValue = {
   color: "#2C3245",
   margin: "0",
   textAlign: "right" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const totalRow = {
@@ -462,7 +495,8 @@ const totalLabel = {
   fontWeight: "600",
   color: "#2C3245",
   margin: "0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const totalValue = {
@@ -471,7 +505,8 @@ const totalValue = {
   color: "#5897FB",
   margin: "0",
   textAlign: "right" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const paymentInstructionsSection = {
@@ -498,7 +533,8 @@ const paymentTypeHeading = {
   fontWeight: "600",
   color: "#2C3245",
   margin: "0 0 16px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const paymentInstructionText = {
@@ -506,7 +542,8 @@ const paymentInstructionText = {
   color: "#2C3245",
   margin: "12px 0",
   lineHeight: "1.5",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const paymentAddressText = {
@@ -518,7 +555,8 @@ const paymentAddressText = {
   padding: "12px",
   borderRadius: "6px",
   wordBreak: "break-all" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const paymentNoteText = {
@@ -530,7 +568,8 @@ const paymentNoteText = {
   padding: "12px",
   borderRadius: "6px",
   wordBreak: "break-all" as const,
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const paymentWarningText = {
@@ -538,7 +577,8 @@ const paymentWarningText = {
   fontWeight: "600",
   color: "#EF4444",
   margin: "16px 0 0",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };
 
 const footer = {
@@ -547,5 +587,6 @@ const footer = {
   margin: "32px 0 0",
   textAlign: "center" as const,
   lineHeight: "24px",
-  fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
+  fontFamily:
+    '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif',
 };

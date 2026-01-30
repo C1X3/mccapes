@@ -3,13 +3,9 @@
 import { ReactNode, Suspense } from "react";
 
 interface AdminLayoutProps {
-    children: ReactNode;
+  children: ReactNode;
 }
 
 export default function AdminLayoutSuspense({ children }: AdminLayoutProps) {
-    return (
-        <Suspense>
-            {children}
-        </Suspense>
-    );
+  return <Suspense>{children}</Suspense>;
 }

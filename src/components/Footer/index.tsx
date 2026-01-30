@@ -17,8 +17,8 @@ const links = [
   },
   {
     label: "Discord",
-    href: "https://discord.mccapes.net"
-  }
+    href: "https://discord.mccapes.net",
+  },
 ];
 
 const Footer = () => {
@@ -57,7 +57,8 @@ const Footer = () => {
           <div>
             <h5 className="text-lg font-semibold mb-4 text-[var(--accent-light)]">
               Company
-            </h5>            <ul className="space-y-2">
+            </h5>{" "}
+            <ul className="space-y-2">
               {[
                 { label: "FAQ", href: "/faq" },
                 { label: "Privacy Policy", href: "/privacy" },

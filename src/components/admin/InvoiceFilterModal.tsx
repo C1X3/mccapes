@@ -80,7 +80,9 @@ export default function InvoiceFilterModal({
         className="bg-[var(--background)] rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
       >
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-[var(--foreground)]">Filter Invoices</h2>
+          <h2 className="text-2xl font-bold text-[var(--foreground)]">
+            Filter Invoices
+          </h2>
           <button
             onClick={onClose}
             className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-full transition-colors"
@@ -94,10 +96,14 @@ export default function InvoiceFilterModal({
             onApplyFilters();
           }}
         >
-          <input type="submit" className="hidden" />          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
+          <input type="submit" className="hidden" />{" "}
+          <div className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-2">
             {/* Row 1: Invoice ID, Status */}
             <div>
-              <label htmlFor="invoiceId" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="invoiceId"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Invoice ID
               </label>
               <input
@@ -111,15 +117,20 @@ export default function InvoiceFilterModal({
               />
             </div>
             <div>
-              <label htmlFor="status" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="status"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Status
               </label>
               <select
                 id="status"
                 value={tempStatusFilter}
-                onChange={(e) => setTempStatusFilter(e.target.value as OrderStatus | "ALL")}
+                onChange={(e) =>
+                  setTempStatusFilter(e.target.value as OrderStatus | "ALL")
+                }
                 className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
-                style={{ minHeight: '48px' }}
+                style={{ minHeight: "48px" }}
               >
                 <option value="ALL">All Statuses</option>
                 {Object.values(OrderStatus)
@@ -134,7 +145,10 @@ export default function InvoiceFilterModal({
 
             {/* Row 2: Email, Payment Method */}
             <div>
-              <label htmlFor="email" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="email"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 E-mail Address
               </label>
               <input
@@ -148,19 +162,28 @@ export default function InvoiceFilterModal({
               />
             </div>
             <div>
-              <label htmlFor="paymentMethod" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="paymentMethod"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Payment Method
               </label>
               <select
                 id="paymentMethod"
                 value={tempPaymentFilter}
-                onChange={(e) => setTempPaymentFilter(e.target.value as PaymentFilterType)}
+                onChange={(e) =>
+                  setTempPaymentFilter(e.target.value as PaymentFilterType)
+                }
                 className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
-                style={{ minHeight: '48px' }}
+                style={{ minHeight: "48px" }}
               >
                 <option value="ALL">All Payment Methods</option>
-                <option value={PaymentType.STRIPE}>{getPaymentMethodName(PaymentType.STRIPE)}</option>
-                <option value={PaymentType.PAYPAL}>{getPaymentMethodName(PaymentType.PAYPAL)}</option>
+                <option value={PaymentType.STRIPE}>
+                  {getPaymentMethodName(PaymentType.STRIPE)}
+                </option>
+                <option value={PaymentType.PAYPAL}>
+                  {getPaymentMethodName(PaymentType.PAYPAL)}
+                </option>
                 <option value={PaymentType.CRYPTO}>All Crypto</option>
                 <option value={CryptoType.BITCOIN}>Bitcoin</option>
                 <option value={CryptoType.ETHEREUM}>Ethereum</option>
@@ -171,7 +194,10 @@ export default function InvoiceFilterModal({
 
             {/* Row 3: Discord, Date Processed */}
             <div>
-              <label htmlFor="discord" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="discord"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Discord Username
               </label>
               <input
@@ -185,7 +211,10 @@ export default function InvoiceFilterModal({
               />
             </div>
             <div>
-              <label htmlFor="date" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="date"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Date Processed
               </label>
               <input
@@ -200,7 +229,10 @@ export default function InvoiceFilterModal({
 
             {/* Row 4: Product Name, PayPal Note */}
             <div>
-              <label htmlFor="product" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="product"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Product Name
               </label>
               <select
@@ -208,7 +240,7 @@ export default function InvoiceFilterModal({
                 value={tempProductFilter}
                 onChange={(e) => setTempProductFilter(e.target.value)}
                 className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
-                style={{ minHeight: '48px' }}
+                style={{ minHeight: "48px" }}
               >
                 <option value="">All Products</option>
                 {productOptions.activeProducts.map((productName) => (
@@ -222,7 +254,10 @@ export default function InvoiceFilterModal({
               </select>
             </div>
             <div>
-              <label htmlFor="paypalNote" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="paypalNote"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 PayPal Note
               </label>
               <input
@@ -238,7 +273,10 @@ export default function InvoiceFilterModal({
 
             {/* Row 5: Affiliate Code, Deliverable Code */}
             <div>
-              <label htmlFor="affiliate" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="affiliate"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Affiliate Code
               </label>
               <input
@@ -252,7 +290,10 @@ export default function InvoiceFilterModal({
               />
             </div>
             <div>
-              <label htmlFor="code" className="block text-[var(--foreground)] mb-2">
+              <label
+                htmlFor="code"
+                className="block text-[var(--foreground)] mb-2"
+              >
                 Deliverable Code
               </label>
               <input

@@ -54,7 +54,7 @@ export default function AffiliateDetailModal({
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const { data: affiliate, isLoading } = useQuery(
-    trpc.affiliate.getById.queryOptions({ id: affiliateId })
+    trpc.affiliate.getById.queryOptions({ id: affiliateId }),
   );
 
   const deleteMutation = useMutation(
@@ -66,20 +66,26 @@ export default function AffiliateDetailModal({
       onError: (error) => {
         toast.error(error.message || "Failed to delete affiliate");
       },
-    })
+    }),
   );
 
   const toggleActiveMutation = useMutation(
     trpc.affiliate.update.mutationOptions({
       onSuccess: () => {
-        toast.success(affiliate?.active ? "Affiliate deactivated" : "Affiliate activated");
-        queryClient.invalidateQueries({ queryKey: trpc.affiliate.getById.queryKey({ id: affiliateId }) });
-        queryClient.invalidateQueries({ queryKey: trpc.affiliate.getAll.queryKey() });
+        toast.success(
+          affiliate?.active ? "Affiliate deactivated" : "Affiliate activated",
+        );
+        queryClient.invalidateQueries({
+          queryKey: trpc.affiliate.getById.queryKey({ id: affiliateId }),
+        });
+        queryClient.invalidateQueries({
+          queryKey: trpc.affiliate.getAll.queryKey(),
+        });
       },
       onError: (error) => {
         toast.error(error.message || "Failed to update affiliate");
       },
-    })
+    }),
   );
 
   const handleDelete = () => {
@@ -118,16 +124,24 @@ export default function AffiliateDetailModal({
 
   if (!affiliate && !isLoading) return null;
 
-  const clicksChartData = affiliate?.clicksLast7Days.map((d) => ({
-    date: new Date(d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    clicks: d.clicks,
-  })) || [];
+  const clicksChartData =
+    affiliate?.clicksLast7Days.map((d) => ({
+      date: new Date(d.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      clicks: d.clicks,
+    })) || [];
 
-  const revenueChartData = affiliate?.ordersLast7Days.map((d) => ({
-    date: new Date(d.date).toLocaleDateString("en-US", { month: "short", day: "numeric" }),
-    revenue: d.revenue,
-    orders: d.orders,
-  })) || [];
+  const revenueChartData =
+    affiliate?.ordersLast7Days.map((d) => ({
+      date: new Date(d.date).toLocaleDateString("en-US", {
+        month: "short",
+        day: "numeric",
+      }),
+      revenue: d.revenue,
+      orders: d.orders,
+    })) || [];
 
   return (
     <div
@@ -148,7 +162,9 @@ export default function AffiliateDetailModal({
             <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <h2 className="text-xl font-bold text-[var(--foreground)]">{affiliate.name}</h2>
+                  <h2 className="text-xl font-bold text-[var(--foreground)]">
+                    {affiliate.name}
+                  </h2>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="text-sm bg-[color-mix(in_srgb,var(--background),#333_10%)] px-2 py-0.5 rounded text-[var(--foreground)]">
                       ?ref={affiliate.code}
@@ -158,7 +174,10 @@ export default function AffiliateDetailModal({
                       className="p-1 hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded transition-colors"
                       title="Copy link"
                     >
-                      <FaCopy size={12} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
+                      <FaCopy
+                        size={12}
+                        className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                      />
                     </button>
                   </div>
                   <div className="flex items-center gap-3 mt-3">
@@ -171,7 +190,11 @@ export default function AffiliateDetailModal({
                           : "bg-red-100 text-red-800 hover:bg-red-200"
                       } disabled:opacity-50`}
                     >
-                      {affiliate.active ? <FaToggleOn size={16} /> : <FaToggleOff size={16} />}
+                      {affiliate.active ? (
+                        <FaToggleOn size={16} />
+                      ) : (
+                        <FaToggleOff size={16} />
+                      )}
                       {affiliate.active ? "Active" : "Inactive"}
                     </button>
                     <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
@@ -183,7 +206,10 @@ export default function AffiliateDetailModal({
                   onClick={onClose}
                   className="p-2 hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-full transition-colors"
                 >
-                  <FaTimes size={18} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
+                  <FaTimes
+                    size={18}
+                    className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                  />
                 </button>
               </div>
 
@@ -191,22 +217,41 @@ export default function AffiliateDetailModal({
               <div className="grid grid-cols-3 gap-4 mt-6">
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-1">
-                    <FaCalendarDay size={14} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Today&apos;s Clicks</span>
+                    <FaCalendarDay
+                      size={14}
+                      className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                    />
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Today&apos;s Clicks
+                    </span>
                   </div>
-                  <p className="text-2xl font-bold text-[var(--foreground)]">{affiliate.clicksToday}</p>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">
+                    {affiliate.clicksToday}
+                  </p>
                 </div>
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-1">
-                    <FaShoppingCart size={14} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Today&apos;s Orders</span>
+                    <FaShoppingCart
+                      size={14}
+                      className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                    />
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Today&apos;s Orders
+                    </span>
                   </div>
-                  <p className="text-2xl font-bold text-[var(--foreground)]">{affiliate.ordersToday}</p>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">
+                    {affiliate.ordersToday}
+                  </p>
                 </div>
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-1">
-                    <FaDollarSign size={14} className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Today&apos;s Revenue</span>
+                    <FaDollarSign
+                      size={14}
+                      className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                    />
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Today&apos;s Revenue
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {formatCurrency(affiliate.revenueToday)}
@@ -222,7 +267,9 @@ export default function AffiliateDetailModal({
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaMousePointer className="text-blue-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Total Clicks</span>
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Total Clicks
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {affiliate.totalClicks.toLocaleString()}
@@ -231,7 +278,9 @@ export default function AffiliateDetailModal({
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaShoppingCart className="text-green-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Total Orders</span>
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Total Orders
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {affiliate.totalOrders.toLocaleString()}
@@ -240,7 +289,9 @@ export default function AffiliateDetailModal({
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaDollarSign className="text-amber-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Total Revenue</span>
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Total Revenue
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {formatCurrency(affiliate.totalRevenue)}
@@ -249,7 +300,9 @@ export default function AffiliateDetailModal({
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaChartLine className="text-purple-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Avg. Order</span>
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Avg. Order
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {formatCurrency(affiliate.averageOrderValue)}
@@ -258,7 +311,9 @@ export default function AffiliateDetailModal({
                 <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaPercentage className="text-pink-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">Conv. Rate</span>
+                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      Conv. Rate
+                    </span>
                   </div>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {affiliate.conversionRate.toFixed(2)}%
@@ -276,14 +331,34 @@ export default function AffiliateDetailModal({
                   </h3>
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={clicksChartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                      <AreaChart
+                        data={clicksChartData}
+                        margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
+                      >
                         <defs>
-                          <linearGradient id="clicksGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                          <linearGradient
+                            id="clicksGradient"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor="#3b82f6"
+                              stopOpacity={0.3}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor="#3b82f6"
+                              stopOpacity={0}
+                            />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="rgba(0,0,0,0.1)"
+                        />
                         <XAxis
                           dataKey="date"
                           stroke="var(--foreground)"
@@ -303,7 +378,10 @@ export default function AffiliateDetailModal({
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
-                          formatter={(value: number | undefined) => [(value ?? 0), "Clicks"]}
+                          formatter={(value: number | undefined) => [
+                            value ?? 0,
+                            "Clicks",
+                          ]}
                         />
                         <Area
                           type="monotone"
@@ -325,14 +403,34 @@ export default function AffiliateDetailModal({
                   </h3>
                   <div className="h-48">
                     <ResponsiveContainer width="100%" height="100%">
-                      <AreaChart data={revenueChartData} margin={{ top: 5, right: 5, left: -20, bottom: 5 }}>
+                      <AreaChart
+                        data={revenueChartData}
+                        margin={{ top: 5, right: 5, left: -20, bottom: 5 }}
+                      >
                         <defs>
-                          <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-                            <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.3} />
-                            <stop offset="95%" stopColor="#f59e0b" stopOpacity={0} />
+                          <linearGradient
+                            id="revenueGradient"
+                            x1="0"
+                            y1="0"
+                            x2="0"
+                            y2="1"
+                          >
+                            <stop
+                              offset="5%"
+                              stopColor="#f59e0b"
+                              stopOpacity={0.3}
+                            />
+                            <stop
+                              offset="95%"
+                              stopColor="#f59e0b"
+                              stopOpacity={0}
+                            />
                           </linearGradient>
                         </defs>
-                        <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
+                        <CartesianGrid
+                          strokeDasharray="3 3"
+                          stroke="rgba(0,0,0,0.1)"
+                        />
                         <XAxis
                           dataKey="date"
                           stroke="var(--foreground)"
@@ -353,7 +451,10 @@ export default function AffiliateDetailModal({
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
-                          formatter={(value: number | undefined) => [formatCurrency(value ?? 0), "Revenue"]}
+                          formatter={(value: number | undefined) => [
+                            formatCurrency(value ?? 0),
+                            "Revenue",
+                          ]}
                         />
                         <Area
                           type="monotone"
@@ -379,28 +480,44 @@ export default function AffiliateDetailModal({
                     <table className="w-full">
                       <thead>
                         <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
-                          <th className="text-left py-4 px-2 text-[var(--foreground)]">Products</th>
-                          <th className="text-left py-4 px-2 text-[var(--foreground)]">Price</th>
-                          <th className="text-left py-4 px-2 text-[var(--foreground)]">E-mail</th>
-                          <th className="text-left py-4 px-2 text-[var(--foreground)]">Time</th>
+                          <th className="text-left py-4 px-2 text-[var(--foreground)]">
+                            Products
+                          </th>
+                          <th className="text-left py-4 px-2 text-[var(--foreground)]">
+                            Price
+                          </th>
+                          <th className="text-left py-4 px-2 text-[var(--foreground)]">
+                            E-mail
+                          </th>
+                          <th className="text-left py-4 px-2 text-[var(--foreground)]">
+                            Time
+                          </th>
                         </tr>
                       </thead>
                       <tbody>
                         {affiliate.recentOrders.map((order) => (
-                          <tr 
-                            key={order.id} 
+                          <tr
+                            key={order.id}
                             className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_5%)] cursor-pointer"
-                            onClick={() => router.push(`/admin/invoice/${order.id}`)}
+                            onClick={() =>
+                              router.push(`/admin/invoice/${order.id}`)
+                            }
                           >
-                            <td className="py-4 px-2 text-[var(--foreground)]">{order.products}</td>
+                            <td className="py-4 px-2 text-[var(--foreground)]">
+                              {order.products}
+                            </td>
                             <td className="py-4 px-2">
                               <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-md">
                                 {formatCurrency(order.totalPrice)}
                               </span>
                             </td>
-                            <td className="py-4 px-2 text-[var(--foreground)]">{order.customerEmail}</td>
                             <td className="py-4 px-2 text-[var(--foreground)]">
-                              {formatDistanceToNow(new Date(order.createdAt), { addSuffix: true })}
+                              {order.customerEmail}
+                            </td>
+                            <td className="py-4 px-2 text-[var(--foreground)]">
+                              {formatDistanceToNow(new Date(order.createdAt), {
+                                addSuffix: true,
+                              })}
                             </td>
                           </tr>
                         ))}
@@ -464,15 +581,19 @@ export default function AffiliateDetailModal({
                 <FaExclamationTriangle className="text-red-600" size={24} />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-[var(--foreground)]">Delete Affiliate</h3>
+                <h3 className="text-lg font-bold text-[var(--foreground)]">
+                  Delete Affiliate
+                </h3>
                 <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
                   This action cannot be undone
                 </p>
               </div>
             </div>
-            
+
             <p className="text-[var(--foreground)] mb-6">
-              Are you sure you want to delete <strong>{affiliate?.name}</strong>? This will permanently delete the affiliate and all associated click tracking data.
+              Are you sure you want to delete <strong>{affiliate?.name}</strong>
+              ? This will permanently delete the affiliate and all associated
+              click tracking data.
             </p>
 
             <div className="flex items-center gap-3 justify-end">

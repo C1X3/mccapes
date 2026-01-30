@@ -2,9 +2,7 @@ import { HydrateClient, prefetch, trpc } from "@/server/server";
 import HomePage from "@/views/homepage";
 
 const Page = async () => {
-  prefetch(
-    trpc.product.getAll.queryOptions({ isHomePage: true })
-  );
+  prefetch(trpc.product.getAll.queryOptions({ isHomePage: true }));
 
   return (
     <HydrateClient>

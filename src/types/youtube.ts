@@ -24,4 +24,4 @@ export interface YouTubeApiResponse {
       subscriberCount: string;
     };
   }>;
-} 
+}

@@ -25,8 +25,12 @@ interface Affiliate {
 export default function AffiliatesTab() {
   const trpc = useTRPC();
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedAffiliateId, setSelectedAffiliateId] = useState<string | null>(null);
-  const [editingAffiliate, setEditingAffiliate] = useState<Affiliate | null>(null);
+  const [selectedAffiliateId, setSelectedAffiliateId] = useState<string | null>(
+    null,
+  );
+  const [editingAffiliate, setEditingAffiliate] = useState<Affiliate | null>(
+    null,
+  );
 
   const {
     data: affiliates = [],
@@ -57,41 +61,71 @@ export default function AffiliatesTab() {
         </div>
 
         {/* Stats Overview */}
-        {!isLoading && affiliates.length > 0 && (() => {
-          const totalClicks = affiliates.reduce((sum, a) => sum + a.totalClicks, 0);
-          const totalOrders = affiliates.reduce((sum, a) => sum + a.totalOrders, 0);
-          const overallConversionRate = totalClicks > 0 ? (totalOrders / totalClicks) * 100 : 0;
-          
-          return (
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Conversion Rate</h3>
-              <p className={`text-2xl font-bold ${
-                overallConversionRate >= 5 ? "text-green-500" : 
-                overallConversionRate >= 2 ? "text-amber-500" : "text-[var(--foreground)]"
-              }`}>{overallConversionRate.toFixed(2)}%</p>
-            </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Clicks</h3>
-              <p className="text-2xl font-bold text-[var(--foreground)]">
-                {totalClicks.toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Orders</h3>
-              <p className="text-2xl font-bold text-[var(--foreground)]">
-                {totalOrders.toLocaleString()}
-              </p>
-            </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Revenue</h3>
-              <p className="text-2xl font-bold text-[var(--foreground)]">
-                ${affiliates.reduce((sum, a) => sum + a.totalRevenue, 0).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </p>
-            </div>
-          </div>
-          );
-        })()}
+        {!isLoading &&
+          affiliates.length > 0 &&
+          (() => {
+            const totalClicks = affiliates.reduce(
+              (sum, a) => sum + a.totalClicks,
+              0,
+            );
+            const totalOrders = affiliates.reduce(
+              (sum, a) => sum + a.totalOrders,
+              0,
+            );
+            const overallConversionRate =
+              totalClicks > 0 ? (totalOrders / totalClicks) * 100 : 0;
+
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                    Conversion Rate
+                  </h3>
+                  <p
+                    className={`text-2xl font-bold ${
+                      overallConversionRate >= 5
+                        ? "text-green-500"
+                        : overallConversionRate >= 2
+                          ? "text-amber-500"
+                          : "text-[var(--foreground)]"
+                    }`}
+                  >
+                    {overallConversionRate.toFixed(2)}%
+                  </p>
+                </div>
+                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                    Total Clicks
+                  </h3>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">
+                    {totalClicks.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                    Total Orders
+                  </h3>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">
+                    {totalOrders.toLocaleString()}
+                  </p>
+                </div>
+                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                    Total Revenue
+                  </h3>
+                  <p className="text-2xl font-bold text-[var(--foreground)]">
+                    $
+                    {affiliates
+                      .reduce((sum, a) => sum + a.totalRevenue, 0)
+                      .toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                  </p>
+                </div>
+              </div>
+            );
+          })()}
 
         {/* Affiliate Cards Grid */}
         {isLoading ? (
@@ -111,9 +145,14 @@ export default function AffiliatesTab() {
         ) : (
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-12 text-center border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
             <div className="w-16 h-16 bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-full flex items-center justify-center mx-auto mb-4">
-              <FaUsers className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]" size={24} />
+              <FaUsers
+                className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
+                size={24}
+              />
             </div>
-            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">No affiliates yet</h3>
+            <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">
+              No affiliates yet
+            </h3>
             <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-6">
               Create your first affiliate to start tracking referrals
             </p>
@@ -149,7 +188,12 @@ export default function AffiliatesTab() {
           <AffiliateDetailModal
             affiliateId={selectedAffiliateId}
             onClose={() => setSelectedAffiliateId(null)}
-            onEdit={(affiliate: { id: string; code: string; name: string; active: boolean }) => {
+            onEdit={(affiliate: {
+              id: string;
+              code: string;
+              name: string;
+              active: boolean;
+            }) => {
               setSelectedAffiliateId(null);
               setEditingAffiliate(affiliate as Affiliate);
             }}

@@ -13,7 +13,7 @@ export const YOUTUBE_CHANNEL_IDS = [
   "UCH8CkkLskdhprMPO4EYsHVw", // Flowtives
   "UCNv8iB--rsS_CwfJ2T8B3qw", // IcyNutella
   "UC2gufCjSyNihNbOEZE50bwQ", // JudeLow
-  "UCi8bmLd969MYvmrgAGndHaQ" // ItzOwo
+  "UCi8bmLd969MYvmrgAGndHaQ", // ItzOwo
 ];
 
 export const YOUTUBE_API_CONFIG = {
@@ -34,7 +34,7 @@ export const formatSubscriberCount = (count: string): string => {
 };
 
 export const fetchYouTubeChannels = async (
-  channelIds: string[]
+  channelIds: string[],
 ): Promise<YouTubeChannel[]> => {
   if (!YOUTUBE_API_CONFIG.apiKey) {
     console.error("YouTube API key is not configured");
@@ -43,8 +43,9 @@ export const fetchYouTubeChannels = async (
 
   try {
     const response = await fetch(
-      `${YOUTUBE_API_CONFIG.baseUrl}/channels?part=${YOUTUBE_API_CONFIG.part
-      }&id=${channelIds.join(",")}&key=${YOUTUBE_API_CONFIG.apiKey}`
+      `${YOUTUBE_API_CONFIG.baseUrl}/channels?part=${
+        YOUTUBE_API_CONFIG.part
+      }&id=${channelIds.join(",")}&key=${YOUTUBE_API_CONFIG.apiKey}`,
     );
 
     if (!response.ok) {
@@ -64,4 +65,4 @@ export const fetchYouTubeChannels = async (
     console.error("Error fetching YouTube data:", error);
     return [];
   }
-}; 
+};

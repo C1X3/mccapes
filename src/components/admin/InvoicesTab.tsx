@@ -1,10 +1,22 @@
 import { useTRPC } from "@/server/client";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect } from "react";
-import { FaReceipt, FaSearch, FaDownload, FaFilter, FaChevronLeft, FaChevronRight, FaSpinner } from "react-icons/fa";
+import {
+  FaReceipt,
+  FaSearch,
+  FaDownload,
+  FaFilter,
+  FaChevronLeft,
+  FaChevronRight,
+  FaSpinner,
+} from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import InvoiceFilterModal from "./InvoiceFilterModal";
-import { getStatusBadgeClass, formatDate, getPaymentDisplayName } from "@/utils/invoiceUtils";
+import {
+  getStatusBadgeClass,
+  formatDate,
+  getPaymentDisplayName,
+} from "@/utils/invoiceUtils";
 import { exportInvoicesToCSV } from "@/utils/csvExport";
 import { useInvoiceFilters } from "@/hooks/useInvoiceFilters";
 import { formatPrice } from "@/utils/formatting";
@@ -13,7 +25,7 @@ import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
 export default function InvoicesTab() {
   const trpc = useTRPC();
   const router = useRouter();
-  
+
   // Use the custom hook for filter management
   const {
     filters,
@@ -37,7 +49,7 @@ export default function InvoicesTab() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [showFilterModal, setShowFilterModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
-  
+
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
@@ -56,7 +68,8 @@ export default function InvoicesTab() {
   const filterQueryParams = {
     search: debouncedSearch || undefined,
     status: filters.statusFilter !== "ALL" ? filters.statusFilter : undefined,
-    paymentType: filters.paymentFilter !== "ALL" ? filters.paymentFilter : undefined,
+    paymentType:
+      filters.paymentFilter !== "ALL" ? filters.paymentFilter : undefined,
     email: filters.emailFilter || undefined,
     discord: filters.discordFilter || undefined,
     affiliate: filters.affiliateFilter || undefined,
@@ -72,11 +85,11 @@ export default function InvoicesTab() {
     setIsExporting(true);
     try {
       const filteredInvoices = await queryClient.fetchQuery(
-        trpc.invoices.getFiltered.queryOptions(filterQueryParams)
+        trpc.invoices.getFiltered.queryOptions(filterQueryParams),
       );
       exportInvoicesToCSV(filteredInvoices);
     } catch (error) {
-      console.error('Failed to export invoices:', error);
+      console.error("Failed to export invoices:", error);
     } finally {
       setIsExporting(false);
     }
@@ -84,7 +97,7 @@ export default function InvoicesTab() {
 
   // Get stats (lightweight aggregate query with filters)
   const { data: stats } = useQuery(
-    trpc.invoices.getStats.queryOptions(filterQueryParams)
+    trpc.invoices.getStats.queryOptions(filterQueryParams),
   );
 
   // Get paginated invoices (only fetches current page)
@@ -93,22 +106,24 @@ export default function InvoicesTab() {
       page: currentPage,
       limit: itemsPerPage,
       ...filterQueryParams,
-    })
+    }),
   );
 
-  const { data: currentProducts = [] } = useQuery(trpc.product.getAllWithStock.queryOptions());
-  
+  const { data: currentProducts = [] } = useQuery(
+    trpc.product.getAllWithStock.queryOptions(),
+  );
+
   // Compute product options for the dropdown
   const productOptions = useMemo(() => {
-    const currentProductNames = new Set(currentProducts.map(p => p.name));
-    
+    const currentProductNames = new Set(currentProducts.map((p) => p.name));
+
     return {
       activeProducts: Array.from(currentProductNames).sort(),
       discontinuedProducts: [] as string[],
-      hasDiscontinued: false
+      hasDiscontinued: false,
     };
   }, [currentProducts]);
-  
+
   // Navigate to invoice detail page
   const navigateToInvoice = (invoiceId: string) => {
     router.push(`/admin/invoice/${invoiceId}`);
@@ -179,32 +194,35 @@ export default function InvoicesTab() {
         onApplyFilters={handleApplyFilters}
         onResetAndApplyFilters={handleResetAndApplyFilters}
       />
-
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
           <FaReceipt />
           Invoices
-        </h2>        <div className="flex gap-3 items-center flex-wrap">
+        </h2>{" "}
+        <div className="flex gap-3 items-center flex-wrap">
           {/* Export to CSV button - hidden on mobile */}
           <button
             onClick={handleExportAll}
             disabled={isExporting}
             className="hidden md:flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors disabled:opacity-50"
             title="Export all invoices to CSV"
-            >
-            {isExporting ? <FaSpinner className="size-4 animate-spin" /> : <FaDownload className="size-4" />}
+          >
+            {isExporting ? (
+              <FaSpinner className="size-4 animate-spin" />
+            ) : (
+              <FaDownload className="size-4" />
+            )}
             {isExporting ? "Exporting..." : "Export to CSV"}
-            </button>
+          </button>
 
-            <button
+          <button
             onClick={openFilterModal}
             className="flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
             title="Filter"
-            >
+          >
             <FaFilter className="size-4" />
             <span className="hidden md:inline">Filter</span>
-            </button>
-
+          </button>
 
           <div className="relative">
             {/* Mobile search input */}
@@ -223,32 +241,49 @@ export default function InvoicesTab() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="hidden md:block pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-auto min-w-[200px]"
             />
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]" size={14} />
+            <FaSearch
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+              size={14}
+            />
           </div>
         </div>
       </div>
-
       <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Total Sales</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{formatPrice(stats?.totalSales || 0)}</p>
+            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+              Total Sales
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              {formatPrice(stats?.totalSales || 0)}
+            </p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Invoices</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.totalCount || 0}</p>
+            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+              Invoices
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              {stats?.totalCount || 0}
+            </p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Pending</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.pendingCount || 0}</p>
+            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+              Pending
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              {stats?.pendingCount || 0}
+            </p>
           </div>
           <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">Completed</h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">{stats?.completedCount || 0}</p>
+            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+              Completed
+            </h3>
+            <p className="text-2xl font-bold text-[var(--foreground)]">
+              {stats?.completedCount || 0}
+            </p>
           </div>
         </div>
       </div>
-
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
@@ -279,19 +314,39 @@ export default function InvoicesTab() {
           <tbody>
             {isLoading ? (
               Array.from({ length: itemsPerPage }).map((_, i) => (
-                <tr key={i} className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] animate-pulse">
-                  <td className="py-4 px-2"><div className="h-6 w-20 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-24 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-32 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-16 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-20 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-40 bg-gray-200 rounded"></div></td>
-                  <td className="py-4 px-2"><div className="h-4 w-24 bg-gray-200 rounded"></div></td>
+                <tr
+                  key={i}
+                  className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] animate-pulse"
+                >
+                  <td className="py-4 px-2">
+                    <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                  </td>
+                  <td className="py-4 px-2">
+                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                  </td>
                 </tr>
               ))
             ) : currentInvoices.length === 0 ? (
               <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] text-center">
-                <td colSpan={7} className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                <td
+                  colSpan={7}
+                  className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                >
                   No invoices found
                 </td>
               </tr>
@@ -318,17 +373,19 @@ export default function InvoicesTab() {
 
                   {/* Products */}
                   <td className="py-4 px-2 text-[var(--foreground)] max-w-[250px]">
-                    {invoice.OrderItem && invoice.OrderItem.length > 0 ? (() => {
-                      const firstItem = invoice.OrderItem[0];
-                      const extraCount = invoice.OrderItem.length - 1;
+                    {invoice.OrderItem && invoice.OrderItem.length > 0
+                      ? (() => {
+                          const firstItem = invoice.OrderItem[0];
+                          const extraCount = invoice.OrderItem.length - 1;
 
-                      return (
-                        <div>
-                          {firstItem.product.name}
-                          {extraCount > 0 && ` +${extraCount} more`}
-                        </div>
-                      );
-                    })() : "N/A"}
+                          return (
+                            <div>
+                              {firstItem.product.name}
+                              {extraCount > 0 && ` +${extraCount} more`}
+                            </div>
+                          );
+                        })()
+                      : "N/A"}
                   </td>
 
                   {/* Price */}
@@ -339,9 +396,9 @@ export default function InvoicesTab() {
                   {/* Payment Method */}
                   <td className="py-4 px-2 text-[var(--foreground)]">
                     <div className="flex items-center gap-2">
-                      <PaymentMethodLogo 
-                        paymentType={invoice.paymentType} 
-                        cryptoType={invoice.Wallet?.[0]?.chain} 
+                      <PaymentMethodLogo
+                        paymentType={invoice.paymentType}
+                        cryptoType={invoice.Wallet?.[0]?.chain}
                       />
                       <span>{getPaymentDisplayName(invoice)}</span>
                     </div>
@@ -361,13 +418,17 @@ export default function InvoicesTab() {
             )}
           </tbody>
         </table>
-      </div>      {/* Pagination Controls */}
+      </div>{" "}
+      {/* Pagination Controls */}
       <div className="mt-6">
         {/* Pagination info - always visible, responsive layout */}
         <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-4">
           <div className="flex flex-col md:flex-row md:items-center gap-2">
             <span className="text-[var(--foreground)] text-sm">
-              Showing {Math.min(totalItems, (currentPage - 1) * itemsPerPage + 1)} - {Math.min(totalItems, currentPage * itemsPerPage)} of {totalItems} invoices
+              Showing{" "}
+              {Math.min(totalItems, (currentPage - 1) * itemsPerPage + 1)} -{" "}
+              {Math.min(totalItems, currentPage * itemsPerPage)} of {totalItems}{" "}
+              invoices
             </span>
             {/* Per page selector - only shown on desktop */}
             <select
@@ -389,33 +450,33 @@ export default function InvoicesTab() {
               <option value={100}>100 per page</option>
             </select>
           </div>
-          
+
           <div className="flex items-center justify-center md:justify-end gap-2">
             <button
               onClick={goToPreviousPage}
               disabled={currentPage <= 1}
               className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
                 currentPage <= 1
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
               }`}
             >
               <FaChevronLeft size={14} />
             </button>
-            
+
             <div className="flex items-center">
               <span className="mx-2 text-[var(--foreground)] text-sm">
                 Page {currentPage} of {totalPages}
               </span>
             </div>
-            
+
             <button
               onClick={goToNextPage}
               disabled={currentPage >= totalPages}
               className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
                 currentPage >= totalPages
-                  ? 'opacity-50 cursor-not-allowed'
-                  : 'hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors'
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
               }`}
             >
               <FaChevronRight size={14} />

@@ -1,9 +1,18 @@
 import { useState, useEffect } from "react";
 import { Reorder, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
-import { FaEdit, FaTrash, FaPlus, FaEye, FaGripVertical, FaBox } from "react-icons/fa";
+import {
+  FaEdit,
+  FaTrash,
+  FaPlus,
+  FaEye,
+  FaGripVertical,
+  FaBox,
+} from "react-icons/fa";
 import { toast } from "react-hot-toast";
-import ProductFormModal, { ProductFormModalSchema } from "@/components/admin/ProductFormModal";
+import ProductFormModal, {
+  ProductFormModalSchema,
+} from "@/components/admin/ProductFormModal";
 import { Product } from "@generated/browser";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useTRPC } from "@/server/client";
@@ -11,7 +20,9 @@ import { useTRPC } from "@/server/client";
 export default function ProductsTab() {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductFormModalSchema | undefined>(undefined);
+  const [selectedProduct, setSelectedProduct] = useState<
+    ProductFormModalSchema | undefined
+  >(undefined);
   const [orderedProducts, setOrderedProducts] = useState<Product[]>([]);
   const [isDragDisabled, setIsDragDisabled] = useState(false);
 
@@ -20,29 +31,33 @@ export default function ProductsTab() {
 
   // tRPC product hooks
   const products = useQuery(trpc.product.getAllWithStock.queryOptions());
-  const deleteProductMutation = useMutation(trpc.product.delete.mutationOptions({
-    onSuccess: () => {
-      toast.success("Product deleted successfully");
-      products.refetch();
-    },
-    onError: (error) => {
-      toast.error(`Error deleting product: ${error.message}`);
-    },
-  }));
-  
+  const deleteProductMutation = useMutation(
+    trpc.product.delete.mutationOptions({
+      onSuccess: () => {
+        toast.success("Product deleted successfully");
+        products.refetch();
+      },
+      onError: (error) => {
+        toast.error(`Error deleting product: ${error.message}`);
+      },
+    }),
+  );
+
   // Product order mutation
-  const updateProductOrderMutation = useMutation(trpc.product.updateOrders.mutationOptions({
-    onSuccess: () => {
-      toast.success("Product order updated successfully");
-    },
-    onError: (error) => {
-      toast.error(`Error updating product order: ${error.message}`);
-      // Reset to original order if update fails
-      if (products.data) {
-        setOrderedProducts(products.data);
-      }
-    },
-  }));
+  const updateProductOrderMutation = useMutation(
+    trpc.product.updateOrders.mutationOptions({
+      onSuccess: () => {
+        toast.success("Product order updated successfully");
+      },
+      onError: (error) => {
+        toast.error(`Error updating product order: ${error.message}`);
+        // Reset to original order if update fails
+        if (products.data) {
+          setOrderedProducts(products.data);
+        }
+      },
+    }),
+  );
 
   useEffect(() => {
     if (products.data) {
@@ -75,7 +90,7 @@ export default function ProductsTab() {
       hideProductPage: product.hideProductPage || false,
       isFeatured: product.isFeatured || false,
       order: product.order || 0,
-      stripeProductName: product.stripeProductName || ""
+      stripeProductName: product.stripeProductName || "",
     };
     setSelectedProduct(formProduct);
     setIsEditModalOpen(true);
@@ -83,13 +98,13 @@ export default function ProductsTab() {
 
   const handleReorder = (reorderedProducts: Product[]) => {
     setOrderedProducts(reorderedProducts);
-    
+
     // Update products with new order values
     const productOrders = reorderedProducts.map((product, index) => ({
       id: product.id,
-      order: index
+      order: index,
     }));
-    
+
     updateProductOrderMutation.mutate({ productOrders });
   };
 
@@ -174,82 +189,84 @@ export default function ProductsTab() {
                   </th>
                 </tr>
               </thead>
-              <Reorder.Group 
-                as="tbody" 
-                axis="y" 
-                values={orderedProducts} 
+              <Reorder.Group
+                as="tbody"
+                axis="y"
+                values={orderedProducts}
                 onReorder={handleReorder}
                 className="relative"
               >
-                {!products.error && orderedProducts.map((product) => (
-                  <Reorder.Item
-                    key={product.id}
-                    value={product}
-                    as="tr"
-                    dragListener={!isDragDisabled}
-                    dragControls={undefined}
-                    className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] relative"
-                  >
-                    <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)] cursor-move">
-                      <FaGripVertical className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]" />
-                    </td>
-                    <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                      {product.id.substring(0, 8)}...
-                    </td>
-                    <td className="py-4 px-2 text-[var(--foreground)]">
-                      {product.name}
-                    </td>
-                    <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                      {product.category}
-                    </td>
-                    <td className="py-4 px-2 text-[var(--foreground)]">
-                      ${product.price.toFixed(2)}
-                    </td>
-                    <td className="py-4 px-2 text-[var(--foreground)]">
-                      <span
-                        className={`px-2 py-1 rounded-full text-xs ${product.stock.length > 10
-                          ? "bg-green-100 text-green-800"
-                          : product.stock.length > 0
-                            ? "bg-orange-100 text-orange-800"
-                            : "bg-red-100 text-red-800"
+                {!products.error &&
+                  orderedProducts.map((product) => (
+                    <Reorder.Item
+                      key={product.id}
+                      value={product}
+                      as="tr"
+                      dragListener={!isDragDisabled}
+                      dragControls={undefined}
+                      className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] relative"
+                    >
+                      <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)] cursor-move">
+                        <FaGripVertical className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]" />
+                      </td>
+                      <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        {product.id.substring(0, 8)}...
+                      </td>
+                      <td className="py-4 px-2 text-[var(--foreground)]">
+                        {product.name}
+                      </td>
+                      <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        {product.category}
+                      </td>
+                      <td className="py-4 px-2 text-[var(--foreground)]">
+                        ${product.price.toFixed(2)}
+                      </td>
+                      <td className="py-4 px-2 text-[var(--foreground)]">
+                        <span
+                          className={`px-2 py-1 rounded-full text-xs ${
+                            product.stock.length > 10
+                              ? "bg-green-100 text-green-800"
+                              : product.stock.length > 0
+                                ? "bg-orange-100 text-orange-800"
+                                : "bg-red-100 text-red-800"
                           }`}
-                      >
-                        {product.stock.length}
-                      </span>
-                    </td>
-                    <td className="py-4 px-2 text-right">
-                      <div className="flex justify-end gap-2">
-                        <button
-                          onClick={() => router.push(`/shop/${product.slug}`)}
-                          className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
-                          title="View Product"
-                          onMouseEnter={() => setIsDragDisabled(true)}
-                          onMouseLeave={() => setIsDragDisabled(false)}
                         >
-                          <FaEye size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleEditProduct(product)}
-                          className="p-2 bg-amber-100 text-amber-600 rounded hover:bg-amber-200 transition-colors"
-                          title="Edit Product"
-                          onMouseEnter={() => setIsDragDisabled(true)}
-                          onMouseLeave={() => setIsDragDisabled(false)}
-                        >
-                          <FaEdit size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteProduct(product.id)}
-                          className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
-                          title="Delete Product"
-                          onMouseEnter={() => setIsDragDisabled(true)}
-                          onMouseLeave={() => setIsDragDisabled(false)}
-                        >
-                          <FaTrash size={14} />
-                        </button>
-                      </div>
-                    </td>
-                  </Reorder.Item>
-                ))}
+                          {product.stock.length}
+                        </span>
+                      </td>
+                      <td className="py-4 px-2 text-right">
+                        <div className="flex justify-end gap-2">
+                          <button
+                            onClick={() => router.push(`/shop/${product.slug}`)}
+                            className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                            title="View Product"
+                            onMouseEnter={() => setIsDragDisabled(true)}
+                            onMouseLeave={() => setIsDragDisabled(false)}
+                          >
+                            <FaEye size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleEditProduct(product)}
+                            className="p-2 bg-amber-100 text-amber-600 rounded hover:bg-amber-200 transition-colors"
+                            title="Edit Product"
+                            onMouseEnter={() => setIsDragDisabled(true)}
+                            onMouseLeave={() => setIsDragDisabled(false)}
+                          >
+                            <FaEdit size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteProduct(product.id)}
+                            className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                            title="Delete Product"
+                            onMouseEnter={() => setIsDragDisabled(true)}
+                            onMouseLeave={() => setIsDragDisabled(false)}
+                          >
+                            <FaTrash size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </Reorder.Item>
+                  ))}
               </Reorder.Group>
             </table>
           </div>

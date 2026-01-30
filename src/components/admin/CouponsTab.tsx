@@ -31,7 +31,7 @@ export default function CouponsTab() {
       onError: (error) => {
         toast.error(error.message || "Failed to delete coupon");
       },
-    })
+    }),
   );
 
   const handleDeleteCoupon = (id: string) => {
@@ -126,19 +126,19 @@ export default function CouponsTab() {
                         !coupon.active
                           ? "bg-red-100 text-red-800"
                           : coupon.usageCount >= coupon.usageLimit
-                          ? "bg-orange-100 text-orange-800"
-                          : new Date(coupon.validUntil) < new Date()
-                          ? "bg-gray-100 text-gray-800"
-                          : "bg-green-100 text-green-800"
+                            ? "bg-orange-100 text-orange-800"
+                            : new Date(coupon.validUntil) < new Date()
+                              ? "bg-gray-100 text-gray-800"
+                              : "bg-green-100 text-green-800"
                       }`}
                     >
                       {!coupon.active
                         ? "Inactive"
                         : coupon.usageCount >= coupon.usageLimit
-                        ? "Max Uses Reached"
-                        : new Date(coupon.validUntil) < new Date()
-                        ? "Expired"
-                        : "Active"}
+                          ? "Max Uses Reached"
+                          : new Date(coupon.validUntil) < new Date()
+                            ? "Expired"
+                            : "Active"}
                     </span>
                   </td>
                   <td className="py-4 px-2 text-right">

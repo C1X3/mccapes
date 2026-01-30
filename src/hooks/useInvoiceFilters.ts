@@ -4,40 +4,42 @@ import { InvoiceFilters, defaultFilters } from "@/types/invoiceFilters";
 export const useInvoiceFilters = () => {
   // Main filter state
   const [filters, setFilters] = useState<InvoiceFilters>(defaultFilters);
-  
+
   // Temporary filter state for modal
-  const [tempFilters, setTempFilters] = useState<InvoiceFilters>(defaultFilters);
+  const [tempFilters, setTempFilters] =
+    useState<InvoiceFilters>(defaultFilters);
 
   // Individual setters for temp filters (for backward compatibility with modal)
   const setTempStatusFilter = (value: InvoiceFilters["statusFilter"]) =>
-    setTempFilters(prev => ({ ...prev, statusFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, statusFilter: value }));
+
   const setTempPaymentFilter = (value: InvoiceFilters["paymentFilter"]) =>
-    setTempFilters(prev => ({ ...prev, paymentFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, paymentFilter: value }));
+
   const setTempProductFilter = (value: InvoiceFilters["productFilter"]) =>
-    setTempFilters(prev => ({ ...prev, productFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, productFilter: value }));
+
   const setTempEmailFilter = (value: InvoiceFilters["emailFilter"]) =>
-    setTempFilters(prev => ({ ...prev, emailFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, emailFilter: value }));
+
   const setTempDiscordFilter = (value: InvoiceFilters["discordFilter"]) =>
-    setTempFilters(prev => ({ ...prev, discordFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, discordFilter: value }));
+
   const setTempAffiliateFilter = (value: InvoiceFilters["affiliateFilter"]) =>
-    setTempFilters(prev => ({ ...prev, affiliateFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, affiliateFilter: value }));
+
   const setTempCodeFilter = (value: InvoiceFilters["codeFilter"]) =>
-    setTempFilters(prev => ({ ...prev, codeFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, codeFilter: value }));
+
   const setTempPaypalNoteFilter = (value: InvoiceFilters["paypalNoteFilter"]) =>
-    setTempFilters(prev => ({ ...prev, paypalNoteFilter: value }));
-  
+    setTempFilters((prev) => ({ ...prev, paypalNoteFilter: value }));
+
   const setTempInvoiceIdFilter = (value: InvoiceFilters["invoiceIdFilter"]) =>
-    setTempFilters(prev => ({ ...prev, invoiceIdFilter: value }));
-  
-  const setTempDateProcessedFilter = (value: InvoiceFilters["dateProcessedFilter"]) =>
-    setTempFilters(prev => ({ ...prev, dateProcessedFilter: value }));
+    setTempFilters((prev) => ({ ...prev, invoiceIdFilter: value }));
+
+  const setTempDateProcessedFilter = (
+    value: InvoiceFilters["dateProcessedFilter"],
+  ) => setTempFilters((prev) => ({ ...prev, dateProcessedFilter: value }));
 
   // Initialize temp filters with current filters
   const initializeTempFilters = () => {
@@ -59,11 +61,11 @@ export const useInvoiceFilters = () => {
     // Main filter state
     filters,
     setFilters,
-    
+
     // Temp filter state
     tempFilters,
     setTempFilters,
-    
+
     // Individual temp filter setters
     setTempStatusFilter,
     setTempPaymentFilter,
@@ -75,7 +77,7 @@ export const useInvoiceFilters = () => {
     setTempPaypalNoteFilter,
     setTempInvoiceIdFilter,
     setTempDateProcessedFilter,
-    
+
     // Actions
     initializeTempFilters,
     applyFilters,

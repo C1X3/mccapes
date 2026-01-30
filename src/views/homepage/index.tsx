@@ -12,8 +12,12 @@ import { motion } from "framer-motion";
 
 const HomePage = () => {
   const trpc = useTRPC();
-  const { data: products } = useQuery(trpc.product.getAll.queryOptions({ isHomePage: true }));
-  const { data: articles } = useQuery(trpc.article.getAll.queryOptions({ includeInactive: false }));
+  const { data: products } = useQuery(
+    trpc.product.getAll.queryOptions({ isHomePage: true }),
+  );
+  const { data: articles } = useQuery(
+    trpc.article.getAll.queryOptions({ includeInactive: false }),
+  );
 
   return (
     <div className="min-h-screen bg-[var(--background)]">

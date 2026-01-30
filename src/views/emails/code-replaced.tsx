@@ -44,7 +44,8 @@ export const CodeReplacedTemplate = ({
             {/* Replacement Confirmation Banner */}
             <Section style={confirmationBanner}>
               <Text style={confirmationBannerText}>
-                Your product code has been successfully replaced for order #{orderId.substring(0, 8)}
+                Your product code has been successfully replaced for order #
+                {orderId.substring(0, 8)}
               </Text>
             </Section>
 
@@ -55,8 +56,9 @@ export const CodeReplacedTemplate = ({
               </div>
               <Hr style={messageDivider} />
               <Text style={messageText}>
-                We&apos;ve replaced one of your product codes with a fresh new code. 
-                Please use the new code below and discard the previous one.
+                We&apos;ve replaced one of your product codes with a fresh new
+                code. Please use the new code below and discard the previous
+                one.
               </Text>
 
               {/* Order Details */}
@@ -65,19 +67,22 @@ export const CodeReplacedTemplate = ({
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Order ID</Text>
                   <Text style={orderDetailValue}>
-                    <span style={orderDetailLabel}>: </span>#{orderId.substring(0, 8)}
+                    <span style={orderDetailLabel}>: </span>#
+                    {orderId.substring(0, 8)}
                   </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Product</Text>
                   <Text style={orderDetailValue}>
-                    <span style={orderDetailLabel}>: </span>{productName}
+                    <span style={orderDetailLabel}>: </span>
+                    {productName}
                   </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Replacement Date</Text>
                   <Text style={orderDetailValue}>
-                    <span style={orderDetailLabel}>: </span>{new Date().toLocaleDateString()}
+                    <span style={orderDetailLabel}>: </span>
+                    {new Date().toLocaleDateString()}
                   </Text>
                 </div>
               </Section>
@@ -97,7 +102,7 @@ export const CodeReplacedTemplate = ({
                   <div style={oldCodeBox}>
                     <Text style={oldCodeText}>{oldCode}</Text>
                   </div>
-                  
+
                   <Text style={codesTitle}>New Code (Active):</Text>
                   <div style={newCodeBox}>
                     <Text style={newCodeText}>{newCode}</Text>
@@ -109,8 +114,9 @@ export const CodeReplacedTemplate = ({
             <Section style={nextStepsSection}>
               <Text style={nextStepsTitle}>Important Information</Text>
               <Text style={nextStepsText}>
-                • Your previous code has been deactivated and can no longer be used{'\n'}
-                • If you need any assistance, contact our support team with your order ID
+                • Your previous code has been deactivated and can no longer be
+                used{"\n"}• If you need any assistance, contact our support team
+                with your order ID
               </Text>
             </Section>
 

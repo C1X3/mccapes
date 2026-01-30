@@ -48,7 +48,7 @@ const items = [
     label: "Discord",
     href: "https://discord.mccapes.net",
     external: true,
-  }
+  },
 ];
 
 const NavMenu = () => {
@@ -62,9 +62,11 @@ const NavMenu = () => {
       animate="visible"
     >
       {items.map((item) => {
-        const isActive = item.external ? false : pathname === item.href || 
-          (item.href !== "/" && pathname?.startsWith(item.href));
-        
+        const isActive = item.external
+          ? false
+          : pathname === item.href ||
+            (item.href !== "/" && pathname?.startsWith(item.href));
+
         return (
           <motion.li key={item.label} variants={fadeInUp} className="relative">
             <Link
@@ -72,8 +74,8 @@ const NavMenu = () => {
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
               className={`font-medium px-4 py-2 rounded-full transition-all ${
-                isActive 
-                  ? "bg-green-500 text-white" 
+                isActive
+                  ? "bg-green-500 text-white"
                   : "hover:text-[var(--primary-light)]"
               }`}
             >

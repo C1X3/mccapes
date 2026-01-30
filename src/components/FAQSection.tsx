@@ -16,21 +16,45 @@ const faqData: FAQItem[] = [
   },
   {
     question: "What payment methods do you accept?",
-    answer: "We accept payments via PayPal, Bitcoin, Litecoin, Ethereum, Solana, Credit/Debit Card and more via Stripe.",
+    answer:
+      "We accept payments via PayPal, Bitcoin, Litecoin, Ethereum, Solana, Credit/Debit Card and more via Stripe.",
   },
   {
     question: "What do I do if my PayPal order hasn't processed/cancelled?",
     answer: (
       <div>
-        <p className="mb-3">If your PayPal order hasn&apos;t been processed or was cancelled, please reach out to us:</p>
+        <p className="mb-3">
+          If your PayPal order hasn&apos;t been processed or was cancelled,
+          please reach out to us:
+        </p>
         <ul className="space-y-2 ml-4">
           <li className="flex items-start">
             <span className="text-[var(--primary-dark)] mr-2">•</span>
-            <span>Email us at <a href="mailto:mccapesbusiness@gmail.com" className="text-[var(--primary-dark)] hover:underline font-medium">mccapesbusiness@gmail.com</a></span>
+            <span>
+              Email us at{" "}
+              <a
+                href="mailto:mccapesbusiness@gmail.com"
+                className="text-[var(--primary-dark)] hover:underline font-medium"
+              >
+                mccapesbusiness@gmail.com
+              </a>
+            </span>
           </li>
           <li className="flex items-start">
             <span className="text-[var(--primary-dark)] mr-2">•</span>
-            <span>Join our <a href="https://discord.mccapes.net" target="_blank" rel="noopener noreferrer" className="text-[var(--primary-dark)] hover:underline font-medium">Discord</a> and open a ticket in <span className="font-medium">#customer-support</span></span>
+            <span>
+              Join our{" "}
+              <a
+                href="https://discord.mccapes.net"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[var(--primary-dark)] hover:underline font-medium"
+              >
+                Discord
+              </a>{" "}
+              and open a ticket in{" "}
+              <span className="font-medium">#customer-support</span>
+            </span>
           </li>
         </ul>
       </div>
@@ -41,39 +65,72 @@ const faqData: FAQItem[] = [
     answer: (
       <ol className="space-y-3 mt-2">
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">1.</span>
-          <span>Go to <a href="https://www.minecraft.net/en-us/redeem" target="_blank" rel="noopener noreferrer" className="text-[var(--primary-dark)] hover:underline font-medium">https://www.minecraft.net/en-us/redeem</a></span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            1.
+          </span>
+          <span>
+            Go to{" "}
+            <a
+              href="https://www.minecraft.net/en-us/redeem"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[var(--primary-dark)] hover:underline font-medium"
+            >
+              https://www.minecraft.net/en-us/redeem
+            </a>
+          </span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">2.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            2.
+          </span>
           <span>Redeem the cape under your profile after logging in.</span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">3.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            3.
+          </span>
           <span>Open Bedrock Edition and equip the cape.</span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">4.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            4.
+          </span>
           <span>Log out of minecraft.net and log back in.</span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">5.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            5.
+          </span>
           <span>Go to your profile&apos;s skin settings.</span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">6.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            6.
+          </span>
           <span>Equip the cape.</span>
         </li>
         <li className="flex items-start">
-          <span className="font-semibold text-[var(--primary-dark)] mr-2">7.</span>
-          <span>Log off any server, then log back on. The cape will appear afterward.</span>
+          <span className="font-semibold text-[var(--primary-dark)] mr-2">
+            7.
+          </span>
+          <span>
+            Log off any server, then log back on. The cape will appear
+            afterward.
+          </span>
         </li>
       </ol>
     ),
   },
 ];
 
-const FAQAccordionItem = ({ item, index }: { item: FAQItem; index: number }) => {
+const FAQAccordionItem = ({
+  item,
+  index,
+}: {
+  item: FAQItem;
+  index: number;
+}) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -99,7 +156,7 @@ const FAQAccordionItem = ({ item, index }: { item: FAQItem; index: number }) => 
           <IoChevronDown className="w-5 h-5 text-[var(--primary-dark)]" />
         </motion.div>
       </button>
-      
+
       <motion.div
         initial={false}
         animate={{
@@ -110,11 +167,7 @@ const FAQAccordionItem = ({ item, index }: { item: FAQItem; index: number }) => 
         className="overflow-hidden"
       >
         <div className="px-6 pb-5 text-gray-700 leading-relaxed">
-          {typeof item.answer === "string" ? (
-            <p>{item.answer}</p>
-          ) : (
-            item.answer
-          )}
+          {typeof item.answer === "string" ? <p>{item.answer}</p> : item.answer}
         </div>
       </motion.div>
     </motion.div>
@@ -126,7 +179,10 @@ interface FAQSectionProps {
   showContactButtons?: boolean;
 }
 
-const FAQSection = ({ showTitle = false, showContactButtons = false }: FAQSectionProps) => {
+const FAQSection = ({
+  showTitle = false,
+  showContactButtons = false,
+}: FAQSectionProps) => {
   return (
     <div>
       {showTitle && (
@@ -165,7 +221,8 @@ const FAQSection = ({ showTitle = false, showContactButtons = false }: FAQSectio
             Still have questions?
           </h2>
           <p className="text-gray-600 mb-6">
-            Can&apos;t find the answer you&apos;re looking for? Feel free to reach out to our support team.
+            Can&apos;t find the answer you&apos;re looking for? Feel free to
+            reach out to our support team.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <a
@@ -190,4 +247,3 @@ const FAQSection = ({ showTitle = false, showContactButtons = false }: FAQSectio
 };
 
 export default FAQSection;
-

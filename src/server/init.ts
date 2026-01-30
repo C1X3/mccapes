@@ -4,17 +4,16 @@ import SuperJSON from "superjson";
 import { TRPCError } from "@trpc/server";
 import { cookies } from "next/headers";
 
-export const createTRPCContext = cache(
-  async () => {
-    const cooks = await cookies();
-    const authenticatedCookie = cooks.get("authenticated");
-    const isAuthenticated = authenticatedCookie?.value === process.env.ADMIN_PASSWORD;
+export const createTRPCContext = cache(async () => {
+  const cooks = await cookies();
+  const authenticatedCookie = cooks.get("authenticated");
+  const isAuthenticated =
+    authenticatedCookie?.value === process.env.ADMIN_PASSWORD;
 
-    return {
-      isAuthenticated,
-    };
-  }
-);
+  return {
+    isAuthenticated,
+  };
+});
 
 const t = initTRPC
   .context<{

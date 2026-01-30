@@ -83,17 +83,22 @@ export const OrderCompleteTemplate = ({
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Order ID</Text>
                   <Text style={orderDetailValue}>
-                    <span style={orderDetailLabel}>: </span>#{orderId.substring(0, 8)}
+                    <span style={orderDetailLabel}>: </span>#
+                    {orderId.substring(0, 8)}
                   </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Order Date</Text>
-                  <Text style={orderDetailValue}><span style={orderDetailLabel}>: </span>{orderDate}</Text>
+                  <Text style={orderDetailValue}>
+                    <span style={orderDetailLabel}>: </span>
+                    {orderDate}
+                  </Text>
                 </div>
                 <div style={orderDetailRow}>
                   <Text style={orderDetailLabel}>Payment Method</Text>
                   <Text style={orderDetailValue}>
-                    <span style={orderDetailLabel}>: </span>{paymentType.replace("_", " ")}
+                    <span style={orderDetailLabel}>: </span>
+                    {paymentType.replace("_", " ")}
                   </Text>
                 </div>
               </Section>
@@ -105,7 +110,9 @@ export const OrderCompleteTemplate = ({
                   <div style={itemContainer}>
                     <div style={itemDetailsContainer}>
                       <Text style={itemName}>{item.name}</Text>
-                      <table style={{ width: "100%", borderCollapse: "collapse" }}>
+                      <table
+                        style={{ width: "100%", borderCollapse: "collapse" }}
+                      >
                         <tr>
                           <td style={{ ...itemPrice, width: "60%" }}>
                             {formatPrice(item.price)} × {item.quantity}
@@ -138,17 +145,26 @@ export const OrderCompleteTemplate = ({
               <Section style={summarySection}>
                 <div style={summaryRow}>
                   <Text style={summaryLabel}>Subtotal</Text>
-                  <Text style={summaryValue}><span style={summaryLabel}>: </span>{formatPrice(totalPrice)}</Text>
+                  <Text style={summaryValue}>
+                    <span style={summaryLabel}>: </span>
+                    {formatPrice(totalPrice)}
+                  </Text>
                 </div>
                 {paymentFee > 0 && (
                   <div style={summaryRow}>
                     <Text style={summaryLabel}>Payment Fee</Text>
-                    <Text style={summaryValue}><span style={summaryLabel}>: </span>{formatPrice(paymentFee)}</Text>
+                    <Text style={summaryValue}>
+                      <span style={summaryLabel}>: </span>
+                      {formatPrice(paymentFee)}
+                    </Text>
                   </div>
                 )}
                 <div style={totalRow}>
                   <Text style={totalLabel}>Total Paid</Text>
-                  <Text style={totalValue}><span style={totalLabel}>: </span>{formatPrice(totalWithFee)}</Text>
+                  <Text style={totalValue}>
+                    <span style={totalLabel}>: </span>
+                    {formatPrice(totalWithFee)}
+                  </Text>
                 </div>
               </Section>
             </Section>

@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { CartProvider } from "@/context/CartContext";
 import { TRPCReactProvider } from "@/server/client";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { GoogleAnalytics } from "@next/third-parties/google";
 import { ClickTracker } from "@/components/ClickTracker";
 
 import "./globals.css";
@@ -49,11 +49,9 @@ export default function RootLayout({
 
         <ClickTracker />
         <TRPCReactProvider>
-          <CartProvider>
-            {children}
-          </CartProvider>
+          <CartProvider>{children}</CartProvider>
         </TRPCReactProvider>
-      </body >
-    </html >
+      </body>
+    </html>
   );
 }

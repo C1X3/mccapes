@@ -34,7 +34,8 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
       <div
         className="absolute inset-0"
         style={{
-          background: "repeating-linear-gradient(-45deg, #06b6d4, #06b6d4 80px, #facc15 80px, #facc15 160px)",
+          background:
+            "repeating-linear-gradient(-45deg, #06b6d4, #06b6d4 80px, #facc15 80px, #facc15 160px)",
         }}
       />
       <div className="relative py-2">

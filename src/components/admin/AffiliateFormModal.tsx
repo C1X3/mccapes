@@ -45,7 +45,7 @@ export default function AffiliateFormModal({
       onError: (error) => {
         toast.error(error.message || "Failed to create affiliate");
       },
-    })
+    }),
   );
 
   const updateMutation = useMutation(
@@ -58,7 +58,7 @@ export default function AffiliateFormModal({
       onError: (error) => {
         toast.error(error.message || "Failed to update affiliate");
       },
-    })
+    }),
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -144,7 +144,12 @@ export default function AffiliateFormModal({
               id="code"
               value={formData.code}
               onChange={(e) =>
-                setFormData({ ...formData, code: e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '') })
+                setFormData({
+                  ...formData,
+                  code: e.target.value
+                    .toLowerCase()
+                    .replace(/[^a-z0-9_-]/g, ""),
+                })
               }
               className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
               placeholder="johndoe"
@@ -152,7 +157,8 @@ export default function AffiliateFormModal({
               pattern="[a-zA-Z0-9_-]+"
             />
             <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
-              This will be used in the URL: mccapes.net?ref=<strong>{formData.code || "code"}</strong>
+              This will be used in the URL: mccapes.net?ref=
+              <strong>{formData.code || "code"}</strong>
             </p>
           </div>
 
@@ -190,8 +196,8 @@ export default function AffiliateFormModal({
               {isPending
                 ? "Saving..."
                 : isEditing
-                ? "Update Affiliate"
-                : "Create Affiliate"}
+                  ? "Update Affiliate"
+                  : "Create Affiliate"}
             </button>
           </div>
         </form>

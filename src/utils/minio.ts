@@ -17,7 +17,7 @@ if (
   !S3_BUCKET_NAME
 ) {
   throw new Error(
-    "Missing required S3 configuration in environment variables."
+    "Missing required S3 configuration in environment variables.",
   );
 }
 

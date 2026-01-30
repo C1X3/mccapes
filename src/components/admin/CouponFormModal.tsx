@@ -53,7 +53,7 @@ export default function CouponFormModal({
       onError: (error) => {
         toast.error(error.message || "Failed to create coupon");
       },
-    })
+    }),
   );
 
   const updateCoupon = useMutation(
@@ -67,7 +67,7 @@ export default function CouponFormModal({
       onError: (error) => {
         toast.error(error.message || "Failed to update coupon");
       },
-    })
+    }),
   );
 
   const onSubmit = (data: CouponFormModalSchema) => {
@@ -192,10 +192,10 @@ export default function CouponFormModal({
                       id="type"
                       className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
                       {...field}
-                    // onChange={(e) => {
-                    //   console.log(e.target.value);
-                    //   field.onChange(e.target.value === "PERCENTAGE" ? CouponType.PERCENTAGE : CouponType.FIXED);
-                    // }}
+                      // onChange={(e) => {
+                      //   console.log(e.target.value);
+                      //   field.onChange(e.target.value === "PERCENTAGE" ? CouponType.PERCENTAGE : CouponType.FIXED);
+                      // }}
                     >
                       <option value="PERCENTAGE">Percentage (%)</option>
                       <option value="FIXED">Fixed Amount ($)</option>
