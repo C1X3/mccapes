@@ -127,6 +127,13 @@ function buildInvoiceWhereClause(
           },
         },
       },
+      {
+        OrderItem: {
+          some: {
+            codes: { has: input.search },
+          },
+        },
+      },
     ];
   }
 
