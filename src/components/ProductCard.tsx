@@ -173,7 +173,7 @@ const ProductCard = ({
   return (
     <motion.div
       key={product.id}
-      className="group bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_15%)] to-[var(--background)] rounded-2xl overflow-hidden border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] hover:border-[var(--accent)] backdrop-blur-sm transition-all duration-300 cursor-pointer"
+      className="group bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_15%)] to-[var(--background)] rounded-2xl overflow-hidden border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] hover:border-[var(--accent)] backdrop-blur-sm cursor-pointer"
       variants={{
         hidden: { opacity: 0, y: 30 },
         visible: { opacity: 1, y: 0 },
@@ -225,7 +225,7 @@ const ProductCard = ({
             {allImages.map((_, index) => (
               <div
                 key={index}
-                className={`w-2 h-2 rounded-full transition-all ${
+                className={`w-2 h-2 rounded-full ${
                   index === currentImageIndex ? "bg-white w-4" : "bg-white/50"
                 }`}
               />
