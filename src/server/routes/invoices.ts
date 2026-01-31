@@ -414,6 +414,50 @@ export const invoicesRouter = createTRPCRouter({
       return { success: true, note: formattedNote };
     }),
 
+  deleteNote: adminProcedure
+    .input(z.object({ orderId: z.string(), noteIndex: z.number().min(0) }))
+    .mutation(async ({ input, ctx }) => {
+      // Only admin users can delete notes
+      if (ctx.role !== "admin") {
+        throw new TRPCError({
+          code: "FORBIDDEN",
+          message: "Only admin users can delete notes",
+        });
+      }
+
+      const order = await prisma.order.findUnique({
+        where: { id: input.orderId },
+      });
+
+      if (!order) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Invoice not found",
+        });
+      }
+
+      const currentNotes = (order.notes as string[]) || [];
+
+      if (input.noteIndex >= currentNotes.length) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Invalid note index",
+        });
+      }
+
+      // Remove the note at the specified index
+      const updatedNotes = currentNotes.filter((_, index) => index !== input.noteIndex);
+
+      await prisma.order.update({
+        where: { id: input.orderId },
+        data: {
+          notes: updatedNotes,
+        },
+      });
+
+      return { success: true };
+    }),
+
   delete: adminProcedure
     .input(z.object({ orderId: z.string() }))
     .mutation(async ({ input, ctx }) => {

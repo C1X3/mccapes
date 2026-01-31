@@ -166,6 +166,18 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     }),
   );
 
+  const { mutate: deleteNote, isPending: isDeletingNote } = useMutation(
+    trpc.invoices.deleteNote.mutationOptions({
+      onSuccess: () => {
+        toast.success("Note deleted successfully");
+        window.location.reload();
+      },
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete note");
+      },
+    }),
+  );
+
   const handleAddNote = () => {
     if (!newNote.trim()) {
       toast.error("Please enter a note");
@@ -174,6 +186,17 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     addNote({
       orderId: id,
       note: newNote.trim(),
+    });
+  };
+
+  const handleDeleteNote = (noteIndex: number) => {
+    if (userRole !== "admin") {
+      toast.error("Only admin users can delete notes");
+      return;
+    }
+    deleteNote({
+      orderId: id,
+      noteIndex,
     });
   };
 
@@ -611,9 +634,19 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {invoice.notes.map((note: string, index: number) => (
               <div
                 key={index}
-                className="bg-surface-muted rounded-lg p-3 border border-admin-card-border"
+                className="bg-surface-muted rounded-lg p-3 border border-admin-card-border flex justify-between items-start gap-3"
               >
-                <p className="text-sm font-mono text-gray-700">{note}</p>
+                <p className="text-sm font-mono text-gray-700 flex-1">{note}</p>
+                {userRole === "admin" && (
+                  <button
+                    onClick={() => handleDeleteNote(index)}
+                    disabled={isDeletingNote}
+                    className="p-1.5 text-error hover:bg-error-bg rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    title="Delete note"
+                  >
+                    <FaTrash size={14} />
+                  </button>
+                )}
               </div>
             ))}
           </div>
