@@ -10,15 +10,7 @@ export const articleRouter = createTRPCRouter({
         includeInactive: z.boolean().default(false),
       }),
     )
-    .query(async ({ input, ctx }) => {
-      // Block support users from accessing articles
-      if (ctx.isAuthenticated && ctx.role === "support") {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message: "Admin access required",
-        });
-      }
-
+    .query(async ({ input }) => {
       return await prisma.article.findMany({
         where: {
           ...(input.includeInactive ? {} : { isActive: true }),

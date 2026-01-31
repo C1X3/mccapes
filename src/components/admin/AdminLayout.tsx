@@ -46,13 +46,14 @@ export default function AdminLayout({
   ];
 
   // Filter tabs based on user role
+  // Support users: products, articles, invoices (no dashboard, coupons, affiliates)
   const tabs =
     userRole === "support"
       ? allTabs.filter(
           (tab) =>
             tab.id === "products" ||
-            tab.id === "invoices" ||
-            tab.id === "affiliates",
+            tab.id === "articles" ||
+            tab.id === "invoices",
         )
       : allTabs;
 

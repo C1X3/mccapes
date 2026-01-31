@@ -9,14 +9,32 @@ import AffiliatesTab from "@/components/admin/AffiliatesTab";
 import AdminWrapper from "@/components/AdminWrapper";
 import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
+import { useTRPC } from "@/server/client";
+import { useQuery } from "@tanstack/react-query";
 
 export default function AdminPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const tabParam = searchParams.get("tab");
+  const trpc = useTRPC();
+
+  // Get auth status including role
+  const { data: authData } = useQuery(trpc.auth.isAuthenticated.queryOptions());
+  const userRole = authData?.role as "admin" | "support" | null | undefined;
 
   // Initialize with tab from URL or default to dashboard
   const [currentTab, setCurrentTab] = useState(tabParam || "dashboard");
+
+  // Redirect support users to products if they try to access restricted tabs or no tab specified
+  useEffect(() => {
+    if (userRole === "support") {
+      const restrictedTabs = ["dashboard", "coupons", "affiliates"];
+      if (!tabParam || restrictedTabs.includes(currentTab)) {
+        setCurrentTab("products");
+        router.replace("/admin?tab=products");
+      }
+    }
+  }, [userRole, tabParam, currentTab, router]);
 
   // Update URL when tab changes
   const handleTabChange = (tab: string) => {

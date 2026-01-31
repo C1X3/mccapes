@@ -140,7 +140,17 @@ function buildInvoiceWhereClause(
 export const invoicesRouter = createTRPCRouter({
   getStats: adminProcedure
     .input(invoiceFilterSchema.optional())
-    .query(async ({ input }) => {
+    .query(async ({ input, ctx }) => {
+      // Support users should not see any stats (financial data)
+      if (ctx.role === "support") {
+        return {
+          totalSales: null,
+          totalCount: null,
+          pendingCount: null,
+          completedCount: null,
+        };
+      }
+
       const where = buildInvoiceWhereClause(input);
 
       const completedWhere = {

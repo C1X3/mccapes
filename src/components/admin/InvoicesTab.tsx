@@ -21,9 +21,11 @@ import { exportInvoicesToCSV } from "@/utils/csvExport";
 import { useInvoiceFilters } from "@/hooks/useInvoiceFilters";
 import { formatPrice } from "@/utils/formatting";
 import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
+import { useAdminRole } from "@/contexts/AdminContext";
 
 export default function InvoicesTab() {
   const trpc = useTRPC();
+  const { userRole } = useAdminRole();
   const router = useRouter();
 
   // Use the custom hook for filter management
@@ -248,42 +250,44 @@ export default function InvoicesTab() {
           </div>
         </div>
       </div>
-      <div className="mb-6">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
-              Total Sales
-            </h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">
-              {formatPrice(stats?.totalSales || 0)}
-            </p>
-          </div>
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
-              Invoices
-            </h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">
-              {stats?.totalCount || 0}
-            </p>
-          </div>
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
-              Pending
-            </h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">
-              {stats?.pendingCount || 0}
-            </p>
-          </div>
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
-              Completed
-            </h3>
-            <p className="text-2xl font-bold text-[var(--foreground)]">
-              {stats?.completedCount || 0}
-            </p>
+      {userRole === "admin" && (
+        <div className="mb-6">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                Total Sales
+              </h3>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                {formatPrice(stats?.totalSales || 0)}
+              </p>
+            </div>
+            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                Invoices
+              </h3>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                {stats?.totalCount || 0}
+              </p>
+            </div>
+            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                Pending
+              </h3>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                {stats?.pendingCount || 0}
+              </p>
+            </div>
+            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                Completed
+              </h3>
+              <p className="text-2xl font-bold text-[var(--foreground)]">
+                {stats?.completedCount || 0}
+              </p>
+            </div>
           </div>
         </div>
-      </div>
+      )}
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
