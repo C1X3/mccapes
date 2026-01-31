@@ -84,9 +84,9 @@ export default function AffiliatesTab() {
                   <p
                     className={`text-2xl font-bold ${
                       overallConversionRate >= 5
-                        ? "text-green-500"
+                        ? "text-success"
                         : overallConversionRate >= 2
-                          ? "text-amber-500"
+                          ? "text-warning"
                           : "text-[var(--foreground)]"
                     }`}
                   >

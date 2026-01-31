@@ -48,14 +48,14 @@ const ProductCard = ({
   // Common rating render
   const Rating = () => (
     <div className="flex items-center">
-      <div className="flex text-yellow-400 mr-2">
+      <div className="flex text-warning mr-2">
         {[...Array(5)].map((_, i) => (
           <FaStar
             key={i}
             size={12}
             className={
               i < Math.floor(product.rating)
-                ? "text-yellow-400"
+                ? "text-warning"
                 : "text-gray-600"
             }
           />

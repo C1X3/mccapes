@@ -76,7 +76,7 @@ const NavMenu = () => {
               rel={item.external ? "noopener noreferrer" : undefined}
               className={`font-medium px-4 py-2 rounded-full transition-all ${
                 isActive
-                  ? "bg-green-500 text-white"
+                  ? "bg-nav-active text-white"
                   : "hover:text-[var(--primary-light)]"
               }`}
             >

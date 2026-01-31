@@ -89,7 +89,7 @@ const HeroSection = () => {
                 variants={{ hidden: {}, visible: {} }}
               >
                 <motion.button
-                  className="minecraft-btn relative overflow-hidden px-6 py-2.5 rounded-lg bg-green-500 text-white font-semibold shadow-lg"
+                  className="minecraft-btn relative overflow-hidden px-6 py-2.5 rounded-lg bg-primary text-white font-semibold shadow-lg"
                   whileHover={{
                     scale: 1.05,
                     boxShadow: "0 12px 24px rgba(0,0,0,0.2)",
@@ -100,11 +100,11 @@ const HeroSection = () => {
                   Shop Now
                 </motion.button>
                 <motion.button
-                  className="px-5 py-2.5 rounded-lg bg-white border-2 border-[var(--primary)] text-[var(--primary)] font-medium shadow-md"
+                  className="px-5 py-2.5 rounded-lg bg-white border-2 border-primary text-primary font-medium shadow-md"
                   whileHover={{
                     scale: 1.05,
-                    borderColor: "var(--primary-dark)",
-                    color: "var(--primary-dark)",
+                    borderColor: "var(--color-primary-dark)",
+                    color: "var(--color-primary-dark)",
                     boxShadow: "0 8px 20px rgba(34,197,94,0.2)",
                   }}
                   whileTap={{ scale: 0.95 }}
@@ -177,7 +177,7 @@ const HeroSection = () => {
               {Array.from({ length: 8 }).map((_, i) => (
                 <motion.div
                   key={i}
-                  className="absolute rounded-full bg-green-700"
+                  className="absolute rounded-full bg-primary-700"
                   style={{
                     width: 20 + Math.random() * 100,
                     height: 20 + Math.random() * 100,
@@ -214,7 +214,7 @@ const HeroSection = () => {
                 >
                   About us
                   <motion.div
-                    className="absolute -bottom-2 left-0 h-1.5 bg-green-500 rounded-full"
+                    className="absolute -bottom-2 left-0 h-1.5 bg-primary rounded-full"
                     initial={{ width: 0 }}
                     animate={{ width: "100%" }}
                     transition={{ delay: 0.8, duration: 0.6 }}
@@ -227,7 +227,7 @@ const HeroSection = () => {
                   transition={{ delay: 0.5, duration: 0.7 }}
                 >
                   MC Capes is the{" "}
-                  <span className="text-green-600 font-semibold">
+                  <span className="text-primary-600 font-semibold">
                     #1 online Minecraft cape shop
                   </span>
                   . We verify that our cape codes are 100% legitimate before
@@ -249,13 +249,13 @@ const HeroSection = () => {
                   whileHover={{ scale: 1.03, y: -5 }}
                 >
                   <motion.div
-                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-green-100 shadow-md group-hover:shadow-green-200 transition-all duration-300"
+                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-primary-100 shadow-md group-hover:shadow-primary-200 transition-all duration-300"
                     whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-7 w-7 text-green-600 group-hover:text-green-500 transition-colors duration-300"
+                      className="h-7 w-7 text-primary-600 group-hover:text-primary-500 transition-colors duration-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -269,7 +269,7 @@ const HeroSection = () => {
                     </svg>
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       Instant Delivery
                     </h3>
                     <p className="text-gray-600 mt-1 group-hover:text-gray-800 transition-colors duration-300">
@@ -288,13 +288,13 @@ const HeroSection = () => {
                   whileHover={{ scale: 1.03, y: -5 }}
                 >
                   <motion.div
-                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-green-100 shadow-md group-hover:shadow-green-200 transition-all duration-300"
+                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-primary-100 shadow-md group-hover:shadow-primary-200 transition-all duration-300"
                     whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-7 w-7 text-green-600 group-hover:text-green-500 transition-colors duration-300"
+                      className="h-7 w-7 text-primary-600 group-hover:text-primary-500 transition-colors duration-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -308,7 +308,7 @@ const HeroSection = () => {
                     </svg>
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       Secure Payments
                     </h3>
                     <p className="text-gray-600 mt-1 group-hover:text-gray-800 transition-colors duration-300">
@@ -327,13 +327,13 @@ const HeroSection = () => {
                   whileHover={{ scale: 1.03, y: -5 }}
                 >
                   <motion.div
-                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-green-100 shadow-md group-hover:shadow-green-200 transition-all duration-300"
+                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-primary-100 shadow-md group-hover:shadow-primary-200 transition-all duration-300"
                     whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-7 w-7 text-green-600 group-hover:text-green-500 transition-colors duration-300"
+                      className="h-7 w-7 text-primary-600 group-hover:text-primary-500 transition-colors duration-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -347,7 +347,7 @@ const HeroSection = () => {
                     </svg>
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       24/7 Support
                     </h3>
                     <p className="text-gray-600 mt-1 group-hover:text-gray-800 transition-colors duration-300">
@@ -366,13 +366,13 @@ const HeroSection = () => {
                   whileHover={{ scale: 1.03, y: -5 }}
                 >
                   <motion.div
-                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-green-100 shadow-md group-hover:shadow-green-200 transition-all duration-300"
+                    className="p-4 bg-white bg-opacity-80 rounded-xl border border-primary-100 shadow-md group-hover:shadow-primary-200 transition-all duration-300"
                     whileHover={{ rotate: [0, -10, 10, -10, 0] }}
                     transition={{ duration: 0.5 }}
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
-                      className="h-7 w-7 text-green-600 group-hover:text-green-500 transition-colors duration-300"
+                      className="h-7 w-7 text-primary-600 group-hover:text-primary-500 transition-colors duration-300"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -386,7 +386,7 @@ const HeroSection = () => {
                     </svg>
                   </motion.div>
                   <div>
-                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-green-600 transition-colors duration-300">
+                    <h3 className="font-bold text-xl text-gray-800 group-hover:text-primary-600 transition-colors duration-300">
                       Rare Capes
                     </h3>
                     <p className="text-gray-600 mt-1 group-hover:text-gray-800 transition-colors duration-300">
@@ -400,7 +400,7 @@ const HeroSection = () => {
 
             {/* Minecraft-style animated border */}
             <motion.div
-              className="absolute inset-0 pointer-events-none border-4 border-green-500 rounded-2xl opacity-0"
+              className="absolute inset-0 pointer-events-none border-4 border-primary rounded-2xl opacity-0"
               animate={{
                 opacity: [0, 0.2, 0],
                 scale: [0.95, 1.02, 0.95],

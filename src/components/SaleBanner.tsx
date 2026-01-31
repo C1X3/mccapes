@@ -14,11 +14,11 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
 
   const messageContent = (
     <div className="flex items-center gap-3 whitespace-nowrap">
-      <FaStar className="text-yellow-300" size={16} />
+      <FaStar className="text-warning-light" size={16} />
       <span className="font-bold">NEW YEARS SALE!</span>
-      <span className="text-yellow-300 font-semibold">UP TO 30% OFF</span>
+      <span className="text-warning-light font-semibold">UP TO 30% OFF</span>
       <span>Limited Time Only!</span>
-      <FaStar className="text-yellow-300" size={16} />
+      <FaStar className="text-warning-light" size={16} />
       <span className="mx-8">•</span>
     </div>
   );
@@ -35,7 +35,7 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
         className="absolute inset-0"
         style={{
           background:
-            "repeating-linear-gradient(-45deg, #06b6d4, #06b6d4 80px, #facc15 80px, #facc15 160px)",
+            "repeating-linear-gradient(-45deg, var(--color-primary), var(--color-primary) 80px, var(--color-warning), var(--color-warning) 160px)",
         }}
       />
       <div className="relative py-2">
@@ -43,7 +43,7 @@ const SaleBanner = ({ isVisible, onClose }: SaleBannerProps) => {
           {Array.from({ length: 15 }).map((_, i) => (
             <motion.div
               key={i}
-              className="absolute text-yellow-300"
+              className="absolute text-warning-light"
               style={{
                 left: `${Math.random() * 100}%`,
                 top: `${Math.random() * 100}%`,

@@ -71,13 +71,13 @@ export const getShortenedProductName = (name: string): string => {
 export const getStatusBadgeClass = (status: OrderStatus): string => {
   switch (status) {
     case OrderStatus.PAID:
-      return "bg-green-100 text-green-800";
+      return "bg-status-completed-bg text-status-completed-text";
     case OrderStatus.PENDING:
-      return "bg-yellow-100 text-yellow-800";
+      return "bg-status-pending-bg text-status-pending-text";
     case OrderStatus.DELIVERED:
-      return "bg-green-100 text-green-800";
+      return "bg-status-completed-bg text-status-completed-text";
     case OrderStatus.CANCELLED:
-      return "bg-red-100 text-red-800";
+      return "bg-status-cancelled-bg text-status-cancelled-text";
     default:
       return "bg-gray-100 text-gray-800";
   }

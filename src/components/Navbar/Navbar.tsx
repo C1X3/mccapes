@@ -162,8 +162,8 @@ const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
               rel={item.external ? "noopener noreferrer" : undefined}
               className={`text-xl font-medium transition-colors block py-3 px-6 rounded-lg ${
                 isActive
-                  ? "bg-green-500 text-white"
-                  : "hover:bg-[var(--surface)] hover:text-[var(--primary)]"
+                  ? "bg-nav-active text-white"
+                  : "hover:bg-surface hover:text-primary"
               }`}
             >
               {item.label}

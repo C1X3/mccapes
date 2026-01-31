@@ -27,12 +27,12 @@ const VouchCard = ({ vouch }: VouchCardProps) => {
           </div>
         </div>
 
-        <div className="flex text-yellow-400 mb-2">
+        <div className="flex text-warning mb-2">
           {[...Array(5)].map((_, i) => (
             <FaStar
               key={i}
               size={16}
-              className={i < vouch.rating ? "text-yellow-400" : "text-gray-600"}
+              className={i < vouch.rating ? "text-warning" : "text-gray-600"}
             />
           ))}
         </div>

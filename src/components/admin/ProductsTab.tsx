@@ -258,10 +258,10 @@ export default function ProductsTab() {
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
                               product.stock.length > 10
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-success-bg text-success-text"
                                 : product.stock.length > 0
-                                  ? "bg-orange-100 text-orange-800"
-                                  : "bg-red-100 text-red-800"
+                                  ? "bg-warning-bg text-warning-text"
+                                  : "bg-error-bg text-error-text"
                             }`}
                           >
                             {product.stock.length}
@@ -271,7 +271,7 @@ export default function ProductsTab() {
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => router.push(`/shop/${product.slug}`)}
-                              className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                              className="p-2 bg-info-bg text-info-text rounded hover:bg-info transition-colors"
                               title="View Product"
                               onMouseEnter={() => setIsDragDisabled(true)}
                               onMouseLeave={() => setIsDragDisabled(false)}
@@ -289,7 +289,7 @@ export default function ProductsTab() {
                             </button>
                             <button
                               onClick={() => handleDeleteProduct(product.id)}
-                              className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                              className="p-2 bg-error-bg text-error-text rounded hover:bg-error transition-colors"
                               title="Delete Product"
                               onMouseEnter={() => setIsDragDisabled(true)}
                               onMouseLeave={() => setIsDragDisabled(false)}
@@ -325,10 +325,10 @@ export default function ProductsTab() {
                           <span
                             className={`px-2 py-1 rounded-full text-xs ${
                               product.stock.length > 10
-                                ? "bg-green-100 text-green-800"
+                                ? "bg-success-bg text-success-text"
                                 : product.stock.length > 0
-                                  ? "bg-orange-100 text-orange-800"
-                                  : "bg-red-100 text-red-800"
+                                  ? "bg-warning-bg text-warning-text"
+                                  : "bg-error-bg text-error-text"
                             }`}
                           >
                             {product.stock.length}
@@ -338,7 +338,7 @@ export default function ProductsTab() {
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => router.push(`/shop/${product.slug}`)}
-                              className="p-2 bg-blue-100 text-blue-600 rounded hover:bg-blue-200 transition-colors"
+                              className="p-2 bg-info-bg text-info-text rounded hover:bg-info transition-colors"
                               title="View Product"
                             >
                               <FaEye size={14} />

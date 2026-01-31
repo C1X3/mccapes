@@ -293,7 +293,7 @@ export default function ArticleFormModal({
                         type="button"
                         onClick={() => fileInputRef.current?.click()}
                         disabled={isUploading}
-                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 flex items-center gap-2"
+                        className="px-4 py-2 bg-info text-white rounded-lg hover:bg-info-text transition-colors disabled:opacity-50 flex items-center gap-2"
                       >
                         {isUploading ? (
                           <>
@@ -308,7 +308,7 @@ export default function ArticleFormModal({
                         )}
                       </button>
                       {videoKey && (
-                        <span className="text-green-600 text-sm">
+                        <span className="text-success text-sm">
                           Video uploaded successfully
                         </span>
                       )}
@@ -321,9 +321,9 @@ export default function ArticleFormModal({
                       className="hidden"
                     />
                     {isUploading && (
-                      <div className="w-full bg-gray-200 rounded-full h-2.5">
+                      <div className="w-full bg-surface-muted rounded-full h-2.5">
                         <div
-                          className="bg-blue-600 h-2.5 rounded-full"
+                          className="bg-info h-2.5 rounded-full"
                           style={{ width: `${uploadProgress}%` }}
                         ></div>
                       </div>
@@ -336,7 +336,7 @@ export default function ArticleFormModal({
                         <video
                           src={videoPreviewUrl}
                           controls
-                          className="w-full max-h-[200px] object-contain rounded-lg border border-gray-300"
+                          className="w-full max-h-[200px] object-contain rounded-lg border border-admin-card-border"
                         />
                       </div>
                     )}

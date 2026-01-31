@@ -186,8 +186,8 @@ export default function AffiliateDetailModal({
                       disabled={toggleActiveMutation.isPending}
                       className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
                         affiliate.active
-                          ? "bg-green-100 text-green-800 hover:bg-green-200"
-                          : "bg-red-100 text-red-800 hover:bg-red-200"
+                          ? "bg-success-bg text-success-text hover:bg-success"
+                          : "bg-error-bg text-error-text hover:bg-error"
                       } disabled:opacity-50`}
                     >
                       {affiliate.active ? (
@@ -373,8 +373,8 @@ export default function AffiliateDetailModal({
                         />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "white",
-                            borderColor: "rgba(0,0,0,0.1)",
+                            backgroundColor: "var(--admin-card)",
+                            borderColor: "var(--admin-card-border)",
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
@@ -446,8 +446,8 @@ export default function AffiliateDetailModal({
                         />
                         <Tooltip
                           contentStyle={{
-                            backgroundColor: "white",
-                            borderColor: "rgba(0,0,0,0.1)",
+                            backgroundColor: "var(--admin-card)",
+                            borderColor: "var(--admin-card-border)",
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
@@ -507,7 +507,7 @@ export default function AffiliateDetailModal({
                               {order.products}
                             </td>
                             <td className="py-4 px-2">
-                              <span className="inline-flex items-center px-2 py-1 bg-green-100 text-green-800 text-sm font-medium rounded-md">
+                              <span className="inline-flex items-center px-2 py-1 bg-success-bg text-success-text text-sm font-medium rounded-md">
                                 {formatCurrency(order.totalPrice)}
                               </span>
                             </td>
@@ -555,7 +555,7 @@ export default function AffiliateDetailModal({
                 <button
                   onClick={() => setShowDeleteConfirm(true)}
                   disabled={deleteMutation.isPending}
-                  className="px-4 py-2 bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  className="px-4 py-2 bg-error-bg text-error-text rounded-lg hover:bg-error transition-colors flex items-center gap-2 disabled:opacity-50"
                 >
                   <FaTrash size={14} />
                   Delete
@@ -577,8 +577,8 @@ export default function AffiliateDetailModal({
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-4 mb-4">
-              <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center flex-shrink-0">
-                <FaExclamationTriangle className="text-red-600" size={24} />
+              <div className="w-12 h-12 rounded-full bg-error-bg flex items-center justify-center flex-shrink-0">
+                <FaExclamationTriangle className="text-error-text" size={24} />
               </div>
               <div>
                 <h3 className="text-lg font-bold text-[var(--foreground)]">
@@ -606,7 +606,7 @@ export default function AffiliateDetailModal({
               <button
                 onClick={handleDelete}
                 disabled={deleteMutation.isPending}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2 disabled:opacity-50"
+                className="px-4 py-2 bg-error text-white rounded-lg hover:bg-error-text transition-colors flex items-center gap-2 disabled:opacity-50"
               >
                 <FaTrash size={14} />
                 {deleteMutation.isPending ? "Deleting..." : "Delete Affiliate"}

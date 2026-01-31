@@ -164,14 +164,14 @@ const ProductPage = ({
             </h1>
 
             <div className="flex items-center mb-6">
-              <div className="flex text-yellow-400 mr-3">
+              <div className="flex text-warning mr-3">
                 {[...Array(5)].map((_, i) => (
                   <FaStar
                     key={i}
                     size={16}
                     className={
                       i < Math.floor(product.rating)
-                        ? "text-yellow-400"
+                        ? "text-warning"
                         : "text-gray-600"
                     }
                   />
@@ -354,7 +354,7 @@ const ProductPage = ({
               <span className="text-5xl font-bold text-[var(--foreground)] mr-2">
                 4.99
               </span>
-              <FaStar className="text-yellow-400" size={28} />
+              <FaStar className="text-warning" size={28} />
             </div>
             <div className="text-gray-600 font-medium">Average Rating</div>
           </div>

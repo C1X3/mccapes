@@ -124,12 +124,12 @@ export default function CouponsTab() {
                     <span
                       className={`px-2 py-1 rounded-full text-xs ${
                         !coupon.active
-                          ? "bg-red-100 text-red-800"
+                          ? "bg-error-bg text-error-text"
                           : coupon.usageCount >= coupon.usageLimit
-                            ? "bg-orange-100 text-orange-800"
+                            ? "bg-warning-bg text-warning-text"
                             : new Date(coupon.validUntil) < new Date()
-                              ? "bg-gray-100 text-gray-800"
-                              : "bg-green-100 text-green-800"
+                              ? "bg-surface-muted text-text-secondary"
+                              : "bg-success-bg text-success-text"
                       }`}
                     >
                       {!coupon.active
@@ -152,7 +152,7 @@ export default function CouponsTab() {
                       </button>
                       <button
                         onClick={() => handleDeleteCoupon(coupon.id)}
-                        className="p-2 bg-red-100 text-red-600 rounded hover:bg-red-200 transition-colors"
+                        className="p-2 bg-error-bg text-error-text rounded hover:bg-error transition-colors"
                         title="Delete Coupon"
                         disabled={deleteCouponMutation.isPending}
                       >

@@ -135,7 +135,7 @@ const ShopPage = () => {
                     }}
                     className="drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] rounded-2xl"
                   />
-                  <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-semibold">
+                  <div className="absolute top-4 right-4 bg-success text-white px-3 py-1 rounded-full text-sm font-semibold">
                     FEATURED
                   </div>
                 </div>
@@ -143,14 +143,14 @@ const ShopPage = () => {
               <div className="w-full md:flex-1 space-y-6">
                 <h3 className="text-3xl font-bold">{topProduct.name}</h3>
                 <div className="flex items-center">
-                  <div className="flex text-yellow-400 mr-2">
+                  <div className="flex text-warning mr-2">
                     {[...Array(5)].map((_, i) => (
                       <FaStar
                         key={i}
                         size={16}
                         className={
                           i < Math.floor(topProduct.rating || 5)
-                            ? "text-yellow-400"
+                            ? "text-warning"
                             : "text-gray-600"
                         }
                       />

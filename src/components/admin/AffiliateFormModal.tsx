@@ -93,8 +93,8 @@ export default function AffiliateFormModal({
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-2 bg-blue-100 rounded-full">
-              <FaUsers className="text-blue-600" size={20} />
+            <div className="p-2 bg-info-bg rounded-full">
+              <FaUsers className="text-info-text" size={20} />
             </div>
             <h2 className="text-xl font-bold text-[var(--foreground)]">
               {isEditing ? "Edit Affiliate" : "Add Affiliate"}

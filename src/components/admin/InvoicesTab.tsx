@@ -323,25 +323,25 @@ export default function InvoicesTab() {
                   className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] animate-pulse"
                 >
                   <td className="py-4 px-2">
-                    <div className="h-6 w-20 bg-gray-200 rounded"></div>
+                    <div className="h-6 w-20 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-24 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-32 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-16 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-20 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-40 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-40 bg-surface-muted rounded"></div>
                   </td>
                   <td className="py-4 px-2">
-                    <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                    <div className="h-4 w-24 bg-surface-muted rounded"></div>
                   </td>
                 </tr>
               ))

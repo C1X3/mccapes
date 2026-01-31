@@ -30,7 +30,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
             <h5 className="text-xl font-bold mb-4 gradient-text">MCCapes</h5>
-            <p className="text-gray-400 mb-4">
+            <p className="text-text-muted mb-4">
               Premium Minecraft cosmetics for discerning players.
             </p>
           </div>
@@ -44,7 +44,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-gray-400 hover:text-[var(--primary-light)] transition-colors flex items-center"
+                    className="text-text-muted hover:text-[var(--primary-light)] transition-colors flex items-center"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -67,7 +67,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-gray-400 hover:text-[var(--accent-light)] transition-colors flex items-center"
+                    className="text-text-muted hover:text-[var(--accent-light)] transition-colors flex items-center"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -81,7 +81,7 @@ const Footer = () => {
             <h5 className="text-lg font-semibold mb-4 text-[var(--tertiary-light)]">
               Contact Us
             </h5>
-            <address className="text-gray-400 not-italic space-y-2">
+            <address className="text-text-muted not-italic space-y-2">
               <p className="flex items-center">
                 <HiCube className="mr-2" />
                 mccapesbusiness@gmail.com

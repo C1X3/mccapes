@@ -61,7 +61,7 @@ const StatusBadge = ({ status }: { status: OrderStatus }) => {
       text = "Pending Payment";
       break;
     case "PAID":
-      color = "bg-green-500";
+      color = "bg-success";
       Icon = FaCheck;
       text = "Payment Confirmed";
       break;
@@ -258,14 +258,14 @@ const OrderPage = ({ id }: { id: string }) => {
                 <div className="bg-gradient-to-b from-green-500/10 to-green-500/5 rounded-xl p-6 border border-green-500/20 shadow-lg backdrop-blur-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
-                      <div className="w-10 h-10 flex items-center justify-center mr-3 bg-green-500/20 text-green-500 rounded-full">
+                      <div className="w-10 h-10 flex items-center justify-center mr-3 bg-success/20 text-success rounded-full">
                         <FaCheck size={20} />
                       </div>
                       <h2 className="text-xl font-bold text-[var(--foreground)]">
                         Payment Confirmed!
                       </h2>
                     </div>
-                    <div className="px-4 py-2 bg-green-500 rounded-full text-white inline-flex items-center">
+                    <div className="px-4 py-2 bg-success rounded-full text-white inline-flex items-center">
                       <FaCheck className="mr-2" />
                       Confirmed
                     </div>

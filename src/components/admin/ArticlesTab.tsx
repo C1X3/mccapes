@@ -260,8 +260,8 @@ export default function ArticlesTab() {
                       onClick={() => handleToggleStatus(article)}
                       className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-semibold ${
                         article.isActive
-                          ? "bg-green-100 text-green-800"
-                          : "bg-red-100 text-red-800"
+                          ? "bg-success-bg text-success-text"
+                          : "bg-error-bg text-error-text"
                       }`}
                     >
                       {article.isActive ? <FaToggleOn /> : <FaToggleOff />}
@@ -272,7 +272,7 @@ export default function ArticlesTab() {
                     <div className="flex items-center justify-end gap-2">
                       <button
                         onClick={() => handleEditArticle(article)}
-                        className="p-2 text-blue-600 hover:bg-blue-50 rounded transition-colors"
+                        className="p-2 text-info-text hover:bg-info-bg rounded transition-colors"
                         title="Edit Article"
                         onMouseEnter={() => setIsDragDisabled(true)}
                         onMouseLeave={() => setIsDragDisabled(false)}
@@ -281,7 +281,7 @@ export default function ArticlesTab() {
                       </button>
                       <button
                         onClick={() => handleDeleteArticle(article)}
-                        className="p-2 text-red-600 hover:bg-red-50 rounded transition-colors"
+                        className="p-2 text-error-text hover:bg-error-bg rounded transition-colors"
                         title="Delete Article"
                         onMouseEnter={() => setIsDragDisabled(true)}
                         onMouseLeave={() => setIsDragDisabled(false)}

@@ -80,8 +80,8 @@ export default function AffiliateCard({
           <span
             className={`px-2 py-1 rounded-full text-xs font-medium ${
               affiliate.active
-                ? "bg-green-100 text-green-800"
-                : "bg-red-100 text-red-800"
+                ? "bg-success-bg text-success-text"
+                : "bg-error-bg text-error-text"
             }`}
           >
             {affiliate.active ? "Active" : "Inactive"}
@@ -172,9 +172,9 @@ export default function AffiliateCard({
           <span
             className={`text-sm font-semibold ${
               affiliate.conversionRate >= 5
-                ? "text-green-500"
+                ? "text-success"
                 : affiliate.conversionRate >= 2
-                  ? "text-amber-500"
+                  ? "text-warning"
                   : "text-[var(--foreground)]"
             }`}
           >
@@ -185,9 +185,9 @@ export default function AffiliateCard({
           <div
             className={`h-full rounded-full transition-all ${
               affiliate.conversionRate >= 5
-                ? "bg-green-500"
+                ? "bg-success"
                 : affiliate.conversionRate >= 2
-                  ? "bg-amber-500"
+                  ? "bg-warning"
                   : "bg-[var(--primary)]"
             }`}
             style={{

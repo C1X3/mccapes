@@ -260,12 +260,12 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
   if (error || !invoice) {
     return (
-      <div className="bg-red-100 text-red-800 p-4 rounded-lg">
+      <div className="bg-error-bg text-error-text p-4 rounded-lg">
         <h3 className="font-bold">Error loading invoice</h3>
         <p>{error?.message || "Invoice not found"}</p>
         <Link
           href="/admin?tab=invoices"
-          className="text-blue-600 underline mt-2 inline-block"
+          className="text-info underline mt-2 inline-block"
         >
           Return to invoices
         </Link>
@@ -278,7 +278,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       <div className="mb-4 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-semibold">Invoice Details</h1>
-          <p className="text-gray-400 text-sm">
+          <p className="text-text-muted text-sm">
             View the details of the invoice.
           </p>
         </div>
@@ -286,7 +286,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           {(invoice.status === OrderStatus.PENDING ||
             invoice.status === OrderStatus.CANCELLED) && (
             <button
-              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-admin-hover transition-colors"
               onClick={handleManuallyProcessInvoice}
             >
               <FaFileInvoice />{" "}
@@ -298,7 +298,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           {invoice.status == OrderStatus.PENDING && (
             <div className="flex gap-2">
               <button
-                className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-gray-400 transition-colors"
+                className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-admin-hover transition-colors"
                 onClick={handleCancelInvoice}
               >
                 <FaTimesCircle />{" "}
@@ -308,13 +308,13 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           )}
           <Link
             href={`/order/${invoice.id}`}
-            className="px-4 py-2 flex items-center gap-2 bg-transparent border border-blue-600 text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition-colors"
+            className="px-4 py-2 flex items-center gap-2 bg-transparent border border-info text-info rounded-md hover:bg-info hover:text-white transition-colors"
           >
             <FaEye /> View Invoice
           </Link>
           {userRole === "admin" && (
             <button
-              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-red-600 text-red-600 rounded-md hover:bg-red-600 hover:text-white transition-colors"
+              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-error text-error rounded-md hover:bg-error hover:text-white transition-colors"
               onClick={handleDeleteInvoice}
             >
               <FaTrash /> {isDeleting ? "Deleting..." : "Delete Invoice"}
@@ -325,27 +325,27 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Order Information Card */}
-        <div className="bg-white rounded-lg shadow text-black p-4">
+        <div className="bg-admin-card rounded-lg shadow text-foreground p-4">
           <div className="flex items-center gap-2 mb-4">
-            <FaShoppingBag className="text-gray-500" />
+            <FaShoppingBag className="text-text-muted" />
             <h2 className="font-semibold">Order Information</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">ID</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">ID</span>
               <span>{invoice.id}</span>
             </div>
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Status</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Status</span>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
               >
                 {invoice.status === "PAID" ? "COMPLETED" : invoice.status}
               </span>
             </div>
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Payment Method</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Payment Method</span>
               <div className="flex items-center gap-2">
                 <span>{getPaymentDisplayName(invoice)}</span>
                 <PaymentMethodLogo
@@ -355,8 +355,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 />
               </div>
             </div>{" "}
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Subtotal</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Subtotal</span>
               <span>
                 $
                 {(
@@ -367,7 +367,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                     : invoice.couponDetails?.discount || 0)
                 ).toFixed(2) || "N/A"}
                 {invoice.couponDetails && (
-                  <span className="text-green-600 ml-2">
+                  <span className="text-success ml-2">
                     (
                     {invoice.couponDetails.type === "PERCENTAGE"
                       ? `-${invoice.couponDetails.discount}%`
@@ -377,14 +377,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 )}
               </span>
             </div>
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Gateway Fee</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Gateway Fee</span>
               <span>
                 ${invoice.paymentFee ? invoice.paymentFee.toFixed(2) : "0.00"}
               </span>
             </div>
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Total Price</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Total Price</span>
               <span>
                 $
                 {(
@@ -398,12 +398,12 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </span>
             </div>
             {invoice.couponUsed && (
-              <div className="flex justify-between border-b border-gray-200 pb-2">
-                <span className="text-gray-600">Coupon</span>
+              <div className="flex justify-between border-b border-admin-card-border pb-2">
+                <span className="text-text-secondary">Coupon</span>
                 <span>
                   {invoice.couponUsed}
                   {invoice.couponDetails && (
-                    <span className="text-green-600 ml-2">
+                    <span className="text-success ml-2">
                       (
                       {invoice.couponDetails.type === "PERCENTAGE"
                         ? `${invoice.couponDetails.discount}% OFF`
@@ -415,44 +415,44 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </div>
             )}
             {invoice.paymentType === PaymentType.CRYPTO && (
-              <div className="flex justify-between border-b border-gray-200 pb-2">
-                <span className="text-gray-600">Transaction ID</span>
+              <div className="flex justify-between border-b border-admin-card-border pb-2">
+                <span className="text-text-secondary">Transaction ID</span>
                 <span>{invoice.Wallet?.[0]?.txHash || "N/A"}</span>
               </div>
             )}
             {invoice.paymentType === PaymentType.PAYPAL && (
-              <div className="flex justify-between border-b border-gray-200 pb-2">
-                <span className="text-gray-600">Paypal Note</span>
+              <div className="flex justify-between border-b border-admin-card-border pb-2">
+                <span className="text-text-secondary">Paypal Note</span>
                 <span>{invoice.paypalNote || "N/A"}</span>
               </div>
             )}
             <div className="flex justify-between pb-2">
-              <span className="text-gray-600">Created At</span>
+              <span className="text-text-secondary">Created At</span>
               <span>{formatDate(invoice.createdAt, "long")}</span>
             </div>
           </div>
         </div>
 
         {/* Customer Information Card */}
-        <div className="bg-white rounded-lg shadow text-black p-4">
+        <div className="bg-admin-card rounded-lg shadow text-foreground p-4">
           <div className="flex items-center gap-2 mb-4">
-            <FaUser className="text-gray-500" />
+            <FaUser className="text-text-muted" />
             <h2 className="font-semibold">Customer Information</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">E-mail Address</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">E-mail Address</span>
               <span>{invoice.customer?.email || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">IP Address</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">IP Address</span>
               <span>{invoice.customer?.ipAddress || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Country</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Country</span>
               <div className="flex items-center gap-2">
                 {countryInfo ? (
                   <>
@@ -468,27 +468,27 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                     )}
                   </>
                 ) : (
-                  <span className="text-gray-500">Unavailable</span>
+                  <span className="text-text-muted">Unavailable</span>
                 )}
               </div>
             </div>
 
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">User Agent</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">User Agent</span>
               <span className="text-sm truncate max-w-[300px]">
                 {invoice.customer?.useragent || "N/A"}
               </span>
             </div>
 
-            <div className="flex justify-between border-b border-gray-200 pb-2">
-              <span className="text-gray-600">Discord Username</span>
+            <div className="flex justify-between border-b border-admin-card-border pb-2">
+              <span className="text-text-secondary">Discord Username</span>
               <span>{invoice.customer?.discord || "Not provided"}</span>
             </div>
 
             {invoice.customer?.affiliate && (
               <div className="flex justify-between pb-2">
-                <span className="text-gray-600">Affiliate</span>
-                <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-medium">
+                <span className="text-text-secondary">Affiliate</span>
+                <span className="px-2 py-1 bg-info-bg text-info-text rounded-full text-xs font-medium">
                   {invoice.customer.affiliate.name}
                 </span>
               </div>
@@ -498,9 +498,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       </div>
 
       {/* Notes Section */}
-      <div className="mt-6 bg-white rounded-lg shadow text-black p-4">
+      <div className="mt-6 bg-admin-card rounded-lg shadow text-foreground p-4">
         <div className="flex items-center gap-2 mb-4">
-          <FaStickyNote className="text-gray-500" />
+          <FaStickyNote className="text-text-muted" />
           <h2 className="font-semibold">Notes</h2>
         </div>
 
@@ -511,7 +511,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             placeholder="Add a note..."
-            className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-admin-card-border rounded-lg focus:outline-none focus:ring-2 focus:ring-info focus:border-transparent"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isAddingNote) {
                 handleAddNote();
@@ -521,7 +521,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           <button
             onClick={handleAddNote}
             disabled={isAddingNote || !newNote.trim()}
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-info text-white rounded-lg hover:bg-info-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isAddingNote ? "Adding..." : "Add Note"}
           </button>
@@ -533,41 +533,41 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {invoice.notes.map((note: string, index: number) => (
               <div
                 key={index}
-                className="bg-gray-50 rounded-lg p-3 border border-gray-200"
+                className="bg-surface-muted rounded-lg p-3 border border-admin-card-border"
               >
                 <p className="text-sm font-mono text-gray-700">{note}</p>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-gray-500 text-sm">No notes yet.</p>
+          <p className="text-text-muted text-sm">No notes yet.</p>
         )}
       </div>
 
       {/* Items Section */}
-      <div className="mt-6 bg-white rounded-lg shadow text-black p-4">
+      <div className="mt-6 bg-admin-card rounded-lg shadow text-foreground p-4">
         <div className="flex items-center gap-2 mb-4">
-          <FaBox className="text-gray-500" />
+          <FaBox className="text-text-muted" />
           <h2 className="font-semibold">Items</h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border-b border-gray-200">
+            <thead className="border-b border-admin-card-border">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary">
                   Status
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary">
                   Product & Variant
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary">
                   Quantity
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary">
                   Total Price
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-gray-600">
+                <th className="text-left py-3 px-4 font-medium text-text-secondary">
                   Deliverable
                 </th>
               </tr>
@@ -587,7 +587,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                   <td className="py-3 px-4">
                     <div>
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="text-sm text-text-muted">
                         {item.product.slug}
                       </p>
                     </div>
@@ -603,13 +603,13 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                           setSelectedItem(item);
                           setShowCodeModal(true);
                         }}
-                        className="flex items-center gap-2 px-3 py-1 bg-blue-600 text-white text-xs rounded-md hover:bg-blue-700 transition-colors"
+                        className="flex items-center gap-2 px-3 py-1 bg-info text-white text-xs rounded-md hover:bg-info-text transition-colors"
                       >
                         <FaExternalLinkAlt size={12} />
                         View
                       </button>
                     ) : (
-                      <span className="text-gray-500 text-xs px-3 py-1 bg-gray-200 rounded-md">
+                      <span className="text-text-muted text-xs px-3 py-1 bg-gray-200 rounded-md">
                         None
                       </span>
                     )}
@@ -638,9 +638,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-yellow-100 rounded-full">
+                <div className="p-2 bg-warning-bg rounded-full">
                   <FaExclamationTriangle
-                    className="text-yellow-600"
+                    className="text-warning"
                     size={20}
                   />
                 </div>
@@ -673,7 +673,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 </ul>
               </div>
 
-              <p className="text-sm text-red-400 font-medium">
+              <p className="text-sm text-error-light font-medium">
                 ⚠️ This action cannot be undone.
               </p>
             </div>
@@ -682,14 +682,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                className="px-4 py-2 rounded-lg border border-admin-card-border text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmProcessInvoice}
                 disabled={isManuallyProcessing}
-                className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-lg bg-info text-white hover:bg-info-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isManuallyProcessing ? "Processing..." : "Confirm Processing"}
               </button>
@@ -715,8 +715,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-red-100 rounded-full">
-                  <FaTrash className="text-red-600" size={20} />
+                <div className="p-2 bg-error-bg rounded-full">
+                  <FaTrash className="text-error" size={20} />
                 </div>
                 <h2 className="text-xl font-bold text-[var(--foreground)]">
                   Delete Invoice
@@ -750,7 +750,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 </ul>
               </div>
 
-              <p className="text-sm text-red-400 font-medium">
+              <p className="text-sm text-error-light font-medium">
                 ⚠️ THIS ACTION CANNOT BE UNDONE. The invoice will be permanently
                 lost.
               </p>
@@ -760,14 +760,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg border border-gray-300 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                className="px-4 py-2 rounded-lg border border-admin-card-border text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteInvoice}
                 disabled={isDeleting}
-                className="px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                className="px-4 py-2 rounded-lg bg-error text-white hover:bg-error-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isDeleting ? "Deleting..." : "Delete Permanently"}
               </button>
@@ -793,8 +793,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {/* Header */}
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center gap-3">
-                <div className="p-2 bg-blue-100 rounded-full">
-                  <FaEye className="text-blue-600" size={20} />
+                <div className="p-2 bg-info-bg rounded-full">
+                  <FaEye className="text-info" size={20} />
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-[var(--foreground)]">
@@ -853,8 +853,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                               pendingReplaceCode.itemId === selectedItem.id &&
                               pendingReplaceCode.codeIndex === index &&
                               pendingReplaceCode.oldCode === code
-                                ? "bg-red-600 hover:bg-red-700"
-                                : "bg-blue-600 hover:bg-blue-700"
+                                ? "bg-error hover:bg-error-text"
+                                : "bg-info hover:bg-info-text"
                             }`}
                           >
                             <FaSync

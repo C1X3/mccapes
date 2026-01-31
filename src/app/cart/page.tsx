@@ -440,7 +440,7 @@ const CartPage = () => {
                                 Discount ({couponCode})
                                 <button
                                   onClick={removeCoupon}
-                                  className="text-xs bg-green-500/10 text-green-500 rounded-full px-2 py-0.5 hover:bg-green-500/20"
+                                  className="text-xs bg-success/10 text-success rounded-full px-2 py-0.5 hover:bg-success/20"
                                 >
                                   Remove
                                 </button>

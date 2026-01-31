@@ -32,7 +32,7 @@ export const PaymentMethodLogo = ({
           <div
             className={`${config.container} flex items-center justify-center`}
           >
-            <SiBitcoin className={`${iconSize} text-[#f7931a]`} />
+            <SiBitcoin className={`${iconSize} text-crypto-bitcoin`} />
           </div>
         );
       case CryptoType.ETHEREUM:
@@ -40,7 +40,7 @@ export const PaymentMethodLogo = ({
           <div
             className={`${config.container} flex items-center justify-center`}
           >
-            <SiEthereum className={`${iconSize} text-[#627eea]`} />
+            <SiEthereum className={`${iconSize} text-crypto-ethereum`} />
           </div>
         );
       case CryptoType.LITECOIN:
@@ -48,7 +48,7 @@ export const PaymentMethodLogo = ({
           <div
             className={`${config.container} flex items-center justify-center`}
           >
-            <SiLitecoin className={`${iconSize} text-[#a6a9aa]`} />
+            <SiLitecoin className={`${iconSize} text-crypto-litecoin`} />
           </div>
         );
       case CryptoType.SOLANA:
@@ -56,7 +56,7 @@ export const PaymentMethodLogo = ({
           <div
             className={`${config.container} flex items-center justify-center`}
           >
-            <SiSolana className={`${iconSize} text-[#14f195]`} />
+            <SiSolana className={`${iconSize} text-crypto-solana`} />
           </div>
         );
       default:
@@ -64,7 +64,7 @@ export const PaymentMethodLogo = ({
           <div
             className={`${config.container} flex items-center justify-center`}
           >
-            <SiBitcoin className={`${iconSize} text-[#f7931a]`} />
+            <SiBitcoin className={`${iconSize} text-crypto-bitcoin`} />
           </div>
         );
     }
