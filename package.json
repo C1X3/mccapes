@@ -10,6 +10,7 @@
     "format": "prettier --write \"src/**/*.{ts,tsx}\"",
     "sync": "prisma generate",
     "deploy": "prisma migrate deploy",
+    "postinstall": "prisma generate",
     "server": "tsx --tsconfig tsconfig.server.json src/server.ts",
     "balances": "tsx --tsconfig tsconfig.server.json src/balances.ts"
   },
