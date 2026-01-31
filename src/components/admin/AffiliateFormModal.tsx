@@ -157,7 +157,7 @@ export default function AffiliateFormModal({
               pattern="[a-zA-Z0-9_-]+"
             />
             <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
-              This will be used in the URL: mccapes.net?ref=
+              This will be used in the URL: mccapes.net/
               <strong>{formData.code || "code"}</strong>
             </p>
           </div>

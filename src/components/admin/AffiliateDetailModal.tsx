@@ -100,7 +100,7 @@ export default function AffiliateDetailModal({
 
   const copyAffiliateLink = () => {
     if (!affiliate) return;
-    const link = `${window.location.origin}?ref=${affiliate.code}`;
+    const link = `${window.location.origin}/${affiliate.code}`;
     navigator.clipboard.writeText(link);
     toast.success("Affiliate link copied!");
   };
@@ -167,7 +167,7 @@ export default function AffiliateDetailModal({
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
                     <code className="text-sm bg-[color-mix(in_srgb,var(--background),#333_10%)] px-2 py-0.5 rounded text-[var(--foreground)]">
-                      ?ref={affiliate.code}
+                      /{affiliate.code}
                     </code>
                     <button
                       onClick={copyAffiliateLink}

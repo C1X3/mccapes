@@ -4,6 +4,19 @@ import { z } from "zod";
 import { adminProcedure, createTRPCRouter } from "../init";
 import { OrderStatus } from "@generated/client";
 
+const RESERVED_ROUTES = [
+  "admin",
+  "api",
+  "cart",
+  "faq",
+  "order",
+  "privacy",
+  "shop",
+  "terms",
+  "videos",
+  "vouches",
+];
+
 const getLast7Days = () => {
   const days = [];
   for (let i = 6; i >= 0; i--) {
@@ -302,6 +315,13 @@ export const affiliateRouter = createTRPCRouter({
         });
       }
 
+      if (RESERVED_ROUTES.includes(input.code.toLowerCase())) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "This code is reserved and cannot be used",
+        });
+      }
+
       return await prisma.affiliate.create({
         data: {
           code: input.code.toLowerCase(),
@@ -342,6 +362,13 @@ export const affiliateRouter = createTRPCRouter({
           throw new TRPCError({
             code: "CONFLICT",
             message: "Affiliate code already exists",
+          });
+        }
+
+        if (RESERVED_ROUTES.includes(data.code.toLowerCase())) {
+          throw new TRPCError({
+            code: "CONFLICT",
+            message: "This code is reserved and cannot be used",
           });
         }
       }

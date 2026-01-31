@@ -44,7 +44,7 @@ export default function AffiliateCard({
 
   const copyAffiliateLink = (e: React.MouseEvent) => {
     e.stopPropagation();
-    const link = `${window.location.origin}?ref=${affiliate.code}`;
+    const link = `${window.location.origin}/${affiliate.code}`;
     navigator.clipboard.writeText(link);
     toast.success("Affiliate link copied!");
   };
@@ -62,7 +62,7 @@ export default function AffiliateCard({
           </h3>
           <div className="flex items-center gap-1.5">
             <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
-              ?ref={affiliate.code}
+              /{affiliate.code}
             </p>
             <button
               onClick={copyAffiliateLink}
