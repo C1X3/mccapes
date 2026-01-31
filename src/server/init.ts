@@ -13,17 +13,16 @@ export const createTRPCContext = cache(async () => {
   let role: "admin" | "support" | null = null;
 
   if (authenticatedCookie?.value) {
-    const parts = authenticatedCookie.value.split("&role=");
-    const password = parts[0];
-    const cookieRole = parts[1] as "admin" | "support" | undefined;
+    const password = authenticatedCookie.value;
 
-    // Validate password matches expected value
-    if (
-      password === process.env.ADMIN_PASSWORD ||
-      password === process.env.SUPPORT_PASSWORD
-    ) {
+    // Validate password and derive role from which password matched
+    // SECURITY: Never trust client-provided role - derive it from password validation
+    if (password === process.env.ADMIN_PASSWORD) {
       isAuthenticated = true;
-      role = cookieRole || null;
+      role = "admin";
+    } else if (password === process.env.SUPPORT_PASSWORD) {
+      isAuthenticated = true;
+      role = "support";
     }
   }
 

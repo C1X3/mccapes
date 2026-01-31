@@ -25,10 +25,11 @@ export const authenticationRouter = createTRPCRouter({
         });
       }
 
-      // Set the session cookie with password and role
+      // Set the session cookie with only the password
+      // SECURITY: Role is derived from password validation, never stored in cookie
       (await cookies()).set({
         name: "authenticated",
-        value: `${password}&role=${role}`,
+        value: password,
       });
 
       // Return the role
@@ -42,12 +43,18 @@ export const authenticationRouter = createTRPCRouter({
       return { authenticated: false, role: null };
     }
 
-    // Parse role from cookie
-    const cookieValue = sessionCookie.value;
-    const rolePart = cookieValue.split("&role=")[1];
-    const role = rolePart as "admin" | "support" | undefined;
+    const password = sessionCookie.value;
 
-    // Return authentication status and role
-    return { authenticated: true, role: role || null };
+    // Validate password and derive role from which password matched
+    // SECURITY: Never trust client-provided role - derive it from password validation
+    let role: "admin" | "support" | null = null;
+    if (password === process.env.ADMIN_PASSWORD) {
+      role = "admin";
+    } else if (password === process.env.SUPPORT_PASSWORD) {
+      role = "support";
+    }
+
+    // Return authentication status and derived role
+    return { authenticated: role !== null, role };
   }),
 });
