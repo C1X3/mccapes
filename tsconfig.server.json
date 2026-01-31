@@ -13,7 +13,9 @@
       "outDir": "./dist",
       "paths": {
         "@/*": ["./src/*"],
-        "@generated": ["./generated"]
+        "@generated/*": [
+        "./generated/*"
+      ]
       }
     },
     "include": ["src/scripts/**/*.ts"],
