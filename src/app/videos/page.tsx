@@ -40,10 +40,10 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/5TLkJbj--BQ/maxresdefault.jpg",
   },
   {
-    title: "What's The BEST Minecraft Launcher / Client?",
+    title: "Untold History of EVERY Minecraft Cape",
     description: "godnxss",
-    url: "https://www.youtube.com/embed/TNhBkEyOPL0",
-    thumbnail: "https://img.youtube.com/vi/TNhBkEyOPL0/maxresdefault.jpg",
+    url: "https://www.youtube.com/embed/wGbQJwCBbR4",
+    thumbnail: "https://img.youtube.com/vi/wGbQJwCBbR4/maxresdefault.jpg",
   },
   {
     title: "when a top ranked player joins your smp...",
@@ -52,10 +52,10 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/NFbr6KXdY64/maxresdefault.jpg",
   },
   {
-    title: "this pvp method is too unfair...",
-    description: "Flowtives",
-    url: "https://www.youtube.com/embed/p5Io6blJlow",
-    thumbnail: "https://img.youtube.com/vi/p5Io6blJlow/maxresdefault.jpg",
+    title: "EVERY Minecraft Cape You Can STILL Get for FREE! [2026]",
+    description: "godnxss",
+    url: "https://www.youtube.com/embed/SE_30y8sqgo",
+    thumbnail: "https://img.youtube.com/vi/SE_30y8sqgo/maxresdefault.jpg",
   },
   {
     title: "I Won The Bedwars World Cup",
@@ -64,16 +64,22 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/S9qxDXXqEXA/maxresdefault.jpg",
   },
   {
+    title: "How to Claim Minecraft Copper Cape in 4 Minutes (Java & Bedrock)",
+    description: "godnxss",
+    url: "https://www.youtube.com/embed/fDC0z4rVpzQ",
+    thumbnail: "https://img.youtube.com/vi/fDC0z4rVpzQ/maxresdefault.jpg",
+  },
+  {
+    title: "this pvp method is too unfair...",
+    description: "Flowtives",
+    url: "https://www.youtube.com/embed/p5Io6blJlow",
+    thumbnail: "https://img.youtube.com/vi/p5Io6blJlow/maxresdefault.jpg",
+  },
+  {
     title: "I Tried Every Ranked Bedwars Server",
     description: "Dewier",
     url: "https://www.youtube.com/embed/b63GeCDZWfE",
     thumbnail: "https://img.youtube.com/vi/b63GeCDZWfE/maxresdefault.jpg",
-  },
-  {
-    title: "YouTuber Who Stole $3,000 from Technoblade's Charity is Back",
-    description: "Blissolic",
-    url: "https://www.youtube.com/embed/Fh7Blmb-h5I",
-    thumbnail: "https://img.youtube.com/vi/Fh7Blmb-h5I/maxresdefault.jpg",
   },
   {
     title: "How I Got HT3 in Crystal PVP",
@@ -88,10 +94,10 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/RgpHAq9ZmoQ/maxresdefault.jpg",
   },
   {
-    title: "EVERY Minecraft Cape You Can STILL Get for FREE! [2026]",
+    title: "What's The BEST Minecraft Launcher / Client?",
     description: "godnxss",
-    url: "https://www.youtube.com/embed/SE_30y8sqgo",
-    thumbnail: "https://img.youtube.com/vi/SE_30y8sqgo/maxresdefault.jpg",
+    url: "https://www.youtube.com/embed/TNhBkEyOPL0",
+    thumbnail: "https://img.youtube.com/vi/TNhBkEyOPL0/maxresdefault.jpg",
   },
   {
     title: "I Destroyed Top Bedwars Players",
@@ -116,12 +122,6 @@ const videos: Video[] = [
     description: "Dewier",
     url: "https://www.youtube.com/embed/5XCNJrimtPw",
     thumbnail: "https://img.youtube.com/vi/5XCNJrimtPw/maxresdefault.jpg",
-  },
-  {
-    title: "Untold History of EVERY Minecraft Cape",
-    description: "godnxss",
-    url: "https://www.youtube.com/embed/wGbQJwCBbR4",
-    thumbnail: "https://img.youtube.com/vi/wGbQJwCBbR4/maxresdefault.jpg",
   },
   {
     title: "It Took 3 Days to DESTROY This Crystal PVP SMP",
@@ -160,12 +160,6 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/mstd9ZwoHOc/maxresdefault.jpg",
   },
   {
-    title: "How to Unlock Minecraft's NEW Copper Cape (Java & Bedrock)",
-    description: "godnxss",
-    url: "https://www.youtube.com/embed/avQPjUn8S5w",
-    thumbnail: "https://img.youtube.com/vi/avQPjUn8S5w/maxresdefault.jpg",
-  },
-  {
     title: "Destroying Pros In A $50 Bedwars Wager",
     description: "Dewier",
     url: "https://www.youtube.com/embed/IVeGewwX4Hc",
@@ -178,16 +172,10 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/k5jIsyj0Kpw/maxresdefault.jpg",
   },
   {
-    title: "The End of Badlion Client... (New Updates)",
-    description: "Blissolic",
-    url: "https://www.youtube.com/embed/VHaMzoAWxKY",
-    thumbnail: "https://img.youtube.com/vi/VHaMzoAWxKY/maxresdefault.jpg",
-  },
-  {
-    title: "Get THIS Minecraft Cape in 2 Minutes!",
+    title: "How to Unlock Minecraft's NEW Copper Cape (Java & Bedrock)",
     description: "godnxss",
-    url: "https://www.youtube.com/embed/Xn5_loNOqHY",
-    thumbnail: "https://img.youtube.com/vi/Xn5_loNOqHY/maxresdefault.jpg",
+    url: "https://www.youtube.com/embed/avQPjUn8S5w",
+    thumbnail: "https://img.youtube.com/vi/avQPjUn8S5w/maxresdefault.jpg",
   },
   {
     title: "Undercover In Lobby 1 Private Games",
@@ -196,10 +184,10 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/my1CKogHm8I/maxresdefault.jpg",
   },
   {
-    title: "How to Claim Minecraft Copper Cape in 4 Minutes (Java & Bedrock)",
+    title: "Get THIS Minecraft Cape in 2 Minutes!",
     description: "godnxss",
-    url: "https://www.youtube.com/embed/fDC0z4rVpzQ",
-    thumbnail: "https://img.youtube.com/vi/fDC0z4rVpzQ/maxresdefault.jpg",
+    url: "https://www.youtube.com/embed/Xn5_loNOqHY",
+    thumbnail: "https://img.youtube.com/vi/Xn5_loNOqHY/maxresdefault.jpg",
   },
   {
     title: "How Minecraft's NEW $100,000 Cape Disappeared...",
