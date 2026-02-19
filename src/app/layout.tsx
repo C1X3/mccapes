@@ -4,6 +4,7 @@ import { CartProvider } from "@/context/CartContext";
 import { TRPCReactProvider } from "@/server/client";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ClickTracker } from "@/components/ClickTracker";
+import DiscordFloatingWidget from "@/components/DiscordFloatingWidget";
 
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -51,6 +52,7 @@ export default function RootLayout({
         <TRPCReactProvider>
           <CartProvider>{children}</CartProvider>
         </TRPCReactProvider>
+        <DiscordFloatingWidget />
       </body>
     </html>
   );

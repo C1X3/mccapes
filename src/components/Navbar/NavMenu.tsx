@@ -42,13 +42,8 @@ const items: { label: string; href: Route; external?: boolean }[] = [
     href: "/videos",
   },
   {
-    label: "Vouches",
-    href: "/vouches",
-  },
-  {
-    label: "Discord",
-    href: "https://discord.mccapes.net",
-    external: true,
+    label: "About Us",
+    href: "/about" as Route,
   },
 ];
 

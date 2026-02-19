@@ -15,6 +15,7 @@ const RESERVED_ROUTES = [
   "terms",
   "videos",
   "vouches",
+  "about",
   "_next",
   "favicon.ico",
 ];

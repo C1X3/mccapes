@@ -15,7 +15,7 @@ const VouchCard = ({ vouch }: VouchCardProps) => {
 
   return (
     <div
-      className="group bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_15%)] to-[var(--background)] rounded-2xl overflow-hidden border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] hover:border-[var(--accent)] backdrop-blur-sm transition-all duration-300 cursor-pointer"
+      className="group h-full bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_15%)] to-[var(--background)] rounded-2xl overflow-hidden border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] hover:border-[var(--accent)] backdrop-blur-sm transition-all duration-300 cursor-pointer"
       onClick={handleClick}
     >
       <div className="p-6">

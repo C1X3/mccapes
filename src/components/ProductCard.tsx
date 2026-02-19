@@ -70,36 +70,9 @@ const ProductCard = ({
       <motion.div
         key={product.id}
         onClick={handleNavigateToProduct}
-        className="group flex items-center gap-6 p-4 rounded-2xl bg-[var(--background)] hover:shadow-lg transition-shadow duration-200 cursor-pointer relative overflow-hidden"
+        className="group flex items-center gap-6 p-4 rounded-2xl bg-white border border-gray-200 hover:shadow-lg transition-shadow duration-200 cursor-pointer"
         whileHover={{ y: -4, boxShadow: "0 10px 20px rgba(0,0,0,0.1)" }}
       >
-        {/* Animated background elements */}
-        <div className="absolute inset-0 overflow-hidden opacity-10 pointer-events-none">
-          {Array.from({ length: 10 }).map((_, i) => (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-[var(--primary)]"
-              style={{
-                width: 10 + Math.random() * 50,
-                height: 10 + Math.random() * 50,
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-              }}
-              animate={{
-                x: [0, Math.random() * 30 - 15],
-                y: [0, Math.random() * 30 - 15],
-                scale: [1, 1 + Math.random() * 0.2],
-                opacity: [0.6, 0.8, 0.6],
-              }}
-              transition={{
-                duration: 5 + Math.random() * 5,
-                repeat: Infinity,
-                repeatType: "reverse",
-                ease: "easeInOut",
-              }}
-            />
-          ))}
-        </div>
 
         {/* Left: Image */}
         <div
@@ -136,16 +109,16 @@ const ProductCard = ({
         <div className="flex flex-col justify-between flex-1 h-full">
           <div>
             <Rating />
-            <h4 className="mt-1 text-lg font-semibold text-[var(--foreground)] group-hover:text-[var(--accent)] transition-colors">
+            <h4 className="mt-1 text-lg font-semibold text-gray-800 group-hover:text-[var(--primary)] transition-colors">
               {product.name}
             </h4>
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-xl font-bold text-[var(--foreground)]">
+            <span className="text-xl font-bold text-gray-800">
               ${product.price}
               {product.slashPrice && (
-                <span className="ml-2 text-sm line-through text-[color-mix(in_srgb,var(--foreground),#888_60%)]">
+                <span className="ml-2 text-sm line-through text-gray-400">
                   ${product.slashPrice.toFixed(2)}
                 </span>
               )}

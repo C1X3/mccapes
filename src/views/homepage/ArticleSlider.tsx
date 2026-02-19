@@ -9,9 +9,10 @@ import { ProductGetAllOutput } from "@/server/routes/_app";
 interface ArticleSliderProps {
   articles: Article[];
   products: ProductGetAllOutput;
+  hideProduct?: boolean;
 }
 
-const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
+const ArticleSlider = ({ articles, products, hideProduct = false }: ArticleSliderProps) => {
   const router = useRouter();
 
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -183,7 +184,7 @@ const ArticleSlider = ({ articles, products }: ArticleSliderProps) => {
               className="relative md:cursor-default cursor-grab active:cursor-grabbing"
             >
               {/* Product Card if article has productSlug */}
-              {currentArticle.productSlug && (
+              {!hideProduct && currentArticle.productSlug && (
                 <motion.div
                   className="mb-8 md:w-1/3 mx-auto"
                   variants={fadeInUp}
