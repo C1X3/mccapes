@@ -67,6 +67,8 @@ const HeroCapeStage = ({
 
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, dprCap));
     renderer.setClearColor(0x000000, 0);
+    renderer.domElement.style.filter =
+      "drop-shadow(0 14px 20px rgba(10, 25, 18, 0.33)) drop-shadow(0 2px 10px rgba(74, 222, 128, 0.24))";
     renderer.toneMapping = THREE.ACESFilmicToneMapping;
     renderer.toneMappingExposure = 1.38;
     renderer.outputColorSpace = THREE.SRGBColorSpace;

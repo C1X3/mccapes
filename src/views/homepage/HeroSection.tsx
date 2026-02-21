@@ -118,7 +118,15 @@ const HeroSection = ({
                   <span className="block whitespace-nowrap">
                     The{" "}
                     {heroTopWord ? (
-                      <span style={{ color: accentWordColor }}>{heroTopWord}</span>
+                      <span
+                        style={{
+                          color: accentWordColor,
+                          textShadow:
+                            "0 0 6px color-mix(in srgb, currentColor, transparent 30%)",
+                        }}
+                      >
+                        {heroTopWord}
+                      </span>
                     ) : null}
                   </span>
                   <span className="block">Cape Code</span>

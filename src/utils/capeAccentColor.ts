@@ -1,4 +1,4 @@
-const FALLBACK_CAPE_ACCENT_COLOR = "var(--primary)";
+const FALLBACK_CAPE_ACCENT_COLOR = "#9b6bff";
 
 const resolvedColorCache = new Map<string, string>();
 const pendingColorLoads = new Map<string, Promise<string>>();
