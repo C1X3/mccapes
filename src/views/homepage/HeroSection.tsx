@@ -169,7 +169,10 @@ const HeroSection = ({
               </motion.button>
             </div>
 
-            <p className="mt-3 max-w-xl text-[11px] text-[var(--color-text-muted)] md:mt-4 md:text-xs">
+            <p
+              className="mt-3 max-w-xl text-[11px] md:mt-4 md:text-xs"
+              style={{ color: "var(--color-text-muted)" }}
+            >
               MCCapes is not affiliated with Mojang, Minecraft, or Microsoft.
             </p>
           </motion.div>

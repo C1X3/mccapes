@@ -146,27 +146,27 @@ const HeroCapeStage = ({
           clearcoatRoughness: 0.35,
         }),
       );
-      cape.rotation.x = -0.05;
-      cape.rotation.y = 0.35;
+      cape.rotation.x = -0.07;
+      cape.rotation.y = 0.39;
       cape.position.set(0, 0, 0);
       scene.add(cape);
       setReady(true);
     });
 
-    let pointerX = 0;
-    let pointerY = 0;
+    let hovered = false;
 
-    const onPointerMove = (event: MouseEvent) => {
+    const onMouseEnter = () => {
       if (!interactive || lowPower) return;
-      const rect = mount.getBoundingClientRect();
-      const nx = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      const ny = ((event.clientY - rect.top) / rect.height) * 2 - 1;
-      pointerX = nx;
-      pointerY = ny;
+      hovered = true;
+    };
+
+    const onMouseLeave = () => {
+      hovered = false;
     };
 
     if (interactive) {
-      mount.addEventListener("mousemove", onPointerMove);
+      mount.addEventListener("mouseenter", onMouseEnter);
+      mount.addEventListener("mouseleave", onMouseLeave);
     }
 
     const onResize = () => {
@@ -186,8 +186,8 @@ const HeroCapeStage = ({
       rafId = requestAnimationFrame(tick);
 
       if (cape) {
-        const targetRotY = 0.34 + pointerX * 0.15;
-        const targetRotX = -0.035 + pointerY * 0.05;
+        const targetRotY = hovered ? 0.52 : 0.39;
+        const targetRotX = hovered ? -0.14 : -0.07;
         cape.rotation.y += (targetRotY - cape.rotation.y) * 0.08;
         cape.rotation.x += (targetRotX - cape.rotation.x) * 0.08;
         cape.position.y = 0;
@@ -202,7 +202,8 @@ const HeroCapeStage = ({
       mounted = false;
       cancelAnimationFrame(rafId);
       window.removeEventListener("resize", onResize);
-      mount.removeEventListener("mousemove", onPointerMove);
+      mount.removeEventListener("mouseenter", onMouseEnter);
+      mount.removeEventListener("mouseleave", onMouseLeave);
       if (mount.contains(renderer.domElement)) {
         mount.removeChild(renderer.domElement);
       }
