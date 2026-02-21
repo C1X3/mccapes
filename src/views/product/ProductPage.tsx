@@ -27,7 +27,7 @@ const SKIN_USERNAME_STORAGE_KEY = "mccapes.skinUsername";
 const TRY_ON_HINT_SEEN_STORAGE_KEY = "mccapes.tryOnHintSeen";
 
 const sanitizeMinecraftUsername = (raw: string) =>
-  raw.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 16).toUpperCase();
+  raw.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 16);
 
 const getStoredSkinUsername = () => {
   if (typeof window === "undefined") return "";
