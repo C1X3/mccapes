@@ -110,6 +110,9 @@ importers:
       superjson:
         specifier: ^2.2.6
         version: 2.2.6
+      three:
+        specifier: ^0.170.0
+        version: 0.170.0
       zod:
         specifier: ^4.3.6
         version: 4.3.6
@@ -4582,6 +4585,9 @@ packages:
 
   third-party-capital@1.0.20:
     resolution: {integrity: sha512-oB7yIimd8SuGptespDAZnNkzIz+NWaJCu2RMsbs4Wmp9zSDUM8Nhi3s2OOcqYuv3mN4hitXc8DVx+LyUmbUDiA==}
+
+  three@0.170.0:
+    resolution: {integrity: sha512-FQK+LEpYc0fBD+J8g6oSEyyNzjp+Q7Ks1C568WWaoMRLW+TkNNWmenWeGgJjV105Gd+p/2ql1ZcjYvNiPZBhuQ==}
 
   tiny-invariant@1.3.3:
     resolution: {integrity: sha512-+FbBPE1o9QAYvviau/qC5SE3caw21q3xkvWKBtja5vgqOWIHHJ3ioaq1VPfn/Szqctz2bU/oYeKd9/z5BL+PVg==}
@@ -9941,6 +9947,8 @@ snapshots:
   text-hex@1.0.0: {}
 
   third-party-capital@1.0.20: {}
+
+  three@0.170.0: {}
 
   tiny-invariant@1.3.3: {}
 

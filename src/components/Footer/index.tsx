@@ -2,40 +2,32 @@ import { motion } from "framer-motion";
 import { FaChevronRight } from "react-icons/fa";
 
 const links = [
-  {
-    label: "Home",
-    href: "/",
-  },
-  {
-    label: "Shop",
-    href: "/shop",
-  },
-  {
-    label: "Videos",
-    href: "/videos",
-  },
-  {
-    label: "Vouches",
-    href: "/vouches",
-  },
+  { label: "Home", href: "/" },
+  { label: "Shop", href: "/shop" },
+  { label: "Videos", href: "/videos" },
+  { label: "Vouches", href: "/vouches" },
 ];
 
 const Footer = () => {
   return (
-    <footer className="bg-[var(--surface-dark)] text-[var(--foreground)] py-12 relative overflow-hidden">
-      <motion.div className="absolute inset-0 bg-gradient-to-b from-[var(--surface)] to-transparent opacity-10 z-0" />
+    <footer className="relative overflow-hidden border-t border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_12%)] py-14 text-[var(--foreground)]">
+      <motion.div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-[0.15]" />
+      <motion.div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.04]" />
 
-      <div className="container mx-auto px-6 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container relative z-10 mx-auto px-6">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
           <div>
-            <h5 className="text-xl font-bold mb-4 gradient-text">MCCapes</h5>
-            <p className="text-text-muted mb-4">
+            <h5 className="text-xl font-bold mb-4">
+              <span className="text-[var(--primary)]">MC</span>
+              <span className="logo-text">Capes</span>
+            </h5>
+            <p className="mb-4 text-[var(--color-text-secondary)]">
               Premium Minecraft cosmetics for dedicated players.
             </p>
           </div>
 
           <div>
-            <h5 className="text-lg font-semibold mb-4 text-[var(--accent-light)]">
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
               Shop
             </h5>
             <ul className="space-y-2">
@@ -43,7 +35,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-text-muted hover:text-black transition-colors flex items-center"
+                    className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -54,9 +46,9 @@ const Footer = () => {
           </div>
 
           <div>
-            <h5 className="text-lg font-semibold mb-4 text-[var(--accent-light)]">
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
               Company
-            </h5>{" "}
+            </h5>
             <ul className="space-y-2">
               {[
                 { label: "FAQ", href: "/faq" },
@@ -67,7 +59,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="text-text-muted hover:text-black transition-colors flex items-center"
+                    className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -78,13 +70,13 @@ const Footer = () => {
           </div>
 
           <div>
-            <h5 className="text-lg font-semibold mb-4 text-[var(--tertiary-light)]">
-              Contact Us
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
+              Contact
             </h5>
             <address className="not-italic space-y-2">
               <a
                 href="mailto:mccapesbusiness@gmail.com"
-                className="text-text-muted hover:text-black transition-colors flex items-center"
+                className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
               >
                 <FaChevronRight className="mr-2 text-xs" />
                 mccapesbusiness@gmail.com
@@ -93,7 +85,7 @@ const Footer = () => {
                 href="https://discord.mccapes.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-text-muted hover:text-black transition-colors flex items-center"
+                className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
               >
                 <FaChevronRight className="mr-2 text-xs" />
                 Discord
@@ -102,11 +94,13 @@ const Footer = () => {
           </div>
         </div>
 
-        <div className="border-t border-[var(--surface-light)] mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <p className="text-gray-500 text-sm">
+        <div className="mt-10 flex flex-col items-center justify-between border-t border-[var(--border)] pt-8 md:flex-row">
+          <p className="text-sm text-[var(--color-text-muted)]">
             &copy; 2026 MCCapes. All rights reserved.
           </p>
-          <p className="text-gray-500 text-sm mt-4 md:mt-0">mccapes.net</p>
+          <p className="mt-4 text-sm text-[var(--color-text-muted)] md:mt-0">
+            mccapes.net
+          </p>
         </div>
       </div>
     </footer>

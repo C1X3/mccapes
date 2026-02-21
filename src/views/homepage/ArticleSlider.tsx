@@ -107,19 +107,7 @@ const ArticleSlider = ({ articles, products, hideProduct = false }: ArticleSlide
 
   return (
     <>
-      <section className="py-16 bg-[var(--surface-light)] relative px-4 sm:px-6 lg:px-8">
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-tr from-[var(--primary-light)] to-transparent z-0"
-          animate={{
-            opacity: [0.03, 0.06, 0.03],
-          }}
-          transition={{
-            duration: 6,
-            repeat: Infinity,
-            repeatType: "reverse",
-            ease: "easeInOut",
-          }}
-        />
+      <section className="py-16 bg-transparent relative px-4 sm:px-6 lg:px-8">
 
         <div className="container mx-auto relative">
           {/* Navigation buttons - desktop only */}

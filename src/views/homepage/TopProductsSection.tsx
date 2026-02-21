@@ -12,45 +12,38 @@ const TopProductsSection = ({
   const router = useRouter();
 
   return (
-    <section className="py-24 bg-[color-mix(in_srgb,var(--background),#000_5%)] text-[var(--foreground)] relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden opacity-10">
-        <div className="absolute top-[10%] left-[5%] w-64 h-64 bg-[var(--primary)] rounded-full filter blur-[80px]" />
-        <div className="absolute bottom-[15%] right-[10%] w-80 h-80 bg-[var(--secondary)] rounded-full filter blur-[100px]" />
-        <div className="absolute top-[40%] right-[20%] w-40 h-40 bg-[var(--accent)] rounded-full filter blur-[60px]" />
-      </div>
+    <section className="relative overflow-hidden px-4 py-18 md:px-8 md:py-24">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(57,203,115,0.06),transparent_40%,rgba(84,184,255,0.08))]" />
 
-      <div className="container mx-auto px-6 relative z-10">
-        {/* Header with animation */}
+      <div className="container relative z-10 mx-auto">
         <motion.div
-          className="text-center mb-16"
-          initial={{ opacity: 0, y: 30 }}
+          className="mb-14 text-center"
+          initial={{ opacity: 0, y: 28 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
+          transition={{ duration: 0.55 }}
         >
-          <div className="inline-block mb-4">
-            <span className="bg-[var(--primary)] px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider text-white">
-              Customers&apos; Favorites
-            </span>
-          </div>
-          <h2 className="text-4xl md:text-5xl font-extrabold mb-4 gradient-text">
-            Products
+          <span className="mb-4 inline-flex rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#fff_3%)] px-4 py-1 text-xs font-semibold uppercase tracking-[0.15em] text-[var(--accent-light)]">
+            Event Code Catalog
+          </span>
+          <h2 className="text-5xl text-[var(--foreground)] md:text-6xl lg:text-7xl">
+            Our Products
           </h2>
-          <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] max-w-xl mx-auto text-lg">
-            Exclusive in-game items curated for top Minecraft players
+          <p className="mx-auto mt-3 max-w-2xl text-base text-[var(--color-text-secondary)] md:text-lg">
+            Redeemable event cape codes with transparent pricing and trusted
+            delivery.
           </p>
         </motion.div>
 
-        {/* Product Grid with improved cards */}
         <motion.div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+          className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3"
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: "-80px" }}
           variants={{
             hidden: { opacity: 0 },
-            visible: { opacity: 1, transition: { staggerChildren: 0.1 } },
+            visible: { opacity: 1, transition: { staggerChildren: 0.08 } },
           }}
         >
           {products.map((product) => (
@@ -58,25 +51,21 @@ const TopProductsSection = ({
           ))}
         </motion.div>
 
-        {/* Improved CTA */}
         <motion.div
-          className="text-center mt-16"
+          className="mt-14 text-center"
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          transition={{ delay: 0.4 }}
-          onClick={() => router.push("/shop")}
+          transition={{ delay: 0.2 }}
         >
           <motion.button
-            whileHover={{
-              scale: 1.05,
-              boxShadow: "0 0 20px rgba(var(--primary-rgb),0.5)",
-            }}
+            whileHover={{ scale: 1.03 }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center px-8 py-4 bg-[var(--primary)] hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] text-white font-bold rounded-xl shadow-lg shadow-[var(--primary-rgb)]/30 transition-all"
+            onClick={() => router.push("/shop")}
+            className="inline-flex items-center gap-2 rounded-xl border border-[color-mix(in_srgb,var(--primary),#fff_15%)] bg-[linear-gradient(135deg,var(--primary-dark),var(--primary))] px-8 py-3 text-sm font-bold uppercase tracking-[0.08em] text-[var(--text-on-primary)] shadow-[0_16px_35px_rgba(57,203,115,0.25)]"
           >
-            Explore All Products
-            <FaChevronRight className="ml-2" />
+            Explore All Capes
+            <FaChevronRight className="text-xs" />
           </motion.button>
         </motion.div>
       </div>

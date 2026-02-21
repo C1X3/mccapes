@@ -50,6 +50,7 @@
     "recharts": "^3.7.0",
     "stripe": "^20.1.1",
     "superjson": "^2.2.6",
+    "three": "^0.170.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {

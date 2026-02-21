@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar/Navbar";
 import ProductCard from "@/components/ProductCard";
+import ProductCapeViewer from "@/components/ProductCapeViewer";
 import { FaSearch } from "react-icons/fa";
 import { useTRPC } from "@/server/client";
 import { useQuery } from "@tanstack/react-query";
@@ -31,15 +32,11 @@ const ShopPage = () => {
   );
 
   const [selectedCategory, setSelectedCategory] = useState<string>("All");
-  const [searchQuery, setSearchQuery] = useState<string>("");
-
-  // Set search query from URL parameter
-  useEffect(() => {
-    const searchFromUrl = searchParams.get("search");
-    if (searchFromUrl) {
-      setSearchQuery(searchFromUrl);
-    }
-  }, [searchParams]);
+  const [searchQuery, setSearchQuery] = useState<string>(
+    () => searchParams.get("search") ?? "",
+  );
+  const [isFeaturedHovered, setIsFeaturedHovered] = useState(false);
+  const [featuredTilt, setFeaturedTilt] = useState({ x: 0, y: 0 });
 
   const categories = [
     "All",
@@ -78,9 +75,17 @@ const ShopPage = () => {
         : null;
   }, [filteredProducts, products]);
 
-  const handleAddToCart = () => {
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.stopPropagation();
     if (!topProduct) return;
     addItem(topProduct, 1);
+  };
+
+  const handleFeaturedTilt = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+    const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+    setFeaturedTilt({ x: -y * 4.5, y: x * 5.5 });
   };
 
   return (
@@ -113,6 +118,16 @@ const ShopPage = () => {
             }}
             transition={{ duration: 0.7, delay: 0.2 }}
             onClick={() => router.push(`/shop/${topProduct.slug}`)}
+            onMouseEnter={() => setIsFeaturedHovered(true)}
+            onMouseLeave={() => {
+              setIsFeaturedHovered(false);
+              setFeaturedTilt({ x: 0, y: 0 });
+            }}
+            onMouseMove={handleFeaturedTilt}
+            style={{
+              transformStyle: "preserve-3d",
+              transform: `perspective(900px) rotateX(${featuredTilt.x}deg) rotateY(${featuredTilt.y}deg)`,
+            }}
           >
             <div className="flex flex-col md:flex-row items-center gap-10">
               <motion.div
@@ -120,21 +135,22 @@ const ShopPage = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 15 }}
               >
-                <div className="relative rounded-2xl overflow-hidden inline-block">
+                <div className="relative inline-block h-60 aspect-[5/3] overflow-hidden rounded-2xl border border-[var(--border)]">
                   <Image
-                    src={topProduct.image || ""}
-                    alt="Featured Product"
-                    width={500}
-                    height={500}
-                    style={{
-                      objectFit: "contain",
-                      width: "auto",
-                      height: "auto",
-                      maxWidth: "100%",
-                      maxHeight: "400px",
-                    }}
-                    className="drop-shadow-[0_0_15px_rgba(var(--primary-rgb),0.4)] rounded-2xl"
+                    src="/mc_bg.webp"
+                    alt=""
+                    fill
+                    className="object-cover scale-140 blur-sm saturate-125"
                   />
+                  <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.14),rgba(0,0,0,0.3))]" />
+                  <div className="absolute inset-0">
+                    <ProductCapeViewer
+                      texturePath={`/cape renders/${topProduct.slug}.png`}
+                      compact
+                      variant="shop-card"
+                      isHovered={isFeaturedHovered}
+                    />
+                  </div>
                   <div className="absolute top-4 right-4 bg-success text-white px-3 py-1 rounded-full text-sm font-semibold">
                     FEATURED
                   </div>
@@ -175,7 +191,7 @@ const ShopPage = () => {
                     )}
                   </div>
                   <motion.button
-                    onClick={handleAddToCart}
+                    onClick={(e) => handleAddToCart(e)}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                     className="flex items-center gap-2 bg-[var(--primary)] hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] text-white font-medium py-3 px-6 rounded-xl shadow-lg"

@@ -5,8 +5,8 @@ import Navbar from "@/components/Navbar/Navbar";
 import FAQSection from "@/components/FAQSection";
 import { Product } from "@generated/browser";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
+import ProductCapeViewer from "@/components/ProductCapeViewer";
 import { useState } from "react";
 import {
   FaArrowLeft,
@@ -32,8 +32,8 @@ const ProductPage = ({
   const { addItem } = useCart();
 
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(product?.image || "");
   const [isAdding, setIsAdding] = useState(false);
+  const [capeView, setCapeView] = useState<"cape" | "player" | "elytra">("cape");
 
   const handleIncrementQuantity = () => {
     if (product && quantity < stockCount!) {
@@ -101,58 +101,54 @@ const ProductPage = ({
           <span>Back to Shop</span>
         </button>
 
-        {/* Product details: on lg, row 1 = image + info (centered with image), row 2 = thumbnails */}
-        <div className="grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-2 lg:grid-rows-[auto_auto]">
-          {/* Image box - lg row 1 col 1 */}
+        {/* Product details: on lg, row 1 = cape render + info */}
+        <div className="grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-2">
+          {/* Cape render - lg row 1 col 1 */}
           <div className="lg:col-start-1 lg:row-start-1">
-            <div className="mb-4 w-full max-w-[1000px] aspect-[1000/700] rounded-2xl overflow-hidden ring-2 ring-black ring-inset">
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ duration: 0.5 }}
-                className="relative w-full h-full rounded-2xl overflow-hidden"
-              >
-                <Image
-                  src={selectedImage}
-                  alt={product.name}
-                  fill
-                  style={{ objectFit: "cover" }}
-                  className="rounded-2xl drop-shadow-[0_10px_20px_rgba(0,0,0,0.25)]"
-                />
-              </motion.div>
+            {/* View selector tabs */}
+            <div className="flex gap-2 mb-4">
+              {(
+                [
+                  { id: "cape" as const, label: "Cape" },
+                  { id: "player" as const, label: "On Player" },
+                  { id: "elytra" as const, label: "Elytra" },
+                ] as const
+              ).map(({ id, label }) => (
+                <button
+                  key={id}
+                  type="button"
+                  onClick={() => setCapeView(id)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    capeView === id
+                      ? "bg-[var(--primary)] text-white"
+                      : "bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_25%)]"
+                  }`}
+                >
+                  {label}
+                </button>
+              ))}
             </div>
-          </div>
-
-          {/* Thumbnails - lg row 2 col 1 */}
-          <div className="flex gap-4 mt-4 lg:col-start-1 lg:row-start-2">
-            <button
-              className={`border-2 rounded-lg overflow-hidden w-24 h-24 flex items-center justify-center ${selectedImage === product.image ? "border-[var(--accent)]" : "border-transparent"}`}
-              onClick={() => setSelectedImage(product.image)}
-            >
-              <Image
-                src={product.image}
-                alt={`${product.name} thumbnail`}
-                width={80}
-                height={80}
-                style={{ objectFit: "contain" }}
-              />
-            </button>
-
-            {product.additionalImages?.map((img, index) => (
-              <button
-                key={index}
-                className={`rounded-xl overflow-hidden w-24 h-24 flex items-center justify-center ring-2 ring-offset-1 ${selectedImage === img ? "ring-[var(--accent)]" : "ring-gray-300/60"}`}
-                onClick={() => setSelectedImage(img)}
-              >
-                <Image
-                  src={img}
-                  alt={`${product.name} alternative view ${index + 1}`}
-                  width={80}
-                  height={80}
-                  style={{ objectFit: "contain" }}
-                />
-              </button>
-            ))}
+            <div className="relative w-full max-w-[1000px] aspect-[1000/700] rounded-2xl overflow-visible bg-[color-mix(in_srgb,var(--background),#000_8%)] border border-[var(--border)]">
+              {capeView === "cape" && (
+                <div className="absolute inset-0">
+                  <ProductCapeViewer texturePath={`/cape renders/${product.slug}.png`} />
+                </div>
+              )}
+              {capeView === "player" && (
+                <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)]">
+                  <p className="text-center px-6">
+                    Cape on player view — coming soon
+                  </p>
+                </div>
+              )}
+              {capeView === "elytra" && (
+                <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)]">
+                  <p className="text-center px-6">
+                    Elytra variant view — coming soon
+                  </p>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Product information - lg row 1 col 2, same height as image box, content vertically centered */}
