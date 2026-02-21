@@ -86,7 +86,7 @@ const HeroSection = ({
       router.push("/shop/experience");
       return;
     }
-    addItem(activeProduct, 1);
+    addItem(activeProducts[normalizedIndex]!, 1);
     router.push("/cart");
   };
 

@@ -73,7 +73,7 @@ export default function ProductCapeViewer({
     scene.add(fill);
 
     const geo = new THREE.BoxGeometry(1.4, 2.24, 0.14);
-    const uv = geo.attributes.uv.array as number[];
+    const uv = geo.attributes.uv.array as unknown as number[];
     const W = 64;
     const H = 32;
     const u = (x: number) => (x - 1) / W;

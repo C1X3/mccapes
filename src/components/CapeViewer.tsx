@@ -71,7 +71,7 @@ export default function CapeViewer({ scrollProgress }: { scrollProgress?: number
       // Front: (2,2) to (11,17) | Left: (1,2) to (1,17) | Back: (13,2) to (22,17)
       // Right edge: (12,2) to (12,17) | Top: (1,2) to (1,11) | Bottom: (1,12) to (1,21)
       const geo = new THREE.BoxGeometry(1.4, 2.24, 0.14);
-      const uv = geo.attributes.uv.array as number[];
+      const uv = geo.attributes.uv.array as unknown as number[];
       const W = 64, H = 32;
       const u = (x: number) => (x - 1) / W;
       const v = (y: number) => 1 - (y - 1) / H;  // y=1 top -> v=1

@@ -67,6 +67,7 @@
     "@types/react": "^19",
     "@types/react-date-range": "^1.4.10",
     "@types/react-dom": "^19",
+    "@types/three": "^0.183.1",
     "bitcoin-core": "^5.0.0",
     "csv-parser": "^3.2.0",
     "date-fns": "^4.1.0",

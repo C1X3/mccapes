@@ -693,7 +693,7 @@ const OrderPage = ({ id }: { id: string }) => {
                           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
                           <div className="absolute inset-0">
                             <ProductCapeViewer
-                              texturePath={`/cape renders/${item.product.slug || "experience"}.png`}
+                              texturePath={`/cape renders/${("slug" in item.product ? item.product.slug : null) || "experience"}.png`}
                               compact
                               variant="shop-card"
                               isHovered={hoveredPreviewId === item.product.id}

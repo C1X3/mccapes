@@ -94,7 +94,7 @@ const HeroCapeStage = ({
     scene.add(front);
 
     const geo = new THREE.BoxGeometry(1.45, 2.3, 0.16);
-    const uv = geo.attributes.uv.array as number[];
+    const uv = geo.attributes.uv.array as unknown as number[];
     const W = 64;
     const H = 32;
     const u = (x: number) => (x - 1) / W;
