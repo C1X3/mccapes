@@ -134,7 +134,11 @@ export default function AdminLayout({
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
-            className="rounded-2xl border border-[var(--color-admin-card-border)] bg-[var(--color-admin-card)] p-3 md:p-5"
+            className={
+              currentTab === "dashboard"
+                ? ""
+                : "rounded-2xl border border-[var(--color-admin-card-border)] bg-[var(--color-admin-card)] p-3 md:p-5"
+            }
           >
             {children}
           </motion.div>
