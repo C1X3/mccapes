@@ -147,7 +147,7 @@ const HeroCapeStage = ({
         }),
       );
       cape.rotation.x = -0.07;
-      cape.rotation.y = 0.39;
+      cape.rotation.y = -0.39;
       cape.position.set(0, 0, 0);
       scene.add(cape);
       setReady(true);
@@ -186,7 +186,7 @@ const HeroCapeStage = ({
       rafId = requestAnimationFrame(tick);
 
       if (cape) {
-        const targetRotY = hovered ? 0.52 : 0.39;
+        const targetRotY = hovered ? -0.52 : -0.39;
         const targetRotX = hovered ? -0.14 : -0.07;
         cape.rotation.y += (targetRotY - cape.rotation.y) * 0.08;
         cape.rotation.x += (targetRotX - cape.rotation.x) * 0.08;
