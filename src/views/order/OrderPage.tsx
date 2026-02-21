@@ -682,12 +682,12 @@ const OrderPage = ({ id }: { id: string }) => {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                         <div
-                          className="relative w-full sm:w-44 aspect-video rounded-lg overflow-hidden flex-shrink-0 border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
+                          className="relative w-full sm:w-[26rem] lg:w-[30rem] aspect-video rounded-xl overflow-hidden border border-[var(--border)]"
                           onMouseEnter={() => setHoveredPreviewId(item.product.id)}
                           onMouseLeave={() => setHoveredPreviewId((prev) => (prev === item.product.id ? null : prev))}
                         >
                           <div
-                            className="pointer-events-none absolute inset-0 object-cover scale-140 saturate-120 blur-sm bg-cover bg-center"
+                            className="pointer-events-none absolute inset-0 scale-140 saturate-120 blur-[3px] bg-cover bg-center"
                             style={{ backgroundImage: "url('/mc_bg.webp')" }}
                           />
                           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />

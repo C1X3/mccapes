@@ -9,8 +9,8 @@ import ProductCapeViewer from "@/components/ProductCapeViewer";
 
 type CardStyle = "normal" | "article";
 
-const renderRating = (rating: number, score?: number | null) => (
-  <div className="flex items-center gap-2">
+const renderRating = (rating: number) => (
+  <div className="flex items-center">
     <div className="flex text-[var(--color-warning)] mr-1">
       {[...Array(5)].map((_, i) => (
         <FaStar
@@ -24,9 +24,6 @@ const renderRating = (rating: number, score?: number | null) => (
         />
       ))}
     </div>
-    <span className="text-xs text-[var(--color-text-muted)]">
-      {score?.toFixed(1) ?? "4.8"}
-    </span>
   </div>
 );
 
@@ -126,7 +123,7 @@ const ProductCard = ({
 
         <div className="flex h-full flex-1 flex-col justify-between">
           <div>
-            {renderRating(rating, product.rating)}
+            {renderRating(rating)}
             <h4 className="mt-1 text-lg font-semibold text-[var(--foreground)] group-hover:text-[var(--accent-light)]">
               {product.name}
             </h4>
@@ -190,7 +187,7 @@ const ProductCard = ({
       </div>
 
       <div className="p-5">
-        {renderRating(rating, product.rating)}
+        {renderRating(rating)}
         <h4 className="mb-2 mt-2 text-2xl text-[var(--foreground)] group-hover:text-[var(--accent-light)]">
           {product.name}
         </h4>

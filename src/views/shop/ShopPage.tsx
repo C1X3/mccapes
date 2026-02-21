@@ -173,9 +173,6 @@ const ShopPage = () => {
                       />
                     ))}
                   </div>
-                  <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
-                    {topProduct.rating}
-                  </span>
                 </div>
                 <p className="text-[color-mix(in_srgb,var(--foreground),#888_30%)] text-lg leading-relaxed">
                   {topProduct.description}

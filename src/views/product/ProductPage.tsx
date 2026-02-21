@@ -349,39 +349,9 @@ const ProductPage = ({
             </div>
 
             <div className="mb-8 flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-3">
-                {stockCount! > 10 ? (
-                  <FaCheckCircle className="text-green-500 shrink-0" size={24} />
-                ) : stockCount! > 0 ? (
-                  <FaExclamationTriangle className="text-amber-500 shrink-0" size={24} />
-                ) : (
-                  <FaTimesCircle className="text-red-500 shrink-0" size={24} />
-                )}
-                <div>
-                  <span
-                    className={`font-semibold ${stockCount! > 10 ? "text-green-600" : stockCount! > 0 ? "text-amber-600" : "text-red-600"}`}
-                  >
-                    {stockCount! > 10
-                      ? "In Stock"
-                      : stockCount! > 0
-                        ? "Low Stock"
-                        : "Out of Stock"}
-                  </span>
-                  {stockCount! > 0 ? (
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      <span className="font-medium tabular-nums text-[var(--foreground)]">{stockCount}</span> units left in stock
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500 mt-0.5">Currently unavailable</p>
-                  )}
-                </div>
-              </div>
-
               {stockCount! > 0 && (
                 <>
-                  <div className="h-6 w-px bg-gray-300" aria-hidden />
                   <div className="flex items-center gap-3">
-                    <span className="text-sm font-medium text-gray-600">Quantity</span>
                     <div className="flex items-center rounded-lg border border-gray-300 overflow-hidden bg-white">
                       <button
                         onClick={handleDecrementQuantity}
@@ -414,14 +384,40 @@ const ProductPage = ({
                         <FaPlus size={12} />
                       </button>
                     </div>
-                    {stockCount! < 10 && (
-                      <span className="text-sm text-amber-600" role="status">
-                        max {stockCount}
-                      </span>
-                    )}
                   </div>
+                  <div className="h-6 w-px bg-gray-300" aria-hidden />
                 </>
               )}
+
+              <div className="flex items-center gap-3">
+                {stockCount! > 10 ? (
+                  <FaCheckCircle className="text-green-500 shrink-0" size={24} />
+                ) : stockCount! > 0 && stockCount! <= 3 ? (
+                  <FaExclamationTriangle className="text-red-500 shrink-0" size={24} />
+                ) : stockCount! > 0 ? (
+                  <FaExclamationTriangle className="text-amber-500 shrink-0" size={24} />
+                ) : (
+                  <FaTimesCircle className="text-red-500 shrink-0" size={24} />
+                )}
+                <div>
+                  <span
+                    className={`font-semibold ${stockCount! > 10 ? "text-green-600" : stockCount! > 0 && stockCount! <= 3 ? "text-red-600" : stockCount! > 0 ? "text-amber-600" : "text-red-600"}`}
+                  >
+                    {stockCount! > 10
+                      ? "In Stock"
+                      : stockCount! > 0
+                        ? "Low Stock"
+                        : "Out of Stock"}
+                  </span>
+                  {stockCount! > 0 ? (
+                    <p className="text-sm text-gray-500 mt-0.5">
+                      <span className="font-medium tabular-nums text-[var(--foreground)]">{stockCount}</span> units left in stock
+                    </p>
+                  ) : (
+                    <p className="text-sm text-gray-500 mt-0.5">Currently unavailable</p>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4">
