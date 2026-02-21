@@ -54,7 +54,7 @@ const NavMenu = () => {
     <motion.ul
       className="hidden md:flex space-x-8"
       variants={staggerContainer}
-      initial="hidden"
+      initial={false}
       animate="visible"
     >
       {items.map((item) => {

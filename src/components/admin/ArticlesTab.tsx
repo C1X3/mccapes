@@ -146,7 +146,7 @@ export default function ArticlesTab() {
     );
   }
   return (
-    <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
           <FaNewspaper />
@@ -165,24 +165,24 @@ export default function ArticlesTab() {
 
       <div className="mb-6">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+          <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+            <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
               Total Articles
             </h3>
             <p className="text-2xl font-bold text-[var(--foreground)]">
               {orderedArticles.length}
             </p>
           </div>
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+          <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+            <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
               Active Articles
             </h3>
             <p className="text-2xl font-bold text-[var(--foreground)]">
               {orderedArticles.filter((a) => a.isActive).length}
             </p>
           </div>
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+          <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+            <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
               Inactive Articles
             </h3>
             <p className="text-2xl font-bold text-[var(--foreground)]">
@@ -192,14 +192,14 @@ export default function ArticlesTab() {
         </div>
       </div>
 
-      <div className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-4">
+      <div className="text-sm text-[var(--color-text-secondary)] mb-4">
         Drag and drop to reorder articles
       </div>
 
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+            <tr className="border-b border-[var(--border)]">
               <th className="text-left py-4 px-2 text-[var(--foreground)] w-10">
                 Order
               </th>
@@ -228,7 +228,7 @@ export default function ArticlesTab() {
               <tr>
                 <td
                   colSpan={5}
-                  className="py-12 text-center text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                  className="py-12 text-center text-[var(--color-text-secondary)]"
                 >
                   <FaNewspaper className="mx-auto mb-4 text-4xl" />
                   <p>No articles found</p>
@@ -241,14 +241,14 @@ export default function ArticlesTab() {
                   value={article}
                   as="tr"
                   dragListener={!isDragDisabled}
-                  className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                  className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
                 >
-                  <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)] cursor-move">
-                    <FaGripVertical className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]" />
+                  <td className="py-4 px-2 text-[var(--color-text-secondary)] cursor-move">
+                    <FaGripVertical className="text-[var(--color-text-secondary)]" />
                   </td>
                   <td className="py-4 px-2 text-[var(--foreground)] max-w-[250px]">
                     <div className="font-medium">{article.title}</div>
-                    <div className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] truncate">
+                    <div className="text-sm text-[var(--color-text-secondary)] truncate">
                       {article.description.substring(0, 75)}
                     </div>
                   </td>

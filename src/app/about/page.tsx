@@ -1,7 +1,6 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar/Navbar";
 import AboutHeroSection from "@/views/about/AboutHeroSection";
 import VideosCarousel from "@/views/about/VideosCarousel";
 import VouchesCarousel from "@/views/about/VouchesCarousel";
@@ -9,15 +8,6 @@ import ArticleSlider from "@/views/homepage/ArticleSlider";
 import PartnerScroller from "@/views/homepage/PartnerScroll";
 import FAQSection from "@/components/FAQSection";
 import { motion } from "framer-motion";
-
-const orbs = [
-  { size: 280, left: "2%",  top: "15%", speed: "10s" },
-  { size: 320, left: "66%", top: "20%", speed: "15s" },
-  { size: 170, left: "15%", top: "45%", speed: "11s" },
-  { size: 120, left: "88%", top: "10%", speed: "9s"  },
-  { size: 200, left: "50%", top: "70%", speed: "13s" },
-  { size: 150, left: "80%", top: "60%", speed: "12s" },
-];
 import { useTRPC } from "@/server/client";
 import { useQuery } from "@tanstack/react-query";
 
@@ -31,59 +21,45 @@ const AboutPage = () => {
   );
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <Navbar />
-
-      {/* Hero + Videos + Vouches — single continuous gradient with shared orbs */}
-      <div className="relative overflow-hidden bg-gradient-to-b from-[var(--background)] to-[color-mix(in_srgb,var(--background),#000_5%)]">
-        {/* Floating orbs across all three sections */}
-        <div className="absolute inset-0 pointer-events-none hidden md:block" style={{ zIndex: 0 }}>
-          {orbs.map((orb, i) => (
-            <div
-              key={i}
-              className="floating-orb absolute"
-              style={{
-                width: orb.size,
-                height: orb.size,
-                left: orb.left,
-                top: orb.top,
-                backgroundColor: "var(--primary)",
-                opacity: 0.1,
-                ["--dance-speed" as string]: orb.speed,
-              }}
-            />
-          ))}
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_40%,rgba(57,203,115,0.08))]" />
+      {/* Top area + first sections share one continuous background */}
+      <section className="relative overflow-hidden">
+        {/* Hero + Videos + Vouches */}
+        <div className="relative z-10 overflow-hidden">
+          <AboutHeroSection />
+          <VideosCarousel />
+          <VouchesCarousel />
         </div>
-        <AboutHeroSection />
-        <VideosCarousel />
-        <VouchesCarousel />
-      </div>
+      </section>
 
       {/* Articles slider */}
       {articles && articles.length > 0 && (
-        <ArticleSlider articles={articles} products={products || []} hideProduct />
+        <section className="relative z-10 w-full border-y border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_12%)]">
+          <ArticleSlider articles={articles} products={products || []} hideProduct />
+        </section>
       )}
 
       {/* Partners */}
-      <section className="py-16 bg-white relative overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-[url('/images/subtle-pattern.jpg')] bg-cover bg-center opacity-10 z-0"
-          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-          transition={{ duration: 60, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
-        />
-        <div className="container mx-auto px-6 relative z-10">
+      <section className="relative z-10 overflow-hidden px-4 py-18 md:px-8">
+        <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.07),transparent_38%,rgba(57,203,115,0.08))]" />
+        <div className="container relative z-10 mx-auto px-6">
           <motion.div
-            className="text-center mb-12"
+            className="mb-12 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.5 }}
           >
-            <h3 className="text-3xl font-bold mb-2 text-[var(--foreground)]">
-              <span className="gradient-text">Our Partners</span>
+            <h3 className="text-5xl text-[var(--foreground)] md:text-6xl">
+              Trusted Partners
             </h3>
-            <p className="text-gray-600">
-              Top Minecraft content creators who trust our products
+            <p className="mx-auto mt-3 max-w-2xl text-[var(--color-text-secondary)]">
+              Featured Minecraft creators wearing and recommending our releases.
             </p>
           </motion.div>
           <PartnerScroller />
@@ -91,11 +67,15 @@ const AboutPage = () => {
       </section>
 
       {/* FAQ */}
-      <main className="container mx-auto px-6 py-16 max-w-5xl">
-        <FAQSection showTitle={true} showContactButtons={true} />
-      </main>
+      <section className="relative z-10 px-6 py-16">
+        <div className="mx-auto max-w-5xl rounded-3xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-5 md:p-8">
+          <FAQSection showTitle={true} showContactButtons={true} />
+        </div>
+      </section>
 
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };

@@ -81,7 +81,7 @@ const VideosCarousel = () => {
           transition={{ duration: 0.6 }}
         >
           <h3 className="text-3xl font-bold mb-2 text-[var(--foreground)]">
-            <span className="gradient-text">Videos</span>
+            Videos
           </h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Check out our latest videos showcasing our products, tutorials, and

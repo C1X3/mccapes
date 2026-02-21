@@ -2,7 +2,6 @@
 
 import { useState, useMemo } from "react";
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar/Navbar";
 import ProductCard from "@/components/ProductCard";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
 import { FaSearch } from "react-icons/fa";
@@ -89,21 +88,23 @@ const ShopPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[var(--background)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.06]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
       {/* Header */}
-      <header className="py-8 flex flex-col items-center relative">
-        <Navbar />
+      <header className="relative z-10 py-8 flex flex-col items-center">
         <div className="container mx-auto px-4 pt-16 text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--foreground)] mb-4">
-            Our Shop
+          <h1 className="mb-4 text-5xl text-[var(--foreground)] md:text-6xl lg:text-7xl">
+            Our Products
           </h1>
-          <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] max-w-2xl mx-auto">
+          <p className="text-[var(--color-text-secondary)] max-w-2xl mx-auto">
             Discover our curated collection of high-quality products.
           </p>
         </div>
       </header>
 
-      <main className="container mx-auto px-4 py-12">
+      <main className="relative z-10 container mx-auto px-4 py-12">
         {/* Premium Product Spotlight */}
         {topProduct && (
           <motion.div
@@ -140,7 +141,7 @@ const ShopPage = () => {
                     src="/mc_bg.webp"
                     alt=""
                     fill
-                    className="object-cover scale-140 blur-sm saturate-125"
+                    className="object-cover scale-140 blur-[3px] saturate-125"
                   />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.14),rgba(0,0,0,0.3))]" />
                   <div className="absolute inset-0">

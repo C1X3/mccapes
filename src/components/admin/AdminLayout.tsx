@@ -76,18 +76,23 @@ export default function AdminLayout({
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* Fixed Navbar - z-30 to stay above sidebar */}
-      <div className="fixed top-0 left-0 right-0 z-30 bg-[var(--background)]">
+    <div className="relative flex min-h-screen flex-col overflow-hidden bg-[var(--background)]">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(74,222,128,0.06),transparent_40%,rgba(148,163,184,0.10))]" />
+      {/* Top Navbar in normal flow (scrolls away with page) */}
+      <div className="relative z-30">
         <header className="py-2 flex items-center justify-center relative flex-col">
-          <Navbar />
+          <Navbar disableScrollState staticInContainer />
         </header>
       </div>
 
-      <div className="flex flex-1 pt-[120px] pb-20 md:pb-0">
+      <div className="relative z-10 flex flex-1 pb-20 pt-4 md:pb-0 md:pt-6">
         {/* Desktop Sidebar Only - z-20 below navbar */}
-        <aside className="hidden md:block fixed left-0 top-0 h-full w-64 bg-[var(--background)] border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] z-20 pt-[120px]">
-          <div className="h-full overflow-y-auto flex flex-col">
+        <aside className="fixed left-0 top-0 z-20 hidden h-full w-64 overflow-hidden border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] bg-[var(--background)] pt-[120px] md:block">
+          <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+          <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.06]" />
+          <div className="relative h-full overflow-y-auto flex flex-col">
             <div className="p-4 flex-1">
               <h2 className="text-xl font-bold text-[var(--foreground)] mb-6">
                 Admin Panel
@@ -100,7 +105,7 @@ export default function AdminLayout({
                     className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left mb-3 transition-colors ${
                       currentTab === tab.id
                         ? "bg-[var(--primary)] text-white"
-                        : "text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                        : "text-[var(--foreground)] hover:bg-[var(--color-admin-hover)]"
                     }`}
                   >
                     <span className="text-lg">{tab.icon}</span>
@@ -109,7 +114,7 @@ export default function AdminLayout({
                 ))}
               </nav>
             </div>
-            <div className="p-4 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+            <div className="border-t border-[var(--border)] p-4">
               <button
                 onClick={handleLogout}
                 className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-left text-red-500 hover:bg-red-500/10 transition-colors"
@@ -122,13 +127,14 @@ export default function AdminLayout({
         </aside>
 
         {/* Main Content - with left margin to account for sidebar on desktop */}
-        <main className="w-full md:ml-64 p-4 md:p-8">
+        <main className="w-full p-4 md:ml-64 md:p-8">
           <motion.div
             key={currentTab}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -20 }}
             transition={{ duration: 0.2 }}
+            className="rounded-2xl border border-[var(--color-admin-card-border)] bg-[var(--color-admin-card)] p-3 md:p-5"
           >
             {children}
           </motion.div>
@@ -136,7 +142,7 @@ export default function AdminLayout({
       </div>
 
       {/* Mobile Bottom Tab Bar - Primary mobile navigation */}
-      <div className="fixed bottom-0 left-0 right-0 bg-[var(--background)] border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] md:hidden z-40">
+      <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] bg-[var(--background)] md:hidden">
         <nav className="flex justify-around items-center py-2">
           {tabs.map((tab) => (
             <button
@@ -145,7 +151,7 @@ export default function AdminLayout({
               className={`flex items-center justify-center px-3 py-2 rounded-lg transition-colors min-w-0 flex-1 ${
                 currentTab === tab.id
                   ? "text-[var(--primary)]"
-                  : "text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--foreground)]"
+                  : "text-[var(--color-text-secondary)] hover:text-[var(--foreground)]"
               }`}
             >
               <span className="text-2xl">{tab.icon}</span>

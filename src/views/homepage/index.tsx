@@ -1,7 +1,6 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar/Navbar";
 import { useTRPC } from "@/server/client";
 import ArticleSlider from "@/views/homepage/ArticleSlider";
 import HeroSection from "@/views/homepage/HeroSection";
@@ -9,6 +8,7 @@ import PartnerScroller from "@/views/homepage/PartnerScroll";
 import TopProductsSection from "@/views/homepage/TopProductsSection";
 import { useQuery } from "@tanstack/react-query";
 import { motion } from "framer-motion";
+import { FaChevronDown } from "react-icons/fa";
 
 const HomePage = () => {
   const trpc = useTRPC();
@@ -19,24 +19,38 @@ const HomePage = () => {
     trpc.article.getAll.queryOptions({ includeInactive: false }),
   );
 
-  return (
-    <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)]">
-      <section className="relative overflow-visible">
-        <div
-          className="pointer-events-none absolute inset-0 z-0"
-          style={{
-            backgroundImage:
-              "radial-gradient(rgba(21,101,52,0.09) 1px, transparent 1px)",
-            backgroundSize: "22px 22px",
-          }}
-        />
-        <header className="relative z-50 flex items-center justify-center py-0">
-          <Navbar />
-        </header>
+  const handleScrollToProducts = () => {
+    const productsSection = document.getElementById("our-products");
+    if (!productsSection) return;
+    productsSection.scrollIntoView({ behavior: "smooth", block: "start" });
+  };
 
+  return (
+    <div className="relative min-h-screen bg-[var(--background)] text-[var(--foreground)]">
+      <div
+        className="pointer-events-none absolute inset-0 z-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(rgba(21,101,52,0.09) 1px, transparent 1px)",
+          backgroundSize: "22px 22px",
+        }}
+      />
+      <section className="relative overflow-visible">
         <div className="relative z-10">
           <HeroSection heroProducts={products || []} />
         </div>
+        <motion.button
+          type="button"
+          onClick={handleScrollToProducts}
+          whileHover={{ y: -2 }}
+          whileTap={{ scale: 0.98 }}
+          className="absolute bottom-12 left-1/2 z-30 -translate-x-1/2 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:text-[var(--foreground)] md:bottom-16 md:text-sm"
+        >
+          <span className="inline-flex items-center gap-2">
+            View all
+            <FaChevronDown className="text-[10px]" />
+          </span>
+        </motion.button>
       </section>
 
       <TopProductsSection products={products || []} />

@@ -206,7 +206,7 @@ export default function ArticleFormModal({
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
             disabled={isLoading}
           >
             <FaTimes size={20} className="text-[var(--foreground)]" />
@@ -233,7 +233,7 @@ export default function ArticleFormModal({
                     id="title"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter article title"
                   />
                   {fieldState.error && (
@@ -263,7 +263,7 @@ export default function ArticleFormModal({
                     id="description"
                     rows={8}
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter article description"
                   />
                   {fieldState.error && (
@@ -336,7 +336,7 @@ export default function ArticleFormModal({
                         <video
                           src={videoPreviewUrl}
                           controls
-                          className="w-full max-h-[200px] object-contain rounded-lg border border-admin-card-border"
+                          className="w-full max-h-[200px] object-contain rounded-lg border border-[var(--border)]"
                         />
                       </div>
                     )}
@@ -366,12 +366,12 @@ export default function ArticleFormModal({
                   id="thumbnailUrl"
                   type="url"
                   {...field}
-                  className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                  className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                   placeholder="https://example.com/thumbnail.jpg"
                 />
               )}
             />
-            <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+            <p className="text-sm text-[var(--color-text-secondary)] mt-1">
               If provided, this will be used as the video thumbnail
             </p>
           </div>{" "}
@@ -393,7 +393,7 @@ export default function ArticleFormModal({
                     id="productSlug"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="experience-cape"
                   />
                   {fieldState.error && (
@@ -421,7 +421,7 @@ export default function ArticleFormModal({
                   <select
                     id="color"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                   >
                     <option value="var(--primary)">Primary</option>
                     <option value="var(--accent)">Accent</option>
@@ -450,7 +450,7 @@ export default function ArticleFormModal({
                   <select
                     id="alignment"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                   >
                     <option value="left">Left</option>
                     <option value="right">Right</option>
@@ -476,7 +476,7 @@ export default function ArticleFormModal({
                     type="number"
                     min="0"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="0"
                   />
                 )}
@@ -494,13 +494,13 @@ export default function ArticleFormModal({
                     type="checkbox"
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
-                    className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                    className="w-5 h-5 rounded border-[var(--border)] focus:ring-[var(--primary)]"
                   />
                 )}
               />
               <span>Active</span>
             </label>
-            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1 ml-7">
+            <span className="text-sm text-[var(--color-text-secondary)] mt-1 ml-7">
               Enable or disable this article on the homepage
             </span>
           </div>
@@ -510,7 +510,7 @@ export default function ArticleFormModal({
               type="button"
               onClick={onClose}
               disabled={isLoading}
-              className="px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+              className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
             >
               Cancel
             </button>

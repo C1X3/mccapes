@@ -52,7 +52,7 @@ export default function AffiliateCard({
   return (
     <div
       onClick={onClick}
-      className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] cursor-pointer hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+      className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-6 border border-[var(--border)] cursor-pointer hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-5">
@@ -66,7 +66,7 @@ export default function AffiliateCard({
             </p>
             <button
               onClick={copyAffiliateLink}
-              className="p-1 hover:bg-[color-mix(in_srgb,var(--background),#333_20%)] rounded transition-colors"
+              className="p-1 hover:bg-[color-mix(in_srgb,var(--surface),#000_14%)] rounded transition-colors"
               title="Copy affiliate link"
             >
               <FaCopy
@@ -128,7 +128,7 @@ export default function AffiliateCard({
 
       {/* Key Stats */}
       <div className="grid grid-cols-3 gap-4">
-        <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
+        <div className="bg-[color-mix(in_srgb,var(--surface),#000_12%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaMousePointer className="text-blue-500" size={12} />
             <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
@@ -139,7 +139,7 @@ export default function AffiliateCard({
             {affiliate.totalClicks.toLocaleString()}
           </p>
         </div>
-        <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
+        <div className="bg-[color-mix(in_srgb,var(--surface),#000_12%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaShoppingCart className="text-green-500" size={12} />
             <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
@@ -150,7 +150,7 @@ export default function AffiliateCard({
             {affiliate.totalOrders.toLocaleString()}
           </p>
         </div>
-        <div className="bg-[color-mix(in_srgb,var(--background),#333_18%)] rounded-lg p-3">
+        <div className="bg-[color-mix(in_srgb,var(--surface),#000_12%)] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-1">
             <FaDollarSign className="text-amber-500" size={12} />
             <span className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
@@ -164,7 +164,7 @@ export default function AffiliateCard({
       </div>
 
       {/* Conversion Rate Footer */}
-      <div className="mt-4 pt-4 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+      <div className="mt-4 pt-4 border-t border-[var(--border)]">
         <div className="flex items-center justify-between">
           <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_50%)]">
             Conversion Rate
@@ -181,7 +181,7 @@ export default function AffiliateCard({
             {affiliate.conversionRate.toFixed(2)}%
           </span>
         </div>
-        <div className="mt-2 h-2 bg-[color-mix(in_srgb,var(--background),#333_20%)] rounded-full overflow-hidden">
+        <div className="mt-2 h-2 bg-[color-mix(in_srgb,var(--surface),#000_14%)] rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${
               affiliate.conversionRate >= 5

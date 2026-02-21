@@ -44,7 +44,7 @@ const AboutHeroSection = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
         >
-          <h1 className="text-4xl md:text-5xl font-bold text-[var(--foreground)] mb-4">
+          <h1 className="mb-4 text-5xl text-[var(--foreground)] md:text-6xl lg:text-7xl">
             About Us
           </h1>
           <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-center max-w-6xl mx-auto">

@@ -122,6 +122,14 @@
   --primary-rgb: 74, 222, 128;
   --font-sans: "Outfit", "Segoe UI", "Helvetica Neue", Arial, sans-serif;
   --font-mono: var(--font-geist-mono, monospace);
+  --heading-tight: 0.96;
+  --heading-regular: 1.08;
+  --copy-line-height: 1.7;
+  --copy-size: clamp(1rem, 0.96rem + 0.18vw, 1.125rem);
+  --h1-size: clamp(2.25rem, 1.55rem + 3.1vw, 4.5rem);
+  --h2-size: clamp(1.95rem, 1.4rem + 2.35vw, 3.75rem);
+  --h3-size: clamp(1.65rem, 1.3rem + 1.65vw, 3rem);
+  --h4-size: clamp(1.25rem, 1.08rem + 0.95vw, 2rem);
 
   --motion-fast: 180ms;
   --motion-medium: 280ms;
@@ -177,6 +185,52 @@ h4 {
   font-family: var(--font-bebas, var(--font-sans));
   font-weight: 700;
   letter-spacing: 0.02em;
+}
+
+.site-typography h1 {
+  color: var(--foreground) !important;
+}
+
+.site-typography h2 {
+  color: var(--foreground) !important;
+}
+
+.site-typography h3 {
+  color: var(--foreground) !important;
+}
+
+.site-typography h4 {
+  color: var(--foreground) !important;
+}
+
+.site-typography h1:not([class*="text-"]) {
+  font-size: var(--h1-size);
+  line-height: var(--heading-tight);
+  font-weight: 800;
+}
+
+.site-typography h2:not([class*="text-"]) {
+  font-size: var(--h2-size);
+  line-height: var(--heading-tight);
+  font-weight: 800;
+}
+
+.site-typography h3:not([class*="text-"]) {
+  font-size: var(--h3-size);
+  line-height: var(--heading-regular);
+  font-weight: 700;
+}
+
+.site-typography h4:not([class*="text-"]) {
+  font-size: var(--h4-size);
+  line-height: var(--heading-regular);
+  font-weight: 700;
+}
+
+:where(.site-typography p) {
+  color: var(--color-text-secondary);
+  font-size: var(--copy-size);
+  line-height: var(--copy-line-height);
 }
 
 .minecraft-btn {

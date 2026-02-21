@@ -12,7 +12,10 @@ const TopProductsSection = ({
   const router = useRouter();
 
   return (
-    <section className="relative overflow-hidden px-4 py-18 md:px-8 md:py-24">
+    <section
+      id="our-products"
+      className="relative overflow-hidden px-4 py-18 md:px-8 md:py-24"
+    >
       <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(57,203,115,0.06),transparent_40%,rgba(84,184,255,0.08))]" />
 

@@ -4,6 +4,8 @@ import { TRPCReactProvider } from "@/server/client";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import { ClickTracker } from "@/components/ClickTracker";
 import DiscordFloatingWidget from "@/components/DiscordFloatingWidget";
+import LayoutNavbar from "@/components/LayoutNavbar";
+import LayoutContentOffset from "@/components/LayoutContentOffset";
 
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
@@ -49,7 +51,10 @@ export default function RootLayout({
 
         <ClickTracker />
         <TRPCReactProvider>
-          <CartProvider>{children}</CartProvider>
+          <CartProvider>
+            <LayoutNavbar />
+            <LayoutContentOffset>{children}</LayoutContentOffset>
+          </CartProvider>
         </TRPCReactProvider>
         <DiscordFloatingWidget />
       </body>

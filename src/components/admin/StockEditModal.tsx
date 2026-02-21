@@ -72,7 +72,7 @@ export default function StockEditModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+        className="bg-[var(--background)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl border border-[var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">
@@ -82,7 +82,7 @@ export default function StockEditModal({
           </h2>
           <button
             onClick={onClose}
-            className="text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] p-2 rounded-lg transition-colors"
+            className="text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-2 rounded-lg transition-colors"
           >
             <FaTimes size={20} />
           </button>
@@ -96,11 +96,11 @@ export default function StockEditModal({
             <textarea
               value={stockText}
               onChange={(e) => setStockText(e.target.value)}
-              className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono text-sm"
+              className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] font-mono text-sm"
               placeholder="Enter stock codes, one per line"
               rows={15}
             />
-            <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-2">
+            <p className="text-sm text-[var(--color-text-secondary)] mt-2">
               Current stock count:{" "}
               {stockText
                 .split("\n")
@@ -112,7 +112,7 @@ export default function StockEditModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-transparent border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+              className="px-6 py-3 bg-transparent border border-[var(--border)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
             >
               Cancel
             </button>

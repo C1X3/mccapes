@@ -5,21 +5,35 @@ import Navbar from "@/components/Navbar/Navbar";
 import FAQSection from "@/components/FAQSection";
 import { Product } from "@generated/browser";
 import { motion } from "framer-motion";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
-import { useState } from "react";
+import ProductSkinviewViewer from "@/components/ProductSkinviewViewer";
+import { useEffect, useRef, useState } from "react";
 import {
   FaArrowLeft,
   FaStar,
   FaMinus,
   FaPlus,
+  FaPause,
+  FaPlay,
   FaShoppingCart,
   FaCheckCircle,
   FaExclamationTriangle,
   FaTimesCircle,
-  FaBox,
 } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
+
+const SKIN_USERNAME_STORAGE_KEY = "mccapes.skinUsername";
+const TRY_ON_HINT_SEEN_STORAGE_KEY = "mccapes.tryOnHintSeen";
+
+const sanitizeMinecraftUsername = (raw: string) =>
+  raw.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 16).toUpperCase();
+
+const getStoredSkinUsername = () => {
+  if (typeof window === "undefined") return "";
+  const stored = window.localStorage.getItem(SKIN_USERNAME_STORAGE_KEY) ?? "";
+  return sanitizeMinecraftUsername(stored);
+};
 
 const ProductPage = ({
   product,
@@ -29,11 +43,75 @@ const ProductPage = ({
   stockCount?: number;
 }) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { addItem } = useCart();
+  const fromHome = searchParams.get("from") === "home";
+  const backHref = fromHome ? "/" : "/shop";
+  const backLabel = fromHome ? "Back to Home Page" : "Back to Shop";
 
   const [quantity, setQuantity] = useState(1);
   const [isAdding, setIsAdding] = useState(false);
   const [capeView, setCapeView] = useState<"cape" | "player" | "elytra">("cape");
+  const [isWalkPaused, setIsWalkPaused] = useState(false);
+  const [skinUsernameInput, setSkinUsernameInput] = useState(getStoredSkinUsername);
+  const [activeSkinUsername, setActiveSkinUsername] = useState(getStoredSkinUsername);
+  const [isTryOnMenuOpen, setIsTryOnMenuOpen] = useState(false);
+  const [showRotateHint, setShowRotateHint] = useState(true);
+  const [showTryOnHint, setShowTryOnHint] = useState(() => {
+    if (typeof window === "undefined") return false;
+    const hasStoredSkin = Boolean(getStoredSkinUsername());
+    const hintSeen =
+      window.localStorage.getItem(TRY_ON_HINT_SEEN_STORAGE_KEY) === "1";
+    return !hasStoredSkin && !hintSeen;
+  });
+  const tryOnMenuRef = useRef<HTMLDivElement>(null);
+
+  const customSkinPath = activeSkinUsername
+    ? `https://mc-heads.net/skin/${encodeURIComponent(activeSkinUsername)}`
+    : "/skin.png";
+  const avatarTextureUrl = activeSkinUsername
+    ? `https://mc-heads.net/avatar/${encodeURIComponent(activeSkinUsername)}/32`
+    : "https://mc-heads.net/avatar/Steve/32";
+  const pendingSkinUsername = sanitizeMinecraftUsername(skinUsernameInput.trim());
+  const hasPendingSkinChange = pendingSkinUsername !== activeSkinUsername;
+
+  const markTryOnHintSeen = () => {
+    setShowTryOnHint(false);
+    if (typeof window !== "undefined") {
+      window.localStorage.setItem(TRY_ON_HINT_SEEN_STORAGE_KEY, "1");
+    }
+  };
+
+  const applySkinUsername = () => {
+    const username = skinUsernameInput.trim();
+    const safeUsername = sanitizeMinecraftUsername(username);
+    setActiveSkinUsername(safeUsername);
+    setSkinUsernameInput(safeUsername);
+    setIsTryOnMenuOpen(false);
+    markTryOnHintSeen();
+    if (typeof window !== "undefined") {
+      if (safeUsername) {
+        window.localStorage.setItem(SKIN_USERNAME_STORAGE_KEY, safeUsername);
+      } else {
+        window.localStorage.removeItem(SKIN_USERNAME_STORAGE_KEY);
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!isTryOnMenuOpen) return;
+
+    const onPointerDown = (event: PointerEvent) => {
+      if (!tryOnMenuRef.current?.contains(event.target as Node)) {
+        setIsTryOnMenuOpen(false);
+      }
+    };
+
+    document.addEventListener("pointerdown", onPointerDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+    };
+  }, [isTryOnMenuOpen]);
 
   const handleIncrementQuantity = () => {
     if (product && quantity < stockCount!) {
@@ -59,7 +137,6 @@ const ProductPage = ({
     if (!product) return;
 
     addItem({ ...product, stock: stockCount || 0 }, quantity);
-
     router.push("/cart");
   };
 
@@ -75,10 +152,10 @@ const ProductPage = ({
             removed.
           </p>
           <button
-            onClick={() => router.push("/shop")}
+            onClick={() => router.push(backHref)}
             className="px-4 py-2 bg-[var(--primary)] text-white rounded-lg hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors"
           >
-            Return to Shop
+            {backLabel}
           </button>
         </div>
       </div>
@@ -92,25 +169,124 @@ const ProductPage = ({
       </header>
 
       <main className="container mx-auto px-4 py-12">
-        {/* Back button */}
         <button
-          onClick={() => router.push("/shop")}
+          onClick={() => router.push(backHref)}
           className="mb-8 inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-gray-200 text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--accent)] hover:bg-gray-300 shadow-md border border-gray-300 transition-colors"
         >
           <FaArrowLeft size={14} />
-          <span>Back to Shop</span>
+          <span>{backLabel}</span>
         </button>
 
-        {/* Product details: on lg, row 1 = cape render + info */}
         <div className="grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-2">
-          {/* Cape render - lg row 1 col 1 */}
           <div className="lg:col-start-1 lg:row-start-1">
-            {/* View selector tabs */}
-            <div className="flex gap-2 mb-4">
+            <div
+              className="relative w-full max-w-[1000px] aspect-[1000/700] rounded-2xl overflow-hidden bg-[color-mix(in_srgb,var(--background),#000_8%)] border border-[var(--border)]"
+              onPointerDown={() => setShowRotateHint(false)}
+            >
+              <div
+                className="pointer-events-none absolute inset-0 scale-110 bg-cover bg-center blur-md"
+                style={{ backgroundImage: "url('/mc_bg.webp')" }}
+              />
+              <div className="pointer-events-none absolute inset-0 bg-black/20" />
+
+              <div className="absolute inset-0">
+                {capeView === "cape" ? (
+                  <ProductCapeViewer texturePath={`/cape renders/${product.slug}.png`} />
+                ) : (
+                  <ProductSkinviewViewer
+                    texturePath={`/cape renders/${product.slug}.png`}
+                    mode={capeView}
+                    skinPath={customSkinPath}
+                    pausedAnimation={isWalkPaused}
+                  />
+                )}
+              </div>
+
+              {capeView !== "cape" && (
+                <div className="absolute right-3 top-3 z-20">
+                  <button
+                    type="button"
+                    onClick={() => setIsWalkPaused((prev) => !prev)}
+                    className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-white/35 bg-black/40 text-white backdrop-blur-md transition-colors hover:bg-black/55"
+                    aria-label={isWalkPaused ? "Resume animation" : "Pause animation"}
+                  >
+                    {isWalkPaused ? <FaPlay size={11} /> : <FaPause size={11} />}
+                  </button>
+                </div>
+              )}
+
+              <div ref={tryOnMenuRef} className="absolute left-3 top-3 z-20 flex flex-row items-start gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsTryOnMenuOpen((prev) => !prev);
+                    markTryOnHintSeen();
+                  }}
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/40 bg-black/35 p-1.5 backdrop-blur-md transition-colors hover:bg-black/50"
+                  aria-label="Try on with your skin"
+                >
+                  <span
+                    className="h-full w-full rounded-lg border border-black/35 bg-cover bg-center bg-no-repeat"
+                    style={{ backgroundImage: `url(${avatarTextureUrl})` }}
+                  />
+                </button>
+
+                {showTryOnHint && !isTryOnMenuOpen && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsTryOnMenuOpen(true);
+                      markTryOnHintSeen();
+                    }}
+                    className="absolute left-12 top-0 whitespace-nowrap rounded-full border border-white/45 bg-black/55 px-3 py-1.5 text-xs font-medium text-white backdrop-blur-md transition-colors hover:bg-black/70"
+                  >
+                    Click to try on with your skin
+                  </button>
+                )}
+
+                {isTryOnMenuOpen && (
+                  <div className="w-[208px] shrink-0 rounded-xl border border-[var(--border)] bg-[var(--background)] p-3 shadow-xl">
+                    <input
+                      type="text"
+                      value={skinUsernameInput}
+                      onChange={(event) => setSkinUsernameInput(event.target.value)}
+                      onKeyDown={(event) => {
+                        if (event.key === "Enter" && hasPendingSkinChange) {
+                          applySkinUsername();
+                        }
+                      }}
+                      maxLength={16}
+                      placeholder="Minecraft username"
+                      className="h-10 w-full rounded-lg border border-gray-300 bg-white px-3 text-sm text-[var(--foreground)] outline-none placeholder:text-gray-500 focus:border-[var(--primary)]"
+                    />
+                    <div className="mt-2 flex gap-2">
+                      <button
+                        type="button"
+                        onClick={applySkinUsername}
+                        disabled={!hasPendingSkinChange}
+                        className="h-9 rounded-lg bg-[var(--primary)] px-3 text-xs font-medium text-white transition-colors hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] disabled:cursor-not-allowed disabled:opacity-45"
+                      >
+                        Apply Skin
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {showRotateHint && (
+                <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center">
+                  <div className="rounded-full border border-white/30 bg-black/35 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
+                    Click and drag to rotate
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex justify-center gap-2 mt-4">
               {(
                 [
                   { id: "cape" as const, label: "Cape" },
-                  { id: "player" as const, label: "On Player" },
+                  { id: "player" as const, label: "Player" },
                   { id: "elytra" as const, label: "Elytra" },
                 ] as const
               ).map(({ id, label }) => (
@@ -128,30 +304,8 @@ const ProductPage = ({
                 </button>
               ))}
             </div>
-            <div className="relative w-full max-w-[1000px] aspect-[1000/700] rounded-2xl overflow-visible bg-[color-mix(in_srgb,var(--background),#000_8%)] border border-[var(--border)]">
-              {capeView === "cape" && (
-                <div className="absolute inset-0">
-                  <ProductCapeViewer texturePath={`/cape renders/${product.slug}.png`} />
-                </div>
-              )}
-              {capeView === "player" && (
-                <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)]">
-                  <p className="text-center px-6">
-                    Cape on player view — coming soon
-                  </p>
-                </div>
-              )}
-              {capeView === "elytra" && (
-                <div className="absolute inset-0 flex items-center justify-center text-[var(--color-text-muted)]">
-                  <p className="text-center px-6">
-                    Elytra variant view — coming soon
-                  </p>
-                </div>
-              )}
-            </div>
           </div>
 
-          {/* Product information - lg row 1 col 2, same height as image box, content vertically centered */}
           <div className="lg:col-start-2 lg:row-start-1 w-full max-w-[1000px] lg:aspect-[1000/700] flex flex-col justify-center">
             <div className="mb-4">
               <span className="inline-block px-3 py-1 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] text-xs font-medium rounded-full">
@@ -195,7 +349,6 @@ const ProductPage = ({
             </div>
 
             <div className="mb-8 flex flex-wrap items-center gap-6">
-              {/* Stock status: icon + label + count */}
               <div className="flex items-center gap-3">
                 {stockCount! > 10 ? (
                   <FaCheckCircle className="text-green-500 shrink-0" size={24} />
@@ -302,12 +455,9 @@ const ProductPage = ({
         </div>
       </main>
 
-      {/* FAQ Section */}
       <div className="container mx-auto px-4 pb-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-2">
-            <span className="gradient-text">Frequently Asked Questions</span>
-          </h2>
+          <h2 className="text-3xl font-bold mb-2">Frequently Asked Questions</h2>
           <p className="text-gray-600">
             Find answers to common questions about our services
           </p>
@@ -315,12 +465,9 @@ const ProductPage = ({
         <FAQSection showTitle={false} showContactButtons={false} />
       </div>
 
-      {/* Customer Stats Section */}
       <div className="container mx-auto px-4 pb-16">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold mb-2">
-            <span className="gradient-text">Our Customers</span>
-          </h2>
+          <h2 className="text-3xl font-bold mb-2">Our Customers</h2>
           <p className="text-gray-600">
             Join thousands of satisfied Minecraft players worldwide
           </p>
@@ -328,22 +475,16 @@ const ProductPage = ({
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="glass-effect rounded-xl p-8 text-center">
-            <div className="text-5xl font-bold text-[var(--foreground)] mb-2">
-              5,792
-            </div>
+            <div className="text-5xl font-bold text-[var(--foreground)] mb-2">5,792</div>
             <div className="text-gray-600 font-medium">Products Sold</div>
           </div>
           <div className="glass-effect rounded-xl p-8 text-center">
-            <div className="text-5xl font-bold text-[var(--foreground)] mb-2">
-              4,187
-            </div>
+            <div className="text-5xl font-bold text-[var(--foreground)] mb-2">4,187</div>
             <div className="text-gray-600 font-medium">Unique Customers</div>
           </div>
           <div className="glass-effect rounded-xl p-8 text-center">
             <div className="flex items-center justify-center mb-2">
-              <span className="text-5xl font-bold text-[var(--foreground)] mr-2">
-                4.97
-              </span>
+              <span className="text-5xl font-bold text-[var(--foreground)] mr-2">4.97</span>
               <FaStar className="text-warning" size={28} />
             </div>
             <div className="text-gray-600 font-medium">Average Rating</div>

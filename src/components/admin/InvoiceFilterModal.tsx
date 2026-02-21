@@ -85,7 +85,7 @@ export default function InvoiceFilterModal({
           </h2>
           <button
             onClick={onClose}
-            className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-full transition-colors"
+            className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] rounded-full transition-colors"
           >
             <FaTimes size={20} />
           </button>
@@ -113,7 +113,7 @@ export default function InvoiceFilterModal({
                 placeholder="xxxxxxxxxxxxxxxxxxxxxxxxx"
                 value={tempInvoiceIdFilter}
                 onChange={(e) => setTempInvoiceIdFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
             <div>
@@ -129,7 +129,7 @@ export default function InvoiceFilterModal({
                 onChange={(e) =>
                   setTempStatusFilter(e.target.value as OrderStatus | "ALL")
                 }
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)] appearance-none"
                 style={{ minHeight: "48px" }}
               >
                 <option value="ALL">All Statuses</option>
@@ -158,7 +158,7 @@ export default function InvoiceFilterModal({
                 placeholder="customer@website.com"
                 value={tempEmailFilter}
                 onChange={(e) => setTempEmailFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
             <div>
@@ -174,7 +174,7 @@ export default function InvoiceFilterModal({
                 onChange={(e) =>
                   setTempPaymentFilter(e.target.value as PaymentFilterType)
                 }
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)] appearance-none"
                 style={{ minHeight: "48px" }}
               >
                 <option value="ALL">All Payment Methods</option>
@@ -207,7 +207,7 @@ export default function InvoiceFilterModal({
                 placeholder="Discord Username"
                 value={tempDiscordFilter}
                 onChange={(e) => setTempDiscordFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
             <div>
@@ -223,7 +223,7 @@ export default function InvoiceFilterModal({
                 id="date"
                 value={tempDateProcessedFilter}
                 onChange={(e) => setTempDateProcessedFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
 
@@ -239,7 +239,7 @@ export default function InvoiceFilterModal({
                 id="product"
                 value={tempProductFilter}
                 onChange={(e) => setTempProductFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] appearance-none"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)] appearance-none"
                 style={{ minHeight: "48px" }}
               >
                 <option value="">All Products</option>
@@ -267,7 +267,7 @@ export default function InvoiceFilterModal({
                 placeholder="PayPal Transaction Note"
                 value={tempPaypalNoteFilter}
                 onChange={(e) => setTempPaypalNoteFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
 
@@ -286,7 +286,7 @@ export default function InvoiceFilterModal({
                 placeholder="Affiliate Code"
                 value={tempAffiliateFilter}
                 onChange={(e) => setTempAffiliateFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
             <div>
@@ -303,7 +303,7 @@ export default function InvoiceFilterModal({
                 placeholder="Deliverable Code"
                 value={tempCodeFilter}
                 onChange={(e) => setTempCodeFilter(e.target.value)}
-                className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
               />
             </div>
           </div>
@@ -312,7 +312,7 @@ export default function InvoiceFilterModal({
           <button
             type="button"
             onClick={onResetAndApplyFilters}
-            className="px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+            className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
           >
             Reset Filters
           </button>

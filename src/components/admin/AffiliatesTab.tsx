@@ -43,7 +43,7 @@ export default function AffiliatesTab() {
   };
 
   return (
-    <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6">
       <div className="space-y-6">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -77,8 +77,8 @@ export default function AffiliatesTab() {
 
             return (
               <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+                  <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                     Conversion Rate
                   </h3>
                   <p
@@ -93,24 +93,24 @@ export default function AffiliatesTab() {
                     {overallConversionRate.toFixed(2)}%
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+                  <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                     Total Clicks
                   </h3>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {totalClicks.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+                  <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                     Total Orders
                   </h3>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
                     {totalOrders.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-                  <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+                  <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                     Total Revenue
                   </h3>
                   <p className="text-2xl font-bold text-[var(--foreground)]">
@@ -143,8 +143,8 @@ export default function AffiliatesTab() {
             ))}
           </div>
         ) : (
-          <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-12 text-center border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-            <div className="w-16 h-16 bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-full flex items-center justify-center mx-auto mb-4">
+          <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-12 text-center border border-[var(--border)]">
+            <div className="w-16 h-16 bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded-full flex items-center justify-center mx-auto mb-4">
               <FaUsers
                 className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
                 size={24}
@@ -153,7 +153,7 @@ export default function AffiliatesTab() {
             <h3 className="text-lg font-semibold text-[var(--foreground)] mb-2">
               No affiliates yet
             </h3>
-            <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-6">
+            <p className="text-[var(--color-text-secondary)] mb-6">
               Create your first affiliate to start tracking referrals
             </p>
             <button

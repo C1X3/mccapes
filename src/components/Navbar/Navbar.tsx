@@ -11,18 +11,32 @@ import Link from "next/link";
 import SaleBanner from "../SaleBanner";
 import { Route } from "next";
 
-const Navbar = () => {
+interface NavbarProps {
+  disableScrollState?: boolean;
+  staticInContainer?: boolean;
+  fullWidth?: boolean;
+}
+
+const Navbar = ({
+  disableScrollState = false,
+  staticInContainer = false,
+  fullWidth = false,
+}: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const effectiveScrolled = disableScrollState ? false : isScrolled;
 
   useEffect(() => {
+    if (disableScrollState) {
+      return;
+    }
     const handleScroll = () => {
       setIsScrolled(window.scrollY > 10);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
+  }, [disableScrollState]);
 
   const shouldShowBanner = false;
 
@@ -30,74 +44,55 @@ const Navbar = () => {
     <>
       <SaleBanner isVisible={shouldShowBanner} onClose={() => undefined} />
       <div
-        className={`fixed ${shouldShowBanner ? "top-[40px]" : "top-0"} left-0 right-0 z-[9999] isolate transition-all duration-300 ${
-          isScrolled ? "py-2" : "py-4"
+        className={`w-full ${staticInContainer ? "relative" : "fixed"} ${staticInContainer ? "top-auto" : shouldShowBanner ? "top-[40px]" : "top-0"} left-0 right-0 z-[9999] isolate transition-all duration-300 ${
+          effectiveScrolled ? "py-2" : "py-4"
         }`}
       >
-        <div className="relative mx-auto w-full max-w-7xl px-4">
+        <div className={fullWidth ? "relative w-full px-0" : "relative mx-auto w-full max-w-7xl px-4"}>
           <div
-            className={`relative rounded-xl overflow-hidden transition-all duration-300 border ${
-              isScrolled
+            className={`relative overflow-hidden transition-all duration-300 border ${fullWidth ? "rounded-none" : "rounded-xl"} ${
+              effectiveScrolled
                 ? "border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
                 : "border-transparent bg-transparent backdrop-blur-0 shadow-none"
             }`}
           >
-            {isScrolled && (
+            {effectiveScrolled && (
               <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-[0.12]" />
             )}
-            <nav className="relative z-[10000] container mx-auto flex items-center justify-between px-6 py-4">
+            <nav className={`relative z-[10000] mx-auto flex items-center justify-between py-4 ${fullWidth ? "w-full px-4 md:px-6" : "container px-6"}`}>
               <Logo />
               <NavMenu />
               <div className="flex items-center space-x-4">
                 <NavIcons />
                 <button
                   className="md:hidden p-2 text-[var(--primary)] transition-colors hover:text-[var(--accent-light)]"
-                  onClick={() => setMobileMenuOpen(true)}
+                  onClick={() => setMobileMenuOpen((prev) => !prev)}
+                  aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
                 >
-                  <HiMenuAlt3 size={24} />
+                  {mobileMenuOpen ? <HiX size={24} /> : <HiMenuAlt3 size={24} />}
                 </button>
               </div>
             </nav>
           </div>
+
+          <AnimatePresence>
+            {mobileMenuOpen && (
+              <motion.div
+                className="absolute left-4 right-4 top-full z-[10010] mt-2 md:hidden"
+                initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -6, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+              >
+                <div className="rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-3 shadow-[0_20px_40px_rgba(0,0,0,0.18)] backdrop-blur-xl">
+                  <MobileNavMenu closeMenu={() => setMobileMenuOpen(false)} />
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
       </div>
 
-      <AnimatePresence>
-        {mobileMenuOpen && (
-          <motion.div
-            className="fixed inset-0 z-50 flex flex-col bg-[color-mix(in_srgb,var(--background),#000_4%)] backdrop-blur-md md:hidden"
-            initial={{ opacity: 0, x: "100%" }}
-            animate={{ opacity: 1, x: 0 }}
-            exit={{ opacity: 0, x: "100%" }}
-            transition={{ duration: 0.3 }}
-          >
-            <div className="flex items-center justify-between border-b border-[var(--border)] p-6">
-              <Logo />
-              <button
-                className="p-2 text-[var(--primary)] transition-colors hover:text-[var(--accent-light)]"
-                onClick={() => setMobileMenuOpen(false)}
-              >
-                <HiX size={24} />
-              </button>
-            </div>
-            <div className="flex flex-1 flex-col items-center justify-center p-8">
-              <MobileNavMenu closeMenu={() => setMobileMenuOpen(false)} />
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <div
-        className={`${
-          shouldShowBanner
-            ? isScrolled
-              ? "h-[120px]"
-              : "h-[132px]"
-            : isScrolled
-              ? "h-24"
-              : "h-28"
-        } transition-all duration-300`}
-      />
     </>
   );
 };
@@ -107,7 +102,6 @@ const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
     { label: "Home", href: "/" },
     { label: "Shop", href: "/shop" },
     { label: "Videos", href: "/videos" },
-    { label: "Vouches", href: "/vouches" },
     { label: "About Us", href: "/about" },
   ];
 
@@ -115,7 +109,7 @@ const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
 
   return (
     <motion.ul
-      className="flex w-full flex-col items-center space-y-6"
+      className="flex w-full flex-col gap-2"
       initial="hidden"
       animate="visible"
       variants={{
@@ -140,7 +134,7 @@ const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
                 transition: { duration: 0.45, ease: "easeOut" },
               },
             }}
-            className="w-full text-center"
+            className="w-full"
           >
             <Link
               href={item.href}
@@ -149,7 +143,7 @@ const MobileNavMenu = ({ closeMenu }: { closeMenu: () => void }) => {
               }}
               target={item.external ? "_blank" : undefined}
               rel={item.external ? "noopener noreferrer" : undefined}
-              className={`block rounded-lg px-6 py-3 text-xl font-medium uppercase tracking-[0.08em] transition-colors ${
+              className={`block rounded-lg px-4 py-2.5 text-base font-semibold uppercase tracking-[0.08em] transition-colors ${
                 isActive
                   ? "bg-nav-active text-[var(--text-on-primary)]"
                   : "text-[var(--color-text-secondary)] hover:bg-[var(--surface)] hover:text-[var(--accent-light)]"

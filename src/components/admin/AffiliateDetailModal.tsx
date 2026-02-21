@@ -149,7 +149,7 @@ export default function AffiliateDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-[var(--background)] rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+        className="bg-[var(--background)] rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-lg border border-[var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
@@ -159,19 +159,19 @@ export default function AffiliateDetailModal({
         ) : affiliate ? (
           <>
             {/* Header */}
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] p-6">
+            <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] border-b border-[var(--border)] p-6">
               <div className="flex items-start justify-between">
                 <div>
                   <h2 className="text-xl font-bold text-[var(--foreground)]">
                     {affiliate.name}
                   </h2>
                   <div className="flex items-center gap-2 mt-1">
-                    <code className="text-sm bg-[color-mix(in_srgb,var(--background),#333_10%)] px-2 py-0.5 rounded text-[var(--foreground)]">
+                    <code className="text-sm bg-[color-mix(in_srgb,var(--surface),#000_10%)] px-2 py-0.5 rounded text-[var(--foreground)]">
                       /{affiliate.code}
                     </code>
                     <button
                       onClick={copyAffiliateLink}
-                      className="p-1 hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded transition-colors"
+                      className="p-1 hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded transition-colors"
                       title="Copy link"
                     >
                       <FaCopy
@@ -204,7 +204,7 @@ export default function AffiliateDetailModal({
                 </div>
                 <button
                   onClick={onClose}
-                  className="p-2 hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-full transition-colors"
+                  className="p-2 hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded-full transition-colors"
                 >
                   <FaTimes
                     size={18}
@@ -215,13 +215,13 @@ export default function AffiliateDetailModal({
 
               {/* Today's Stats */}
               <div className="grid grid-cols-3 gap-4 mt-6">
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-4 rounded-lg border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-1">
                     <FaCalendarDay
                       size={14}
                       className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
                     />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Today&apos;s Clicks
                     </span>
                   </div>
@@ -229,13 +229,13 @@ export default function AffiliateDetailModal({
                     {affiliate.clicksToday}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-4 rounded-lg border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-1">
                     <FaShoppingCart
                       size={14}
                       className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
                     />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Today&apos;s Orders
                     </span>
                   </div>
@@ -243,13 +243,13 @@ export default function AffiliateDetailModal({
                     {affiliate.ordersToday}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-4 rounded-lg border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-1">
                     <FaDollarSign
                       size={14}
                       className="text-[color-mix(in_srgb,var(--foreground),#888_50%)]"
                     />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Today&apos;s Revenue
                     </span>
                   </div>
@@ -264,10 +264,10 @@ export default function AffiliateDetailModal({
             <div className="p-6 overflow-y-auto max-h-[calc(90vh-280px)]">
               {/* All-time Stats */}
               <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-4 border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaMousePointer className="text-blue-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Total Clicks
                     </span>
                   </div>
@@ -275,10 +275,10 @@ export default function AffiliateDetailModal({
                     {affiliate.totalClicks.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-4 border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaShoppingCart className="text-green-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Total Orders
                     </span>
                   </div>
@@ -286,10 +286,10 @@ export default function AffiliateDetailModal({
                     {affiliate.totalOrders.toLocaleString()}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-4 border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaDollarSign className="text-amber-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Total Revenue
                     </span>
                   </div>
@@ -297,10 +297,10 @@ export default function AffiliateDetailModal({
                     {formatCurrency(affiliate.totalRevenue)}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-4 border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaChartLine className="text-purple-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Avg. Order
                     </span>
                   </div>
@@ -308,10 +308,10 @@ export default function AffiliateDetailModal({
                     {formatCurrency(affiliate.averageOrderValue)}
                   </p>
                 </div>
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-4 border border-[var(--border)]">
                   <div className="flex items-center gap-2 mb-2">
                     <FaPercentage className="text-pink-500" size={14} />
-                    <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-sm text-[var(--color-text-secondary)]">
                       Conv. Rate
                     </span>
                   </div>
@@ -324,7 +324,7 @@ export default function AffiliateDetailModal({
               {/* Charts */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                 {/* Clicks Chart */}
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-5 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-5 rounded-lg border border-[var(--border)]">
                   <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
                     <FaMousePointer className="text-blue-500" />
                     Clicks
@@ -374,7 +374,7 @@ export default function AffiliateDetailModal({
                         <Tooltip
                           contentStyle={{
                             backgroundColor: "var(--admin-card)",
-                            borderColor: "var(--admin-card-border)",
+                            borderColor: "var(--border)",
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
@@ -396,7 +396,7 @@ export default function AffiliateDetailModal({
                 </div>
 
                 {/* Revenue Chart */}
-                <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-5 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-5 rounded-lg border border-[var(--border)]">
                   <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
                     <FaDollarSign className="text-amber-500" />
                     Revenue
@@ -447,7 +447,7 @@ export default function AffiliateDetailModal({
                         <Tooltip
                           contentStyle={{
                             backgroundColor: "var(--admin-card)",
-                            borderColor: "var(--admin-card-border)",
+                            borderColor: "var(--border)",
                             borderRadius: "8px",
                             fontSize: "12px",
                           }}
@@ -470,7 +470,7 @@ export default function AffiliateDetailModal({
               </div>
 
               {/* Recent Orders */}
-              <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] rounded-lg p-5 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] rounded-lg p-5 border border-[var(--border)]">
                 <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
                   <FaShoppingCart className="text-green-500" />
                   Recent Orders
@@ -479,7 +479,7 @@ export default function AffiliateDetailModal({
                   <div className="overflow-x-auto">
                     <table className="w-full">
                       <thead>
-                        <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+                        <tr className="border-b border-[var(--border)]">
                           <th className="text-left py-4 px-2 text-[var(--foreground)]">
                             Products
                           </th>
@@ -498,7 +498,7 @@ export default function AffiliateDetailModal({
                         {affiliate.recentOrders.map((order) => (
                           <tr
                             key={order.id}
-                            className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_5%)] cursor-pointer"
+                            className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_6%)] cursor-pointer"
                             onClick={() =>
                               router.push(`/admin/invoice/${order.id}`)
                             }
@@ -525,7 +525,7 @@ export default function AffiliateDetailModal({
                     </table>
                   </div>
                 ) : (
-                  <p className="text-center text-[color-mix(in_srgb,var(--foreground),#888_40%)] py-8">
+                  <p className="text-center text-[var(--color-text-secondary)] py-8">
                     No orders from this affiliate yet
                   </p>
                 )}
@@ -533,14 +533,14 @@ export default function AffiliateDetailModal({
             </div>
 
             {/* Footer Actions */}
-            <div className="border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] p-4 flex items-center justify-between bg-[color-mix(in_srgb,var(--background),#333_5%)]">
-              <div className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+            <div className="border-t border-[var(--border)] p-4 flex items-center justify-between bg-[color-mix(in_srgb,var(--surface),#000_6%)]">
+              <div className="text-sm text-[var(--color-text-secondary)]">
                 Created: {formatFullDate(affiliate.createdAt)}
               </div>
               <div className="flex items-center gap-2">
                 <button
                   onClick={copyAffiliateLink}
-                  className="px-4 py-2 bg-[color-mix(in_srgb,var(--background),#333_10%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors flex items-center gap-2"
+                  className="px-4 py-2 bg-[color-mix(in_srgb,var(--surface),#000_10%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors flex items-center gap-2"
                 >
                   <FaLink size={14} />
                   Copy Link
@@ -573,7 +573,7 @@ export default function AffiliateDetailModal({
           onClick={() => setShowDeleteConfirm(false)}
         >
           <div
-            className="bg-[var(--background)] rounded-xl p-6 max-w-md w-full shadow-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+            className="bg-[var(--background)] rounded-xl p-6 max-w-md w-full shadow-lg border border-[var(--border)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-4 mb-4">
@@ -584,7 +584,7 @@ export default function AffiliateDetailModal({
                 <h3 className="text-lg font-bold text-[var(--foreground)]">
                   Delete Affiliate
                 </h3>
-                <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                <p className="text-sm text-[var(--color-text-secondary)]">
                   This action cannot be undone
                 </p>
               </div>
@@ -599,7 +599,7 @@ export default function AffiliateDetailModal({
             <div className="flex items-center gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteConfirm(false)}
-                className="px-4 py-2 bg-[color-mix(in_srgb,var(--background),#333_10%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+                className="px-4 py-2 bg-[color-mix(in_srgb,var(--surface),#000_10%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
               >
                 Cancel
               </button>

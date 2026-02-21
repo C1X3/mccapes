@@ -322,7 +322,7 @@ export default function DashboardTab() {
         <div className="relative" ref={timeRangeDropdownRef}>
           <button
             onClick={() => setShowTimeRangeDropdown(!showTimeRangeDropdown)}
-            className="flex items-center gap-2 px-4 py-2 bg-admin-card rounded-lg border border-admin-card-border text-foreground"
+            className="flex items-center gap-2 px-4 py-2 bg-admin-card rounded-lg border border-[var(--border)] text-foreground"
           >
             <FaCalendarAlt className="text-[var(--primary)]" />
             <span>{getTimeRangeLabel()}</span>
@@ -330,7 +330,7 @@ export default function DashboardTab() {
 
           {showTimeRangeDropdown && (
             <div
-              className={`absolute top-full left-0 mt-1 bg-admin-card border border-admin-card-border rounded-lg shadow-lg z-10 ${timeRange === "custom" ? "w-fit" : "w-48"}`}
+              className={`absolute top-full left-0 mt-1 bg-admin-card border border-[var(--border)] rounded-lg shadow-lg z-10 ${timeRange === "custom" ? "w-fit" : "w-48"}`}
             >
               <div
                 className={
@@ -342,7 +342,7 @@ export default function DashboardTab() {
                 <div
                   className={
                     timeRange === "custom"
-                      ? "w-48 flex-shrink-0 border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] p-2"
+                      ? "w-48 flex-shrink-0 border-r border-[var(--border)] p-2"
                       : "p-2"
                   }
                 >
@@ -398,7 +398,7 @@ export default function DashboardTab() {
         <div className="bg-admin-card p-6 rounded-xl shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm font-medium">
+              <h3 className="text-[var(--color-text-secondary)] text-sm font-medium">
                 Total Revenue
               </h3>
               {revenueData.isLoading ? (
@@ -424,7 +424,7 @@ export default function DashboardTab() {
               </div>
             )}
           </div>
-          <div className="mt-4 flex items-center text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+          <div className="mt-4 flex items-center text-sm text-[var(--color-text-secondary)]">
             <FaChartLine className="mr-1" />
             <span>Compared to previous period</span>
           </div>{" "}
@@ -433,7 +433,7 @@ export default function DashboardTab() {
         <div className="bg-admin-card p-6 rounded-xl shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm font-medium">
+              <h3 className="text-[var(--color-text-secondary)] text-sm font-medium">
                 Total Orders
               </h3>
               {ordersData.isLoading ? (
@@ -459,7 +459,7 @@ export default function DashboardTab() {
               </div>
             )}
           </div>
-          <div className="mt-4 flex items-center text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+          <div className="mt-4 flex items-center text-sm text-[var(--color-text-secondary)]">
             <FaChartLine className="mr-1" />
             <span>Compared to previous period</span>
           </div>
@@ -469,7 +469,7 @@ export default function DashboardTab() {
         <div className="bg-admin-card p-6 rounded-xl shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm font-medium">
+              <h3 className="text-[var(--color-text-secondary)] text-sm font-medium">
                 Total Clicks
               </h3>
               {clickStatsData.isLoading ? (
@@ -495,7 +495,7 @@ export default function DashboardTab() {
               </div>
             )}
           </div>
-          <div className="mt-4 flex items-center text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+          <div className="mt-4 flex items-center text-sm text-[var(--color-text-secondary)]">
             <FaMousePointer className="mr-1" />
             <span>Unique site visitors</span>
           </div>
@@ -505,7 +505,7 @@ export default function DashboardTab() {
         <div className="bg-admin-card p-6 rounded-xl shadow-sm">
           <div className="flex justify-between items-start">
             <div>
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm font-medium">
+              <h3 className="text-[var(--color-text-secondary)] text-sm font-medium">
                 Conversion Rate
               </h3>
               {clickStatsData.isLoading ? (
@@ -531,14 +531,14 @@ export default function DashboardTab() {
               </div>
             )}
           </div>
-          <div className="mt-4 flex items-center text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+          <div className="mt-4 flex items-center text-sm text-[var(--color-text-secondary)]">
             <FaPercent className="mr-1" />
             <span>Clicks to orders</span>
           </div>
         </div>
       </div>
       {/* Chart */}
-      <div className="bg-white p-6 rounded-xl shadow-sm">
+      <div className="bg-admin-card p-6 rounded-xl shadow-sm">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
           <FaChartLine />
           Revenue & Orders
@@ -546,7 +546,7 @@ export default function DashboardTab() {
         {chartDataQuery.isLoading ? (
           <div className="h-80 w-full bg-surface-muted rounded animate-pulse"></div>
         ) : chartData.length === 0 ? (
-          <div className="h-80 w-full flex items-center justify-center text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+          <div className="h-80 w-full flex items-center justify-center text-[var(--color-text-secondary)]">
             No data available for the selected time range
           </div>
         ) : (
@@ -586,7 +586,7 @@ export default function DashboardTab() {
                   content={({ active, payload }) => {
                     if (active && payload && payload.length) {
                       return (
-                        <div className="bg-admin-card p-3 border border-admin-card-border rounded shadow-sm">
+                        <div className="bg-admin-card p-3 border border-[var(--border)] rounded shadow-sm">
                           <p className="font-medium">
                             {payload[0].payload.time}
                           </p>
@@ -638,7 +638,7 @@ export default function DashboardTab() {
           <div className="overflow-x-auto">
             <table className="w-full table-auto text-start">
               <thead>
-                <tr className="border-b border-admin-card-border bg-surface-muted">
+                <tr className="border-b border-[var(--border)] bg-surface-muted">
                   <th className="px-3 py-3.5 text-left">
                     <span className="text-sm font-semibold text-[var(--foreground)]">
                       Products
@@ -666,7 +666,7 @@ export default function DashboardTab() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-admin-card-border whitespace-nowrap">
+              <tbody className="divide-y divide-[var(--border)] whitespace-nowrap">
                 {latestCompletedOrdersData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -691,7 +691,7 @@ export default function DashboardTab() {
                   <tr>
                     <td
                       colSpan={5}
-                      className="px-3 py-12 text-center text-text-muted"
+                      className="px-3 py-12 text-center text-[var(--color-text-muted)]"
                     >
                       No completed orders found
                     </td>
@@ -802,7 +802,7 @@ export default function DashboardTab() {
           <div className="overflow-x-auto">
             <table className="w-full table-auto text-start">
               <thead>
-                <tr className="border-b border-admin-card-border bg-surface-muted">
+                <tr className="border-b border-[var(--border)] bg-surface-muted">
                   <th className="px-3 py-3.5 text-left">
                     <span className="text-sm font-semibold text-[var(--foreground)]">
                       Product
@@ -820,7 +820,7 @@ export default function DashboardTab() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-admin-card-border whitespace-nowrap">
+              <tbody className="divide-y divide-[var(--border)] whitespace-nowrap">
                 {topProductsData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -839,7 +839,7 @@ export default function DashboardTab() {
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-3 py-12 text-center text-text-muted"
+                      className="px-3 py-12 text-center text-[var(--color-text-muted)]"
                     >
                       No product data found
                     </td>
@@ -903,7 +903,7 @@ export default function DashboardTab() {
           <div className="overflow-x-auto">
             <table className="w-full table-auto text-start">
               <thead>
-                <tr className="border-b border-admin-card-border bg-surface-muted">
+                <tr className="border-b border-[var(--border)] bg-surface-muted">
                   <th className="px-3 py-3.5 text-left">
                     <span className="text-sm font-semibold text-[var(--foreground)]">
                       Customer Email
@@ -921,7 +921,7 @@ export default function DashboardTab() {
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-admin-card-border whitespace-nowrap">
+              <tbody className="divide-y divide-[var(--border)] whitespace-nowrap">
                 {topCustomersData.isLoading ? (
                   Array.from({ length: 5 }).map((_, i) => (
                     <tr key={i} className="animate-pulse">
@@ -940,7 +940,7 @@ export default function DashboardTab() {
                   <tr>
                     <td
                       colSpan={3}
-                      className="px-3 py-12 text-center text-text-muted"
+                      className="px-3 py-12 text-center text-[var(--color-text-muted)]"
                     >
                       No customer data found
                     </td>
@@ -996,7 +996,7 @@ export default function DashboardTab() {
         </div>
       </div>
       {/* Crypto Balances Section */}
-      <div className="bg-white p-6 rounded-xl shadow-sm">
+      <div className="bg-admin-card p-6 rounded-xl shadow-sm">
         <h3 className="text-lg font-semibold text-[var(--foreground)] mb-4 flex items-center gap-2">
           <FaBitcoin />
           Crypto Balances
@@ -1023,7 +1023,7 @@ export default function DashboardTab() {
               </div>
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC{" "}
-                <span className="text-base font-normal text-gray-500">
+                <span className="text-base font-normal text-[var(--color-text-secondary)]">
                   (${(cryptoBalances.data?.usdValues?.bitcoin || 0).toFixed(2)})
                 </span>
               </p>
@@ -1045,7 +1045,7 @@ export default function DashboardTab() {
               </div>
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH{" "}
-                <span className="text-base font-normal text-gray-500">
+                <span className="text-base font-normal text-[var(--color-text-secondary)]">
                   (${(cryptoBalances.data?.usdValues?.ethereum || 0).toFixed(2)}
                   )
                 </span>
@@ -1068,7 +1068,7 @@ export default function DashboardTab() {
               </div>
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC{" "}
-                <span className="text-base font-normal text-gray-500">
+                <span className="text-base font-normal text-[var(--color-text-secondary)]">
                   (${(cryptoBalances.data?.usdValues?.litecoin || 0).toFixed(2)}
                   )
                 </span>
@@ -1091,7 +1091,7 @@ export default function DashboardTab() {
               </div>
               <p className="text-2xl font-bold mb-3">
                 {formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL{" "}
-                <span className="text-base font-normal text-gray-500">
+                <span className="text-base font-normal text-[var(--color-text-secondary)]">
                   (${(cryptoBalances.data?.usdValues?.solana || 0).toFixed(2)})
                 </span>
               </p>
@@ -1108,7 +1108,7 @@ export default function DashboardTab() {
       {/* Withdrawal Dialog */}
       {isWithdrawDialogOpen && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+          <div className="bg-admin-card rounded-lg p-6 w-full max-w-md">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               {selectedCrypto === CryptoType.BITCOIN && (
                 <FaBitcoin className="text-[#f7931a]" />
@@ -1128,7 +1128,7 @@ export default function DashboardTab() {
             <div className="mb-4">
               <label
                 htmlFor="destination"
-                className="block text-sm font-medium mb-1 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                className="block text-sm font-medium mb-1 text-[var(--color-text-secondary)]"
               >
                 Destination Address
               </label>
@@ -1137,7 +1137,7 @@ export default function DashboardTab() {
                 type="text"
                 value={destinationAddress}
                 onChange={(e) => setDestinationAddress(e.target.value)}
-                className="w-full p-2 border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] rounded"
+                className="w-full p-2 border border-[var(--border)] rounded"
                 placeholder="Enter destination address"
               />
             </div>
@@ -1163,7 +1163,7 @@ export default function DashboardTab() {
                   formatCryptoBalance(cryptoBalances.data?.solana || 0) +
                     " SOL"}
               </p>
-              <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+              <p className="text-[var(--color-text-secondary)]">
                 Network fees will be deducted automatically
               </p>
             </div>
@@ -1171,7 +1171,7 @@ export default function DashboardTab() {
             <div className="flex justify-end gap-2">
               <button
                 onClick={() => setIsWithdrawDialogOpen(false)}
-                className="px-4 py-2 border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] rounded"
+                className="px-4 py-2 border border-[var(--border)] rounded"
               >
                 Cancel
               </button>

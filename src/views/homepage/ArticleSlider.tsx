@@ -197,7 +197,7 @@ const ArticleSlider = ({ articles, products, hideProduct = false }: ArticleSlide
                   className="text-3xl font-bold mb-4 text-[var(--foreground)]"
                   variants={fadeInUp}
                 >
-                  <span className="gradient-text">{currentArticle.title}</span>
+                  {currentArticle.title}
                 </motion.h3>
               </motion.div>
 
@@ -344,7 +344,7 @@ const ArticleSlider = ({ articles, products, hideProduct = false }: ArticleSlide
           >
             <div className="flex justify-between items-center p-4">
               <h2 className="text-2xl font-bold text-[var(--foreground)]">
-                <span className="gradient-text">{currentArticle.title}</span>
+                {currentArticle.title}
               </h2>
               <button
                 onClick={() => setShowModal(false)}

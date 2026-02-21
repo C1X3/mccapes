@@ -102,7 +102,7 @@ export default function AffiliateFormModal({
           </div>
           <button
             onClick={onCloseAction}
-            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
           >
             <FaTimes size={16} className="text-[var(--foreground)]" />
           </button>
@@ -123,11 +123,11 @@ export default function AffiliateFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
               }
-              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
               placeholder="John Doe"
               required
             />
-            <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               The name of the affiliate or sponsorship
             </p>
           </div>
@@ -151,12 +151,12 @@ export default function AffiliateFormModal({
                     .replace(/[^a-z0-9_-]/g, ""),
                 })
               }
-              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
               placeholder="johndoe"
               required
               pattern="[a-zA-Z0-9_-]+"
             />
-            <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+            <p className="text-xs text-[var(--color-text-secondary)] mt-1">
               This will be used in the URL: mccapes.net/
               <strong>{formData.code || "code"}</strong>
             </p>
@@ -170,7 +170,7 @@ export default function AffiliateFormModal({
               onChange={(e) =>
                 setFormData({ ...formData, active: e.target.checked })
               }
-              className="w-4 h-4 rounded bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)]"
+              className="w-4 h-4 rounded bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)]"
             />
             <label
               htmlFor="active"
@@ -184,7 +184,7 @@ export default function AffiliateFormModal({
             <button
               type="button"
               onClick={onCloseAction}
-              className="flex-1 px-4 py-3 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+              className="flex-1 px-4 py-3 rounded-lg border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
             >
               Cancel
             </button>

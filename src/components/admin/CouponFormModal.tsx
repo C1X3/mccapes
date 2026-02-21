@@ -102,7 +102,7 @@ export default function CouponFormModal({
           </h2>{" "}
           <button
             onClick={onCloseAction}
-            className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-full transition-colors"
+            className="p-2 text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] rounded-full transition-colors"
           >
             <FaTimes size={20} />
           </button>
@@ -127,7 +127,7 @@ export default function CouponFormModal({
                     id="code"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="e.g., SUMMER20"
                   />
                   {fieldState.error && (
@@ -163,7 +163,7 @@ export default function CouponFormModal({
                       onChange={(e) =>
                         field.onChange(parseFloat(e.target.value) || 0)
                       }
-                      className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                       placeholder="Enter discount amount"
                     />
                     {fieldState.error && (
@@ -190,7 +190,7 @@ export default function CouponFormModal({
                   <>
                     <select
                       id="type"
-                      className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                       {...field}
                       // onChange={(e) => {
                       //   console.log(e.target.value);
@@ -229,7 +229,7 @@ export default function CouponFormModal({
                     id="validUntil"
                     type="date"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                   />
                   {fieldState.error && (
                     <p className="text-red-500 text-sm mt-1">
@@ -263,7 +263,7 @@ export default function CouponFormModal({
                     onChange={(e) =>
                       field.onChange(parseInt(e.target.value) || 0)
                     }
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter usage limit"
                   />
                   {fieldState.error && (
@@ -287,13 +287,13 @@ export default function CouponFormModal({
                     type="checkbox"
                     checked={field.value}
                     onChange={(e) => field.onChange(e.target.checked)}
-                    className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                    className="w-5 h-5 rounded border-[var(--border)] focus:ring-[var(--primary)]"
                   />
                 )}
               />
               <span>Active</span>
             </label>
-            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1 ml-7">
+            <span className="text-sm text-[var(--color-text-secondary)] mt-1 ml-7">
               Enable or disable this coupon
             </span>
           </div>
@@ -303,7 +303,7 @@ export default function CouponFormModal({
             <button
               type="button"
               onClick={onCloseAction}
-              className="px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+              className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
             >
               Cancel
             </button>

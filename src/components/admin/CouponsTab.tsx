@@ -51,7 +51,7 @@ export default function CouponsTab() {
   };
 
   return (
-    <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
           <FaTicketAlt />
@@ -68,7 +68,7 @@ export default function CouponsTab() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+            <tr className="border-b border-[var(--border)]">
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Code
               </th>
@@ -95,7 +95,7 @@ export default function CouponsTab() {
               <tr>
                 <td
                   colSpan={6}
-                  className="py-12 text-center text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                  className="py-12 text-center text-[var(--color-text-secondary)]"
                 >
                   Loading coupons...
                 </td>
@@ -104,7 +104,7 @@ export default function CouponsTab() {
               coupons.map((coupon) => (
                 <tr
                   key={coupon.id}
-                  className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                  className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
                 >
                   <td className="py-4 px-2 text-[var(--foreground)] font-medium">
                     {coupon.code}
@@ -114,7 +114,7 @@ export default function CouponsTab() {
                     {coupon.type === "PERCENTAGE" ? "%" : "$"}{" "}
                     {coupon.type === "PERCENTAGE" ? "off" : ""}
                   </td>
-                  <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                  <td className="py-4 px-2 text-[var(--color-text-secondary)]">
                     {formatDate(coupon.validUntil.toString())}
                   </td>
                   <td className="py-4 px-2 text-[var(--foreground)]">
@@ -128,7 +128,7 @@ export default function CouponsTab() {
                           : coupon.usageCount >= coupon.usageLimit
                             ? "bg-warning-bg text-warning-text"
                             : new Date(coupon.validUntil) < new Date()
-                              ? "bg-surface-muted text-text-secondary"
+                              ? "bg-surface-muted text-[var(--color-text-secondary)]"
                               : "bg-success-bg text-success-text"
                       }`}
                     >
@@ -163,10 +163,10 @@ export default function CouponsTab() {
                 </tr>
               ))
             ) : (
-              <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] text-center">
+              <tr className="border-b border-[var(--border)] text-center">
                 <td
                   colSpan={6}
-                  className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                  className="py-12 text-[var(--color-text-secondary)]"
                 >
                   No coupons found
                 </td>

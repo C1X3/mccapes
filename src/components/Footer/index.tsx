@@ -27,7 +27,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
               Shop
             </h5>
             <ul className="space-y-2">
@@ -35,7 +35,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
+                    className="flex items-center text-[var(--color-text-secondary)] transition-opacity hover:opacity-85"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -46,7 +46,7 @@ const Footer = () => {
           </div>
 
           <div>
-            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
               Company
             </h5>
             <ul className="space-y-2">
@@ -59,7 +59,7 @@ const Footer = () => {
                 <li key={item.label}>
                   <a
                     href={item.href}
-                    className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
+                    className="flex items-center text-[var(--color-text-secondary)] transition-opacity hover:opacity-85"
                   >
                     <FaChevronRight className="mr-2 text-xs" />
                     {item.label}
@@ -70,13 +70,13 @@ const Footer = () => {
           </div>
 
           <div>
-            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--accent-light)]">
+            <h5 className="mb-4 text-sm font-semibold uppercase tracking-[0.12em] text-[var(--color-text-secondary)]">
               Contact
             </h5>
             <address className="not-italic space-y-2">
               <a
                 href="mailto:mccapesbusiness@gmail.com"
-                className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
+                className="flex items-center text-[var(--color-text-secondary)] transition-opacity hover:opacity-85"
               >
                 <FaChevronRight className="mr-2 text-xs" />
                 mccapesbusiness@gmail.com
@@ -85,7 +85,7 @@ const Footer = () => {
                 href="https://discord.mccapes.net"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center text-[var(--color-text-secondary)] transition-colors hover:text-[var(--accent-light)]"
+                className="flex items-center text-[var(--color-text-secondary)] transition-opacity hover:opacity-85"
               >
                 <FaChevronRight className="mr-2 text-xs" />
                 Discord

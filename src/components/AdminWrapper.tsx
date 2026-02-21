@@ -76,7 +76,7 @@ export default function AdminWrapper({
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[var(--background)] rounded-2xl p-8 max-w-md w-full shadow-2xl"
+            className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-8 shadow-2xl"
           >
             <div className="flex items-center justify-center mb-6">
               <div className="bg-[var(--primary)] w-16 h-16 rounded-full flex items-center justify-center text-white">
@@ -101,10 +101,10 @@ export default function AdminWrapper({
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className={`w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
+                  className={`w-full rounded-lg border bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] ${
                     isPasswordIncorrect
                       ? "border-red-500"
-                      : "border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      : "border-[var(--border)]"
                   }`}
                   placeholder="Enter admin password"
                 />

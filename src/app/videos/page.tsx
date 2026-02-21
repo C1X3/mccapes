@@ -1,7 +1,6 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import Navbar from "@/components/Navbar/Navbar";
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { useState, useRef } from "react";
@@ -199,45 +198,35 @@ const videos: Video[] = [
 
 export default function VideosPage() {
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <header className="py-8 flex justify-center">
-        <Navbar />
-      </header>
-
-      <section className="py-16 bg-white relative overflow-hidden">
-        <motion.div
-          className="absolute inset-0 bg-[url('/images/subtle-pattern.jpg')] bg-cover bg-center opacity-10"
-          animate={{ backgroundPosition: ["0% 0%", "100% 100%"] }}
-          transition={{
-            duration: 60,
-            ease: "linear",
-            repeat: Infinity,
-            repeatType: "reverse",
-          }}
-        />
-
-        <div className="container mx-auto px-6 relative z-10">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+      <section className="relative overflow-hidden">
+        <div className="relative z-10 px-6 py-16">
+          <div className="container mx-auto relative z-10">
           <motion.div
-            className="text-center mb-12"
+            className="mb-12 text-center"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.6 }}
           >
-            <h3 className="text-3xl font-bold mb-2 text-[var(--foreground)]">
-              <span className="gradient-text">Videos</span>
-            </h3>
-            <p className="text-gray-600 max-w-2xl mx-auto">
+            <h1 className="mb-2 text-5xl text-[var(--foreground)] md:text-6xl lg:text-7xl">
+              Videos
+            </h1>
+            <p className="mx-auto max-w-2xl text-[var(--color-text-secondary)]">
               Check out our latest videos showcasing our products, tutorials,
               and more.
             </p>
           </motion.div>
 
-          {/* 3-column grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {videos.map((video, i) => (
-              <VideoCard key={i} video={video} />
-            ))}
+            {/* 3-column grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {videos.map((video, i) => (
+                <VideoCard key={i} video={video} />
+              ))}
+            </div>
           </div>
         </div>
       </section>
@@ -275,7 +264,7 @@ function VideoCard({ video }: { video: Video }) {
   const firstPara = paragraphs[0];
 
   return (
-    <div className="bg-[var(--surface-light)] rounded-2xl overflow-hidden shadow-lg">
+    <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] shadow-lg card-hover">
       <div
         className="relative aspect-video w-full cursor-pointer"
         onClick={!isPlaying ? handlePlay : undefined}
@@ -288,8 +277,9 @@ function VideoCard({ video }: { video: Video }) {
               fill
               style={{ objectFit: "cover" }}
             />
+            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.05),rgba(0,0,0,0.4))]" />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] shadow-lg hover:scale-110 transition-transform">
                 <div className="w-0 h-0 border-t-[10px] border-t-transparent border-l-[18px] border-l-[var(--primary)] border-b-[10px] border-b-transparent ml-1.5" />
               </div>
             </div>
@@ -309,9 +299,9 @@ function VideoCard({ video }: { video: Video }) {
         <h4 className="text-xl font-semibold mb-2 text-[var(--foreground)]">
           {video.title}
         </h4>
-        <p className="text-gray-600 mb-2">{firstPara}</p>
+        <p className="text-[var(--color-text-secondary)] mb-2">{firstPara}</p>
         {paragraphs.slice(1).map((p, idx) => (
-          <p key={idx} className="text-gray-600">
+          <p key={idx} className="text-[var(--color-text-secondary)]">
             {p}
           </p>
         ))}

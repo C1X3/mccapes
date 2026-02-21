@@ -234,7 +234,7 @@ export default function ProductFormModal({
           </h2>
           <button
             onClick={onClose}
-            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+            className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
           >
             <FaTimes size={20} className="text-[var(--foreground)]" />
           </button>
@@ -260,7 +260,7 @@ export default function ProductFormModal({
                     id="name"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter product name"
                   />
                   {fieldState.error && (
@@ -296,7 +296,7 @@ export default function ProductFormModal({
                       const value = e.target.value.replace(/\s+/g, "");
                       field.onChange(value);
                     }}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter product slug"
                   />
                   {fieldState.error && (
@@ -327,7 +327,7 @@ export default function ProductFormModal({
                     id="description"
                     rows={4}
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter product description"
                   />
                   {fieldState.error && (
@@ -376,7 +376,7 @@ export default function ProductFormModal({
                         field.onChange(0);
                       }
                     }}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter price"
                   />
                   {fieldState.error && (
@@ -427,11 +427,11 @@ export default function ProductFormModal({
                     placeholder="Enter one code per line"
                     className="
                                             w-full p-3
-                                            bg-[color-mix(in_srgb,var(--background),#333_15%)]
+                                            bg-[color-mix(in_srgb,var(--surface),#000_8%)]
                                             border rounded-lg
                                             text-[var(--foreground)]
                                             focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
-                                            border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]
+                                            border-[var(--border)]
                                             resize-vertical
                                         "
                   />
@@ -463,7 +463,7 @@ export default function ProductFormModal({
                     id="category"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter category"
                   />
                   {fieldState.error && (
@@ -494,7 +494,7 @@ export default function ProductFormModal({
                     id="badge"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter badge"
                   />
                   {fieldState.error && (
@@ -533,7 +533,7 @@ export default function ProductFormModal({
                       );
                     }}
                     onBlur={field.onBlur}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter original price (optional)"
                   />
                   {fieldState.error && (
@@ -559,13 +559,13 @@ export default function ProductFormModal({
                       type="checkbox"
                       checked={field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
-                      className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                      className="w-5 h-5 rounded border-[var(--border)] focus:ring-[var(--primary)]"
                     />
                   )}
                 />
                 <span>Hide from Home Page</span>
               </label>
-              <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+              <span className="text-sm text-[var(--color-text-secondary)] mt-1">
                 Product won&apos;t appear on the home page
               </span>
             </div>
@@ -581,13 +581,13 @@ export default function ProductFormModal({
                       type="checkbox"
                       checked={field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
-                      className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                      className="w-5 h-5 rounded border-[var(--border)] focus:ring-[var(--primary)]"
                     />
                   )}
                 />
                 <span>Hide from Product Page</span>
               </label>
-              <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+              <span className="text-sm text-[var(--color-text-secondary)] mt-1">
                 Product won&apos;t appear on the products list
               </span>
             </div>
@@ -603,13 +603,13 @@ export default function ProductFormModal({
                       type="checkbox"
                       checked={field.value}
                       onChange={(e) => field.onChange(e.target.checked)}
-                      className="w-5 h-5 rounded border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] focus:ring-[var(--primary)]"
+                      className="w-5 h-5 rounded border-[var(--border)] focus:ring-[var(--primary)]"
                     />
                   )}
                 />
                 <span>Featured Product</span>
               </label>
-              <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-1">
+              <span className="text-sm text-[var(--color-text-secondary)] mt-1">
                 Highlight this product as featured
               </span>
             </div>
@@ -702,11 +702,11 @@ export default function ProductFormModal({
                     placeholder="Enter one feature per line"
                     className="
                                             w-full p-3
-                                            bg-[color-mix(in_srgb,var(--background),#333_15%)]
+                                            bg-[color-mix(in_srgb,var(--surface),#000_8%)]
                                             border rounded-lg
                                             text-[var(--foreground)]
                                             focus:outline-none focus:ring-2 focus:ring-[var(--primary)]
-                                            border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]
+                                            border-[var(--border)]
                                             resize-vertical
                                         "
                   />
@@ -738,7 +738,7 @@ export default function ProductFormModal({
                     id="image"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter main image URL"
                   />
                   {fieldState.error && (
@@ -761,7 +761,7 @@ export default function ProductFormModal({
                 type="text"
                 value={newImageUrl}
                 onChange={(e) => setNewImageUrl(e.target.value)}
-                className="flex-1 p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                className="flex-1 p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                 placeholder="Enter additional image URL"
               />
               <button
@@ -777,7 +777,7 @@ export default function ProductFormModal({
                 {additionalImageUrls.map((url, index) => (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-2 bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg"
+                    className="flex items-center justify-between p-2 bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded-lg"
                   >
                     <span className="text-sm text-[var(--foreground)] truncate pr-2">
                       {url}
@@ -813,7 +813,7 @@ export default function ProductFormModal({
                     id="stripeProductName"
                     type="text"
                     {...field}
-                    className="w-full p-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter Stripe product name"
                   />
                   {fieldState.error && (
@@ -831,7 +831,7 @@ export default function ProductFormModal({
             <button
               type="button"
               onClick={onClose}
-              className="px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+              className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
             >
               Cancel
             </button>

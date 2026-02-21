@@ -160,7 +160,7 @@ export default function ProductsTab() {
         )}
       </AnimatePresence>
 
-      <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+      <div className="rounded-xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
             <FaBox />
@@ -178,7 +178,7 @@ export default function ProductsTab() {
         </div>
 
         {userRole === "admin" && (
-          <div className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-4">
+          <div className="text-sm text-[var(--color-text-secondary)] mb-4">
             Drag and drop to reorder products
           </div>
         )}
@@ -195,7 +195,7 @@ export default function ProductsTab() {
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+                <tr className="border-b border-[var(--border)]">
                   {userRole === "admin" && (
                     <th className="text-left py-4 px-2 text-[var(--foreground)] w-10">
                       Order
@@ -237,18 +237,18 @@ export default function ProductsTab() {
                         as="tr"
                         dragListener={!isDragDisabled}
                         dragControls={undefined}
-                        className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] relative"
+                        className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] relative"
                       >
-                        <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)] cursor-move">
-                          <FaGripVertical className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]" />
+                        <td className="py-4 px-2 text-[var(--color-text-secondary)] cursor-move">
+                          <FaGripVertical className="text-[var(--color-text-secondary)]" />
                         </td>
-                        <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <td className="py-4 px-2 text-[var(--color-text-secondary)]">
                           {product.id.substring(0, 8)}...
                         </td>
                         <td className="py-4 px-2 text-[var(--foreground)]">
                           {product.name}
                         </td>
-                        <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <td className="py-4 px-2 text-[var(--color-text-secondary)]">
                           {product.category}
                         </td>
                         <td className="py-4 px-2 text-[var(--foreground)]">
@@ -271,7 +271,7 @@ export default function ProductsTab() {
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => router.push(`/shop/${product.slug}`)}
-                              className="p-2 bg-info-bg text-info-text rounded hover:bg-info transition-colors"
+                              className="p-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-500 hover:text-white transition-colors"
                               title="View Product"
                               onMouseEnter={() => setIsDragDisabled(true)}
                               onMouseLeave={() => setIsDragDisabled(false)}
@@ -307,15 +307,15 @@ export default function ProductsTab() {
                     orderedProducts.map((product) => (
                       <tr
                         key={product.id}
-                        className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)]"
+                        className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
                       >
-                        <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <td className="py-4 px-2 text-[var(--color-text-secondary)]">
                           {product.id.substring(0, 8)}...
                         </td>
                         <td className="py-4 px-2 text-[var(--foreground)]">
                           {product.name}
                         </td>
-                        <td className="py-4 px-2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <td className="py-4 px-2 text-[var(--color-text-secondary)]">
                           {product.category}
                         </td>
                         <td className="py-4 px-2 text-[var(--foreground)]">
@@ -338,7 +338,7 @@ export default function ProductsTab() {
                           <div className="flex justify-end gap-2">
                             <button
                               onClick={() => router.push(`/shop/${product.slug}`)}
-                              className="p-2 bg-info-bg text-info-text rounded hover:bg-info transition-colors"
+                              className="p-2 bg-blue-100 text-blue-700 rounded hover:bg-blue-500 hover:text-white transition-colors"
                               title="View Product"
                             >
                               <FaEye size={14} />

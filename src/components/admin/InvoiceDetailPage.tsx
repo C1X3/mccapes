@@ -297,11 +297,11 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
   }
 
   return (
-    <div className="p-4 min-h-screen">
+    <div className="min-h-screen p-4 text-[var(--foreground)]">
       <div className="mb-4 flex justify-between items-center">
         <div>
           <h1 className="text-xl font-semibold">Invoice Details</h1>
-          <p className="text-text-muted text-sm">
+          <p className="text-[var(--color-text-secondary)] text-sm">
             View the details of the invoice.
           </p>
         </div>
@@ -309,7 +309,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           {(invoice.status === OrderStatus.PENDING ||
             invoice.status === OrderStatus.CANCELLED) && (
             <button
-              className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-admin-hover transition-colors"
+              className="flex items-center gap-2 rounded-md border border-[var(--border)] bg-transparent px-4 py-2 transition-colors hover:bg-[var(--color-admin-hover)]"
               onClick={handleManuallyProcessInvoice}
             >
               <FaFileInvoice />{" "}
@@ -321,7 +321,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           {invoice.status == OrderStatus.PENDING && (
             <div className="flex gap-2">
               <button
-                className="px-4 py-2 flex items-center gap-2 bg-transparent border border-gray-700 rounded-md hover:bg-admin-hover transition-colors"
+                className="flex items-center gap-2 rounded-md border border-[var(--border)] bg-transparent px-4 py-2 transition-colors hover:bg-[var(--color-admin-hover)]"
                 onClick={handleCancelInvoice}
               >
                 <FaTimesCircle />{" "}
@@ -331,7 +331,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           )}
           <Link
             href={`/order/${invoice.id}`}
-            className="px-4 py-2 flex items-center gap-2 bg-transparent border border-info text-info rounded-md hover:bg-info hover:text-white transition-colors"
+            className="px-4 py-2 flex items-center gap-2 bg-transparent border border-blue-500 text-blue-600 rounded-md hover:bg-blue-500 hover:text-white transition-colors"
           >
             <FaEye /> View Invoice
           </Link>
@@ -348,27 +348,27 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Order Information Card */}
-        <div className="bg-admin-card rounded-lg shadow text-foreground p-4">
+        <div className="bg-admin-card rounded-lg border border-[var(--border)] p-4 shadow text-foreground">
           <div className="flex items-center gap-2 mb-4">
-            <FaShoppingBag className="text-text-muted" />
+            <FaShoppingBag className="text-[var(--color-text-muted)]" />
             <h2 className="font-semibold">Order Information</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">ID</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">ID</span>
               <span>{invoice.id}</span>
             </div>
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Status</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Status</span>
               <span
                 className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
               >
                 {invoice.status === "PAID" ? "COMPLETED" : invoice.status}
               </span>
             </div>
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Payment Method</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Payment Method</span>
               <div className="flex items-center gap-2">
                 <span>{getPaymentDisplayName(invoice)}</span>
                 <PaymentMethodLogo
@@ -378,8 +378,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 />
               </div>
             </div>{" "}
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Subtotal</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Subtotal</span>
               <span>
                 $
                 {(
@@ -400,14 +400,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 )}
               </span>
             </div>
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Gateway Fee</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Gateway Fee</span>
               <span>
                 ${invoice.paymentFee ? invoice.paymentFee.toFixed(2) : "0.00"}
               </span>
             </div>
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Total Price</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Total Price</span>
               <span>
                 $
                 {(
@@ -421,8 +421,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </span>
             </div>
             {invoice.couponUsed && (
-              <div className="flex justify-between border-b border-admin-card-border pb-2">
-                <span className="text-text-secondary">Coupon</span>
+              <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                <span className="text-[var(--color-text-secondary)]">Coupon</span>
                 <span>
                   {invoice.couponUsed}
                   {invoice.couponDetails && (
@@ -438,44 +438,44 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </div>
             )}
             {invoice.paymentType === PaymentType.CRYPTO && (
-              <div className="flex justify-between border-b border-admin-card-border pb-2">
-                <span className="text-text-secondary">Transaction ID</span>
+              <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                <span className="text-[var(--color-text-secondary)]">Transaction ID</span>
                 <span>{invoice.Wallet?.[0]?.txHash || "N/A"}</span>
               </div>
             )}
             {invoice.paymentType === PaymentType.PAYPAL && (
-              <div className="flex justify-between border-b border-admin-card-border pb-2">
-                <span className="text-text-secondary">Paypal Note</span>
+              <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                <span className="text-[var(--color-text-secondary)]">Paypal Note</span>
                 <span>{invoice.paypalNote || "N/A"}</span>
               </div>
             )}
             <div className="flex justify-between pb-2">
-              <span className="text-text-secondary">Created At</span>
+              <span className="text-[var(--color-text-secondary)]">Created At</span>
               <span>{formatDate(invoice.createdAt, "long")}</span>
             </div>
           </div>
         </div>
 
         {/* Customer Information Card */}
-        <div className="bg-admin-card rounded-lg shadow text-foreground p-4">
+        <div className="bg-admin-card rounded-lg border border-[var(--border)] p-4 shadow text-foreground">
           <div className="flex items-center gap-2 mb-4">
-            <FaUser className="text-text-muted" />
+            <FaUser className="text-[var(--color-text-muted)]" />
             <h2 className="font-semibold">Customer Information</h2>
           </div>
 
           <div className="space-y-3">
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">E-mail Address</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">E-mail Address</span>
               <span>{invoice.customer?.email || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">IP Address</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">IP Address</span>
               <span>{invoice.customer?.ipAddress || "N/A"}</span>
             </div>
 
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Country</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Country</span>
               <div className="flex items-center gap-2">
                 {countryInfo ? (
                   <>
@@ -491,26 +491,26 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                     )}
                   </>
                 ) : (
-                  <span className="text-text-muted">Unavailable</span>
+                  <span className="text-[var(--color-text-muted)]">Unavailable</span>
                 )}
               </div>
             </div>
 
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">User Agent</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">User Agent</span>
               <span className="text-sm truncate max-w-[300px]">
                 {invoice.customer?.useragent || "N/A"}
               </span>
             </div>
 
-            <div className="flex justify-between border-b border-admin-card-border pb-2">
-              <span className="text-text-secondary">Discord Username</span>
+            <div className="flex justify-between border-b border-[var(--border)] pb-2">
+              <span className="text-[var(--color-text-secondary)]">Discord Username</span>
               <span>{invoice.customer?.discord || "Not provided"}</span>
             </div>
 
             {invoice.customer?.affiliate && (
               <div className="flex justify-between pb-2">
-                <span className="text-text-secondary">Affiliate</span>
+                <span className="text-[var(--color-text-secondary)]">Affiliate</span>
                 <span className="px-2 py-1 bg-info-bg text-info-text rounded-full text-xs font-medium">
                   {invoice.customer.affiliate.name}
                 </span>
@@ -521,36 +521,36 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       </div>
 
       {/* Items Section */}
-      <div className="mt-6 bg-admin-card rounded-lg shadow text-foreground p-4">
+      <div className="mt-6 bg-admin-card rounded-lg border border-[var(--border)] p-4 shadow text-foreground">
         <div className="flex items-center gap-2 mb-4">
-          <FaBox className="text-text-muted" />
+          <FaBox className="text-[var(--color-text-muted)]" />
           <h2 className="font-semibold">Items</h2>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="border-b border-admin-card-border">
+            <thead className="border-b border-[var(--border)]">
               <tr>
-                <th className="text-left py-3 px-4 font-medium text-text-secondary">
+                <th className="text-left py-3 px-4 font-medium text-[var(--color-text-secondary)]">
                   Status
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-text-secondary">
+                <th className="text-left py-3 px-4 font-medium text-[var(--color-text-secondary)]">
                   Product & Variant
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-text-secondary">
+                <th className="text-left py-3 px-4 font-medium text-[var(--color-text-secondary)]">
                   Quantity
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-text-secondary">
+                <th className="text-left py-3 px-4 font-medium text-[var(--color-text-secondary)]">
                   Total Price
                 </th>
-                <th className="text-left py-3 px-4 font-medium text-text-secondary">
+                <th className="text-left py-3 px-4 font-medium text-[var(--color-text-secondary)]">
                   Deliverable
                 </th>
               </tr>
             </thead>
             <tbody>
               {invoice.OrderItem.map((item) => (
-                <tr className="border-b border-gray-100" key={item.id}>
+                <tr className="border-b border-[var(--border)]" key={item.id}>
                   <td className="py-3 px-4">
                     <span
                       className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusBadgeClass(invoice.status)}`}
@@ -563,7 +563,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                   <td className="py-3 px-4">
                     <div>
                       <p className="font-medium">{item.product.name}</p>
-                      <p className="text-sm text-text-muted">
+                      <p className="text-sm text-[var(--color-text-muted)]">
                         {item.product.slug}
                       </p>
                     </div>
@@ -579,13 +579,13 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                           setSelectedItem(item);
                           setShowCodeModal(true);
                         }}
-                        className="flex items-center gap-2 px-3 py-1 bg-info text-white text-xs rounded-md hover:bg-info-text transition-colors"
+                        className="flex items-center gap-2 px-3 py-1 bg-blue-500 text-white text-xs rounded-md hover:bg-blue-600 transition-colors"
                       >
                         <FaExternalLinkAlt size={12} />
                         View
                       </button>
                     ) : (
-                      <span className="text-text-muted text-xs px-3 py-1 bg-gray-200 rounded-md">
+                      <span className="rounded-md bg-[color-mix(in_srgb,var(--surface),#000_12%)] px-3 py-1 text-xs text-[var(--color-text-secondary)]">
                         None
                       </span>
                     )}
@@ -599,9 +599,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
 
 
       {/* Notes Section */}
-      <div className="mt-6 bg-admin-card rounded-lg shadow text-foreground p-4">
+      <div className="mt-6 bg-admin-card rounded-lg border border-[var(--border)] p-4 shadow text-foreground">
         <div className="flex items-center gap-2 mb-4">
-          <FaStickyNote className="text-text-muted" />
+          <FaStickyNote className="text-[var(--color-text-muted)]" />
           <h2 className="font-semibold">Notes</h2>
         </div>
 
@@ -612,7 +612,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             value={newNote}
             onChange={(e) => setNewNote(e.target.value)}
             placeholder="Add a note..."
-            className="flex-1 px-3 py-2 border border-admin-card-border rounded-lg focus:outline-none focus:ring-2 focus:ring-info focus:border-transparent"
+            className="flex-1 px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             onKeyDown={(e) => {
               if (e.key === "Enter" && !isAddingNote) {
                 handleAddNote();
@@ -622,7 +622,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
           <button
             onClick={handleAddNote}
             disabled={isAddingNote || !newNote.trim()}
-            className="px-4 py-2 bg-info text-white rounded-lg hover:bg-info-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {isAddingNote ? "Adding..." : "Add Note"}
           </button>
@@ -634,9 +634,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             {invoice.notes.map((note: string, index: number) => (
               <div
                 key={index}
-                className="bg-surface-muted rounded-lg p-3 border border-admin-card-border flex justify-between items-start gap-3"
+                className="bg-surface-muted rounded-lg p-3 border border-[var(--border)] flex justify-between items-start gap-3"
               >
-                <p className="text-sm font-mono text-gray-700 flex-1">{note}</p>
+                <p className="flex-1 text-sm font-mono text-[var(--color-text-secondary)]">{note}</p>
                 {userRole === "admin" && (
                   <button
                     onClick={() => handleDeleteNote(index)}
@@ -651,7 +651,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             ))}
           </div>
         ) : (
-          <p className="text-text-muted text-sm">No notes yet.</p>
+          <p className="text-[var(--color-text-muted)] text-sm">No notes yet.</p>
         )}
       </div>
 
@@ -684,7 +684,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </div>
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
               >
                 <FaTimes size={16} className="text-[var(--foreground)]" />
               </button>
@@ -696,7 +696,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 Are you sure you want to manually process this invoice?
               </p>
 
-              <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg p-4 mb-4">
+              <div className="bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded-lg p-4 mb-4">
                 <p className="text-sm text-[var(--foreground)] font-medium mb-2">
                   This action will:
                 </p>
@@ -716,7 +716,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowConfirmModal(false)}
-                className="px-4 py-2 rounded-lg border border-admin-card-border text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
               >
                 Cancel
               </button>
@@ -758,7 +758,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </div>
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
               >
                 <FaTimes size={16} className="text-[var(--foreground)]" />
               </button>
@@ -770,7 +770,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 Are you sure you want to permanently delete this invoice?
               </p>
 
-              <div className="bg-[color-mix(in_srgb,var(--background),#333_10%)] rounded-lg p-4 mb-4">
+              <div className="bg-[color-mix(in_srgb,var(--surface),#000_10%)] rounded-lg p-4 mb-4">
                 <p className="text-sm text-[var(--foreground)] font-medium mb-2">
                   This action will:
                 </p>
@@ -794,7 +794,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             <div className="flex gap-3 justify-end">
               <button
                 onClick={() => setShowDeleteModal(false)}
-                className="px-4 py-2 rounded-lg border border-admin-card-border text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
               >
                 Cancel
               </button>
@@ -834,7 +834,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                   <h2 className="text-xl font-bold text-[var(--foreground)]">
                     Product Codes
                   </h2>
-                  <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                  <p className="text-sm text-[var(--color-text-secondary)]">
                     {selectedItem.product.name}
                   </p>
                 </div>
@@ -844,7 +844,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                   setShowCodeModal(false);
                   setPendingReplaceCode(null);
                 }}
-                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--background),#333_15%)] transition-colors"
+                className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
               >
                 <FaTimes size={16} className="text-[var(--foreground)]" />
               </button>
@@ -857,10 +857,10 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                   selectedItem.codes.map((code: string, index: number) => (
                     <div
                       key={index}
-                      className="bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-lg p-4 border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]"
+                      className="bg-[color-mix(in_srgb,var(--surface),#000_8%)] rounded-lg p-4 border border-[var(--border)]"
                     >
                       <div className="flex items-center justify-between gap-4">
-                        <div className="bg-[color-mix(in_srgb,var(--background),#333_25%)] rounded-md border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] px-3 py-2 flex-1">
+                        <div className="bg-[color-mix(in_srgb,var(--surface),#000_18%)] rounded-md border border-[var(--border)] px-3 py-2 flex-1">
                           <p className="text-sm font-mono text-[var(--foreground)] break-all select-all">
                             {code}
                           </p>
@@ -913,8 +913,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             </div>
 
             {/* Footer */}
-            <div className="mt-6 pt-4 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+            <div className="mt-6 pt-4 border-t border-[var(--border)]">
+              <p className="text-sm text-[var(--color-text-secondary)]">
                 Status:{" "}
                 {invoice.status === OrderStatus.DELIVERED
                   ? "Delivered"

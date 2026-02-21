@@ -113,7 +113,7 @@ const VouchesCarousel = () => {
           transition={{ duration: 0.6 }}
         >
           <h3 className="text-3xl font-bold mb-2 text-[var(--foreground)]">
-            <span className="gradient-text">Customer Vouches</span>
+            Customer Vouches
           </h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
             See what our customers have to say about their experiences with our

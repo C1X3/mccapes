@@ -3,10 +3,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { formatPrice } from "@/utils/formatting";
 import { formatFeePercentage } from "@/utils/fees";
-import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
 import FAQSection from "@/components/FAQSection";
 import Image from "next/image";
+import ProductCapeViewer from "@/components/ProductCapeViewer";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import {
@@ -120,6 +120,7 @@ const ConfirmationProgress = ({
 const OrderPage = ({ id }: { id: string }) => {
   const trpc = useTRPC();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
+  const [hoveredPreviewId, setHoveredPreviewId] = useState<string | null>(null);
   const {
     data: order,
     isLoading: isOrderLoading,
@@ -187,27 +188,31 @@ const OrderPage = ({ id }: { id: string }) => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)]">
-        <header className="py-8">
-          <Navbar />
-        </header>
-        <div className="container mx-auto px-4 flex-grow flex items-center justify-center">
+      <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+        <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+        <header className="relative z-10 py-8" />
+        <div className="relative z-10 container mx-auto px-4 flex-grow flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary)]"></div>
         </div>
-        <Footer />
+        <div className="relative z-10">
+          <Footer />
+        </div>
       </div>
     );
   }
 
   if (!order) {
     return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)]">
-        <header className="py-8">
-          <Navbar />
-        </header>
-        <div className="container mx-auto px-4 flex-grow">
+      <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+        <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+        <header className="relative z-10 py-8" />
+        <div className="relative z-10 container mx-auto px-4 flex-grow">
           <div className="max-w-4xl mx-auto py-16">
-            <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-8 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-xl">
+            <div className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-8 shadow-xl">
               <div className="flex flex-col items-center text-center">
                 <div className="mb-6 w-16 h-16 flex items-center justify-center rounded-full bg-red-500/10 text-red-500">
                   <FaExclamationTriangle size={28} />
@@ -215,7 +220,7 @@ const OrderPage = ({ id }: { id: string }) => {
                 <h1 className="text-2xl font-bold mb-4 text-[var(--foreground)]">
                   Order Not Found
                 </h1>
-                <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-8">
+                <p className="text-[var(--color-text-secondary)] mb-8">
                   {"We couldn't find the order you're looking for."}
                 </p>
                 <Link href="/shop">
@@ -231,18 +236,21 @@ const OrderPage = ({ id }: { id: string }) => {
             </div>
           </div>
         </div>
-        <Footer />
+        <div className="relative z-10">
+          <Footer />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)]">
-      <header className="py-8">
-        <Navbar />
-      </header>
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+      <header className="relative z-10 py-8" />
 
-      <div className="container mx-auto px-4 flex-grow">
+      <div className="relative z-10 container mx-auto px-4 flex-grow">
         <div className="max-w-5xl mx-auto py-12">
           <div className="mb-8 text-center">
             <h1 className="text-3xl md:text-4xl font-bold text-[var(--foreground)] mb-4">
@@ -272,7 +280,7 @@ const OrderPage = ({ id }: { id: string }) => {
                   </div>
                   <div className="flex items-center mt-2">
                     <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-green-500 mr-2"></div>
-                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <p className="text-[var(--color-text-secondary)]">
                       Your payment has been confirmed! Your order is being
                       processed and will be delivered shortly.
                     </p>
@@ -284,7 +292,7 @@ const OrderPage = ({ id }: { id: string }) => {
           {showCryptoPaymentDetails && order.status === "PENDING" && (
             <div className="mb-8">
               <div
-                className={`bg-gradient-to-b ${CRYPTO_GRADIENTS[walletDetails.chain]} rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-lg backdrop-blur-sm`}
+                className={`bg-gradient-to-b ${CRYPTO_GRADIENTS[walletDetails.chain]} rounded-xl p-6 border border-[var(--border)] shadow-lg backdrop-blur-sm`}
               >
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center">
@@ -312,7 +320,7 @@ const OrderPage = ({ id }: { id: string }) => {
                     </div>
 
                     <div className="mt-4 text-center">
-                      <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                      <p className="text-sm text-[var(--color-text-secondary)]">
                         Scan this QR code with your wallet app
                       </p>
                     </div>
@@ -406,7 +414,7 @@ const OrderPage = ({ id }: { id: string }) => {
                       </h3>
 
                       <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-4 rounded-lg mb-4">
-                        <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <p className="text-[var(--color-text-secondary)]">
                           {walletDetails.txHash ? (
                             <span className="flex items-center">
                               <FaCheck className="text-green-500 mr-2" />{" "}
@@ -430,7 +438,7 @@ const OrderPage = ({ id }: { id: string }) => {
                         {walletDetails.txHash && (
                           <div className="mt-2 flex items-center">
                             <div className="animate-spin rounded-full h-4 w-4 border-t-2 border-b-2 border-[var(--primary)] mr-2"></div>
-                            <span className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                            <span className="text-sm text-[var(--color-text-secondary)]">
                               Processing payment confirmation...
                             </span>
                           </div>
@@ -451,7 +459,7 @@ const OrderPage = ({ id }: { id: string }) => {
           {order.paymentType === PaymentType.PAYPAL &&
             order.status === "PENDING" && (
               <div className="mb-8">
-                <div className="bg-gradient-to-b from-[#0d9ad129] to-[#0d9ad110] rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-lg backdrop-blur-sm">
+                <div className="bg-gradient-to-b from-[#0d9ad129] to-[#0d9ad110] rounded-xl p-6 border border-[var(--border)] shadow-lg backdrop-blur-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
                       <div className="w-10 h-10 flex items-center justify-center mr-3 text-2xl text-[#0d9ad1]">
@@ -483,7 +491,7 @@ const OrderPage = ({ id }: { id: string }) => {
                       </div>
 
                       <div className="mt-4 text-center">
-                        <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <p className="text-sm text-[var(--color-text-secondary)]">
                           Scan to pay with PayPal
                         </p>
                       </div>
@@ -621,13 +629,13 @@ const OrderPage = ({ id }: { id: string }) => {
                         </h3>
 
                         <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-4 rounded-lg mb-4">
-                          <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] mb-2">
+                          <p className="text-[var(--color-text-secondary)] mb-2">
                             <span className="flex items-center text-red-500">
                               <FaExclamationTriangle className="mr-2" /> Send as
                               &quot;Friends and Family&quot; only!
                             </span>
                           </p>
-                          <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                          <p className="text-[var(--color-text-secondary)]">
                             Your order will{" "}
                             <span className="font-bold">NOT</span> be processed
                             if payment is not sent using the &quot;Friends and
@@ -645,14 +653,14 @@ const OrderPage = ({ id }: { id: string }) => {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="md:col-span-2 space-y-6">
               {/* Order Status Card */}
-              <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-md backdrop-blur-sm">
+              <div className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-md backdrop-blur-sm">
                 {" "}
                 <div className="flex justify-between items-center flex-wrap gap-4">
                   <div>
                     <h2 className="text-xl font-bold text-[var(--foreground)]">
                       Order #{(order.orderId || "").substring(0, 8)}
                     </h2>
-                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm">
+                    <p className="text-[var(--color-text-secondary)] text-sm">
                       {order.createdAt &&
                         `Placed on ${new Date(order.createdAt).toLocaleDateString()}`}
                     </p>
@@ -661,7 +669,7 @@ const OrderPage = ({ id }: { id: string }) => {
                 </div>
               </div>{" "}
               {/* Order Items */}
-              <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-md backdrop-blur-sm">
+              <div className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-md backdrop-blur-sm">
                 <h2 className="text-xl font-bold mb-4 text-[var(--foreground)]">
                   Items
                 </h2>
@@ -670,22 +678,33 @@ const OrderPage = ({ id }: { id: string }) => {
                   {order.OrderItem?.map((item) => (
                     <div
                       key={item.product.id}
-                      className="flex flex-col py-3 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] last:border-0"
+                      className="flex flex-col py-3 border-b border-[var(--border)] last:border-0"
                     >
-                      <div className="flex items-center space-x-4">
-                        <div className="w-16 h-16 relative bg-gradient-to-br from-[color-mix(in_srgb,var(--primary),#fff_95%)] to-[color-mix(in_srgb,var(--secondary),#fff_95%)] rounded-lg overflow-hidden flex-shrink-0">
-                          <Image
-                            src={item.product.image}
-                            alt={item.product.name}
-                            fill
-                            className="object-contain p-2"
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+                        <div
+                          className="relative w-full sm:w-44 aspect-video rounded-lg overflow-hidden flex-shrink-0 border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
+                          onMouseEnter={() => setHoveredPreviewId(item.product.id)}
+                          onMouseLeave={() => setHoveredPreviewId((prev) => (prev === item.product.id ? null : prev))}
+                        >
+                          <div
+                            className="pointer-events-none absolute inset-0 object-cover scale-140 saturate-120 blur-sm bg-cover bg-center"
+                            style={{ backgroundImage: "url('/mc_bg.webp')" }}
                           />
+                          <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
+                          <div className="absolute inset-0">
+                            <ProductCapeViewer
+                              texturePath={`/cape renders/${item.product.slug || "experience"}.png`}
+                              compact
+                              variant="shop-card"
+                              isHovered={hoveredPreviewId === item.product.id}
+                            />
+                          </div>
                         </div>
                         <div className="flex-grow">
                           <h3 className="font-medium text-[var(--foreground)]">
                             {item.product.name}
                           </h3>
-                          <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                          <p className="text-sm text-[var(--color-text-secondary)]">
                             Quantity: {item.quantity}
                           </p>
                         </div>
@@ -763,7 +782,7 @@ const OrderPage = ({ id }: { id: string }) => {
                           <div className="bg-yellow-500/10 border border-yellow-500/20 rounded-md p-3">
                             <div className="flex items-center">
                               <FaClock className="text-yellow-500 mr-2" />
-                              <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                              <p className="text-sm text-[var(--color-text-secondary)]">
                                 {order.status === "PENDING"
                                   ? "Your code will be available once payment is confirmed."
                                   : "This order has been cancelled. Codes are not available."}
@@ -780,13 +799,13 @@ const OrderPage = ({ id }: { id: string }) => {
 
             <div className="md:col-span-1">
               {/* Order Summary */}
-              <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-md backdrop-blur-sm sticky top-6">
-                <h2 className="text-xl font-bold mb-4 text-[var(--foreground)] pb-2 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+              <div className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-md backdrop-blur-sm sticky top-6">
+                <h2 className="text-xl font-bold mb-4 text-[var(--foreground)] pb-2 border-b border-[var(--border)]">
                   Order Summary
                 </h2>{" "}
                 <div className="space-y-4 mb-6">
                   <div className="flex justify-between">
-                    <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-[var(--color-text-secondary)]">
                       Subtotal
                     </span>
                     <span className="text-[var(--foreground)]">
@@ -807,7 +826,7 @@ const OrderPage = ({ id }: { id: string }) => {
                   )}
 
                   <div className="flex justify-between">
-                    <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <span className="text-[var(--color-text-secondary)]">
                       Payment Fee{" "}
                       {order.paymentType
                         ? `(${formatFeePercentage(order.paymentType)})`
@@ -818,7 +837,7 @@ const OrderPage = ({ id }: { id: string }) => {
                     </span>
                   </div>
 
-                  <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <div className="pt-3 mt-3 border-t border-[var(--border)]">
                     <div className="flex justify-between">
                       <span className="font-bold text-[var(--foreground)]">
                         Total
@@ -830,11 +849,11 @@ const OrderPage = ({ id }: { id: string }) => {
                   </div>
                 </div>{" "}
                 {/* Payment Method */}
-                <div className="pt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                <div className="pt-3 border-t border-[var(--border)]">
                   <p className="text-sm font-medium text-[var(--foreground)] mb-2">
                     Payment Method
                   </p>
-                  <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                  <p className="text-[var(--color-text-secondary)]">
                     {order.paymentType
                       ? order.paymentType.replace("_", " ")
                       : "N/A"}
@@ -845,14 +864,14 @@ const OrderPage = ({ id }: { id: string }) => {
                 </div>
                 {/* Customer Info */}
                 {order.customer && (
-                  <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                  <div className="pt-3 mt-3 border-t border-[var(--border)]">
                     <p className="text-sm font-medium text-[var(--foreground)] mb-2">
                       Customer
                     </p>
-                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <p className="text-[var(--color-text-secondary)]">
                       {order.customer.name}
                     </p>
-                    <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                    <p className="text-[var(--color-text-secondary)]">
                       {order.customer.email}
                     </p>
                   </div>
@@ -878,7 +897,7 @@ const OrderPage = ({ id }: { id: string }) => {
                   Frequently Asked Questions
                 </span>
               </h2>
-              <p className="text-gray-600">
+              <p className="text-[var(--color-text-secondary)]">
                 Find answers to common questions about our services
               </p>
             </div>
@@ -887,7 +906,9 @@ const OrderPage = ({ id }: { id: string }) => {
         </div>
       </div>
 
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };

@@ -168,7 +168,7 @@ export default function InvoicesTab() {
   };
 
   return (
-    <div className="bg-[color-mix(in_srgb,var(--background),#333_15%)] p-6 rounded-xl border border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+    <div className="rounded-xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6">
       <InvoiceFilterModal
         showFilterModal={showFilterModal}
         tempStatusFilter={tempFilters.statusFilter}
@@ -219,7 +219,7 @@ export default function InvoicesTab() {
 
           <button
             onClick={openFilterModal}
-            className="flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+            className="flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
             title="Filter"
           >
             <FaFilter className="size-4" />
@@ -233,7 +233,7 @@ export default function InvoicesTab() {
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="md:hidden pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full max-w-[150px]"
+              className="md:hidden pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full max-w-[150px]"
             />
             {/* Desktop search input */}
             <input
@@ -241,10 +241,10 @@ export default function InvoicesTab() {
               placeholder="Quick Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="hidden md:block pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-auto min-w-[200px]"
+              className="hidden md:block pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-auto min-w-[200px]"
             />
             <FaSearch
-              className="absolute left-3 top-1/2 -translate-y-1/2 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-[var(--color-text-secondary)]"
               size={14}
             />
           </div>
@@ -253,32 +253,32 @@ export default function InvoicesTab() {
       {userRole === "admin" && (
         <div className="mb-6">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+            <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+              <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                 Total Sales
               </h3>
               <p className="text-2xl font-bold text-[var(--foreground)]">
                 {formatPrice(stats?.totalSales || 0)}
               </p>
             </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+            <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+              <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                 Invoices
               </h3>
               <p className="text-2xl font-bold text-[var(--foreground)]">
                 {stats?.totalCount || 0}
               </p>
             </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+            <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+              <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                 Pending
               </h3>
               <p className="text-2xl font-bold text-[var(--foreground)]">
                 {stats?.pendingCount || 0}
               </p>
             </div>
-            <div className="bg-[color-mix(in_srgb,var(--background),#333_5%)] p-4 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
-              <h3 className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mb-1">
+            <div className="bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-4 rounded-lg border border-[var(--border)]">
+              <h3 className="text-[var(--color-text-secondary)] text-sm mb-1">
                 Completed
               </h3>
               <p className="text-2xl font-bold text-[var(--foreground)]">
@@ -291,7 +291,7 @@ export default function InvoicesTab() {
       <div className="overflow-x-auto">
         <table className="w-full">
           <thead>
-            <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)]">
+            <tr className="border-b border-[var(--border)]">
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Status
               </th>
@@ -320,7 +320,7 @@ export default function InvoicesTab() {
               Array.from({ length: itemsPerPage }).map((_, i) => (
                 <tr
                   key={i}
-                  className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] animate-pulse"
+                  className="border-b border-[var(--border)] animate-pulse"
                 >
                   <td className="py-4 px-2">
                     <div className="h-6 w-20 bg-surface-muted rounded"></div>
@@ -346,10 +346,10 @@ export default function InvoicesTab() {
                 </tr>
               ))
             ) : currentInvoices.length === 0 ? (
-              <tr className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] text-center">
+              <tr className="border-b border-[var(--border)] text-center">
                 <td
                   colSpan={7}
-                  className="py-12 text-[color-mix(in_srgb,var(--foreground),#888_40%)]"
+                  className="py-12 text-[var(--color-text-secondary)]"
                 >
                   No invoices found
                 </td>
@@ -358,7 +358,7 @@ export default function InvoicesTab() {
               currentInvoices.map((invoice) => (
                 <tr
                   key={invoice.id}
-                  className="border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] hover:bg-[color-mix(in_srgb,var(--background),#333_5%)] cursor-pointer"
+                  className="border-b border-[var(--border)] hover:bg-[color-mix(in_srgb,var(--surface),#000_6%)] cursor-pointer"
                   onClick={() => navigateToInvoice(invoice.id)}
                 >
                   {/* Status */}
@@ -436,7 +436,7 @@ export default function InvoicesTab() {
             </span>
             {/* Per page selector - only shown on desktop */}
             <select
-              className="hidden md:block w-fit p-1 rounded-md bg-[color-mix(in_srgb,var(--background),#333_5%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] text-[var(--foreground)] text-sm"
+              className="hidden md:block w-fit p-1 rounded-md bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] text-sm"
               value={itemsPerPage}
               onChange={(e) => {
                 const newPageSize = Number(e.target.value);
@@ -459,10 +459,10 @@ export default function InvoicesTab() {
             <button
               onClick={goToPreviousPage}
               disabled={currentPage <= 1}
-              className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
+              className={`p-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] ${
                 currentPage <= 1
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                  : "hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
               }`}
             >
               <FaChevronLeft size={14} />
@@ -477,10 +477,10 @@ export default function InvoicesTab() {
             <button
               onClick={goToNextPage}
               disabled={currentPage >= totalPages}
-              className={`p-2 rounded-lg border border-[color-mix(in_srgb,var(--foreground),var(--background_90%)] text-[var(--foreground)] ${
+              className={`p-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] ${
                 currentPage >= totalPages
                   ? "opacity-50 cursor-not-allowed"
-                  : "hover:bg-[color-mix(in_srgb,var(--background),#333_10%)] transition-colors"
+                  : "hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
               }`}
             >
               <FaChevronRight size={14} />

@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Image from "next/image";
 import { FaShoppingCart, FaStar } from "react-icons/fa";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { ProductGetAllOutput } from "@/server/routes/_app";
 import { useMemo, useState, type MouseEvent } from "react";
@@ -46,7 +46,7 @@ const CapeImage = ({
         alt=""
         fill
         priority={false}
-        className={`object-cover scale-140 saturate-120 ${compact ? "blur-[2px]" : "blur-sm"}`}
+        className={`object-cover scale-140 saturate-120 ${compact ? "blur-[2px]" : "blur-[3px]"}`}
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
 
@@ -76,6 +76,7 @@ const ProductCard = ({
   styles?: CardStyle;
 }) => {
   const router = useRouter();
+  const pathname = usePathname();
   const { addItem } = useCart();
   const [tilt, setTilt] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
@@ -88,7 +89,8 @@ const ProductCard = ({
   if (!product) return null;
 
   const handleNavigateToProduct = () => {
-    router.push(`/shop/${product.slug}`);
+    const fromHome = pathname === "/";
+    router.push(`/shop/${product.slug}${fromHome ? "?from=home" : ""}`);
   };
 
   const handleAddToCart = (e: MouseEvent) => {

@@ -2,7 +2,6 @@
 
 import React, { useState, useMemo } from "react";
 import { useCart } from "@/context/CartContext";
-import Image from "next/image";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   FaTrash,
@@ -18,8 +17,8 @@ import {
 import { SiLitecoin, SiSolana } from "react-icons/si";
 import Link from "next/link";
 import { formatPrice } from "@/utils/formatting";
-import Navbar from "@/components/Navbar/Navbar";
 import Footer from "@/components/Footer";
+import ProductCapeViewer from "@/components/ProductCapeViewer";
 import { toast } from "react-hot-toast";
 import { useTRPC } from "@/server/client";
 import { useMutation } from "@tanstack/react-query";
@@ -65,6 +64,7 @@ const CartPage = () => {
   const [cryptoType, setCryptoType] = useState<CryptoType>(CryptoType.BITCOIN);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [couponInput, setCouponInput] = useState("");
+  const [hoveredPreviewId, setHoveredPreviewId] = useState<string | null>(null);
 
   const paymentFee = useMemo(
     () => calculatePaymentFee(paymentType, discountedTotal),
@@ -153,25 +153,29 @@ const CartPage = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)]">
-        <header className="py-8">
-          <Navbar />
-        </header>
-        <div className="container mx-auto px-4 flex-grow flex items-center justify-center">
+      <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+        <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+        <header className="relative z-10 py-8" />
+        <div className="relative z-10 container mx-auto px-4 flex-grow flex items-center justify-center">
           <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-[var(--primary)]"></div>
         </div>
-        <Footer />
+        <div className="relative z-10">
+          <Footer />
+        </div>
       </div>
     );
   }
 
   if (items.length === 0) {
     return (
-      <div className="min-h-screen flex flex-col bg-[var(--background)]">
-        <header className="py-8">
-          <Navbar />
-        </header>
-        <div className="container mx-auto px-4 flex-grow">
+      <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+        <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+        <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+        <header className="relative z-10 py-8" />
+        <div className="relative z-10 container mx-auto px-4 flex-grow">
           <div className="max-w-4xl mx-auto py-16">
             <div className="text-center mb-8">
               <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
@@ -180,8 +184,8 @@ const CartPage = () => {
               <div className="h-1 w-20 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] mx-auto rounded-full"></div>
             </div>
 
-            <div className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-2xl p-12 text-center border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-xl backdrop-blur-sm">
-              <div className="mb-6 mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--background),#333_15%)]">
+            <div className="rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-12 text-center shadow-xl backdrop-blur-sm">
+              <div className="mb-6 mx-auto w-24 h-24 flex items-center justify-center rounded-full bg-[color-mix(in_srgb,var(--surface),#000_8%)]">
                 <svg
                   width="48"
                   height="48"
@@ -224,7 +228,7 @@ const CartPage = () => {
               <h2 className="text-2xl font-bold mb-4 text-[var(--foreground)]">
                 Your cart is empty
               </h2>
-              <p className="mb-8 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+              <p className="mb-8 text-[var(--color-text-secondary)]">
                 Looks like you haven&apos;t added any items to your cart yet.
                 <br />
                 Explore our shop to find amazing products!
@@ -241,25 +245,28 @@ const CartPage = () => {
             </div>
           </div>
         </div>
-        <Footer />
+        <div className="relative z-10">
+          <Footer />
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--background)]">
-      <header className="py-8">
-        <Navbar />
-      </header>
+    <div className="relative min-h-screen overflow-hidden bg-[var(--background)] flex flex-col">
+      <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
+      <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_38%,rgba(57,203,115,0.1))]" />
+      <header className="relative z-10 py-8" />
 
-      <div className="container mx-auto px-4 flex-grow">
+      <div className="relative z-10 container mx-auto px-4 flex-grow">
         <div className="max-w-7xl mx-auto py-12">
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold text-[var(--foreground)] mb-4">
               Your Cart
             </h1>
             <div className="h-1 w-20 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] mx-auto rounded-full"></div>
-            <p className="mt-4 text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+            <p className="mt-4 text-[var(--color-text-secondary)]">
               You have {totalItems} {totalItems === 1 ? "item" : "items"} in
               your cart
             </p>
@@ -273,23 +280,34 @@ const CartPage = () => {
                     key={item.id}
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl overflow-hidden border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-md backdrop-blur-sm"
+                    className="rounded-xl overflow-hidden border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] shadow-md backdrop-blur-sm"
                   >
-                    <div className="p-6 flex flex-col sm:flex-row items-center">
-                      <div className="flex-shrink-0 w-40 h-40 mb-4 sm:mb-0 relative rounded-xl overflow-hidden">
-                        <Image
-                          src={item.product.image}
-                          alt={item.product.name}
-                          fill
-                          className="object-cover"
+                    <div className="p-6 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+                      <div
+                        className="relative w-full sm:w-[34rem] lg:w-[40rem] aspect-video rounded-xl overflow-hidden border border-[var(--border)]"
+                        onMouseEnter={() => setHoveredPreviewId(item.product.id)}
+                        onMouseLeave={() => setHoveredPreviewId((prev) => (prev === item.product.id ? null : prev))}
+                      >
+                        <div
+                          className="pointer-events-none absolute inset-0 scale-140 saturate-120 blur-[3px] bg-cover bg-center"
+                          style={{ backgroundImage: "url('/mc_bg.webp')" }}
                         />
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
+                        <div className="absolute inset-0">
+                          <ProductCapeViewer
+                            texturePath={`/cape renders/${item.product.slug || "experience"}.png`}
+                            compact
+                            variant="shop-card"
+                            isHovered={hoveredPreviewId === item.product.id}
+                          />
+                        </div>
                       </div>
 
-                      <div className="flex-grow sm:ml-6">
+                      <div className="flex-grow sm:ml-2 w-full">
                         <h3 className="text-xl font-bold text-[var(--foreground)]">
                           {item.product.name}
                         </h3>
-                        <p className="text-[color-mix(in_srgb,var(--foreground),#888_40%)] text-sm mt-1">
+                        <p className="text-[var(--color-text-secondary)] text-sm mt-1">
                           {item.product.category}
                         </p>
                         <div className="mt-3 flex items-center">
@@ -309,11 +327,11 @@ const CartPage = () => {
                       </div>
 
                       <div className="flex flex-col items-center mt-4 sm:mt-0 sm:ml-4">
-                        <div className="flex items-center mb-4 bg-[color-mix(in_srgb,var(--background),#333_15%)] rounded-full p-1">
+                        <div className="flex items-center mb-4 bg-[color-mix(in_srgb,var(--surface),#000_8%)] rounded-full p-1">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="w-8 h-8 flex items-center justify-center text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--primary)] rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-8 h-8 flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--primary)] rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={() =>
                               updateQuantity(
                                 item.product.id,
@@ -332,7 +350,7 @@ const CartPage = () => {
                           <motion.button
                             whileHover={{ scale: 1.1 }}
                             whileTap={{ scale: 0.9 }}
-                            className="w-8 h-8 flex items-center justify-center text-[color-mix(in_srgb,var(--foreground),#888_40%)] hover:text-[var(--primary)] rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="w-8 h-8 flex items-center justify-center text-[var(--color-text-secondary)] hover:text-[var(--primary)] rounded-full disabled:opacity-50 disabled:cursor-not-allowed"
                             onClick={() =>
                               updateQuantity(item.product.id, item.quantity + 1)
                             }
@@ -345,7 +363,7 @@ const CartPage = () => {
                         <motion.button
                           whileHover={{ scale: 1.1 }}
                           whileTap={{ scale: 0.9 }}
-                          className="text-red-500 hover:text-red-600 bg-[color-mix(in_srgb,var(--background),#333_15%)] p-2 rounded-full"
+                          className="text-red-500 hover:text-red-600 bg-[color-mix(in_srgb,var(--surface),#000_8%)] p-2 rounded-full"
                           onClick={() => removeItem(item.product.id)}
                         >
                           <FaTrash size={14} />
@@ -387,7 +405,7 @@ const CartPage = () => {
 
             <div className="lg:col-span-1">
               <div
-                className="bg-gradient-to-b from-[color-mix(in_srgb,var(--background),#333_10%)] to-[var(--background)] rounded-xl p-6 sticky top-6 border border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)] shadow-xl backdrop-blur-sm overflow-hidden"
+                className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-xl backdrop-blur-sm sticky top-6 overflow-hidden"
                 style={{
                   minHeight:
                     showPaymentOptions || showCryptoOptions ? "480px" : "auto",
@@ -420,13 +438,13 @@ const CartPage = () => {
                           ease: [0.19, 1.0, 0.22, 1.0],
                         }}
                       >
-                        <h2 className="text-2xl font-bold mb-6 text-[var(--foreground)] pb-2 border-b border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                        <h2 className="text-2xl font-bold mb-6 text-[var(--foreground)] pb-2 border-b border-[var(--border)]">
                           Order Summary
                         </h2>
 
                         <div className="space-y-4 mb-6">
                           <div className="flex justify-between">
-                            <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                            <span className="text-[var(--color-text-secondary)]">
                               Subtotal
                             </span>
                             <span className="text-[var(--foreground)]">
@@ -450,14 +468,14 @@ const CartPage = () => {
                           )}
 
                           <div className="flex justify-between">
-                            <span className="text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                            <span className="text-[var(--color-text-secondary)]">
                               Payment Fee ({formatFeePercentage(paymentType)})
                             </span>
                             <span className="text-[var(--foreground)]">
                               {formatPrice(paymentFee)}
                             </span>
                           </div>
-                          <div className="pt-3 mt-3 border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_90%)]">
+                          <div className="pt-3 mt-3 border-t border-[var(--border)]">
                             <div className="flex justify-between">
                               <span className="font-bold text-[var(--foreground)]">
                                 Total
@@ -477,7 +495,7 @@ const CartPage = () => {
                                 value={couponInput}
                                 onChange={(e) => setCouponInput(e.target.value)}
                                 placeholder="Coupon code"
-                                className="flex-1 p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+                                className="flex-1 p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
                                 disabled={isCouponLoading}
                               />
                               <motion.button
@@ -488,7 +506,7 @@ const CartPage = () => {
                                   scale: !isCouponLoading ? 0.98 : 1,
                                 }}
                                 type="submit"
-                                className="px-4 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--background),#333_25%)]"
+                                className="px-4 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)] rounded-lg hover:bg-[color-mix(in_srgb,var(--surface),#000_14%)]"
                                 disabled={isCouponLoading}
                               >
                                 {isCouponLoading ? (
@@ -498,9 +516,8 @@ const CartPage = () => {
                                 )}
                               </motion.button>
                             </div>
-                            <p className="text-xs text-[color-mix(in_srgb,var(--foreground),#888_40%)] mt-2">
-                              Try coupon codes from our promotions or social
-                              media
+                            <p className="text-xs text-[var(--color-text-secondary)] mt-2">
+                              From our promotions or social media.
                             </p>
                           </form>
                         )}
@@ -514,7 +531,7 @@ const CartPage = () => {
                           Proceed to Checkout
                         </motion.button>
 
-                        <div className="mt-6 text-center text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                        <div className="mt-6 text-center text-sm text-[var(--color-text-secondary)]">
                           <p>We accept multiple payment methods</p>
                           <div className="flex justify-center items-center gap-3 mt-3">
                             <FaCreditCard size={16} />
@@ -563,7 +580,7 @@ const CartPage = () => {
                                   name: e.target.value,
                                 })
                               }
-                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
                               placeholder="John Doe"
                               required
                             />
@@ -586,7 +603,7 @@ const CartPage = () => {
                                   email: e.target.value,
                                 })
                               }
-                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
                               placeholder="john@example.com"
                               required
                             />
@@ -609,7 +626,7 @@ const CartPage = () => {
                                   discord: e.target.value,
                                 })
                               }
-                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--foreground)]"
+                              className="w-full p-3 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--foreground)]"
                               placeholder="@JohnDoe"
                               required
                             />
@@ -619,14 +636,14 @@ const CartPage = () => {
                             <input
                               type="checkbox"
                               id="terms"
-                              className="mt-1 w-4 h-4 rounded-md bg-[color-mix(in_srgb,var(--background),#333_15%)] border border-[color-mix(in_srgb,var(--foreground),var(--background)_80%)] text-[var(--primary)]"
+                              className="mt-1 w-4 h-4 rounded-md bg-[color-mix(in_srgb,var(--surface),#000_8%)] border border-[var(--border)] text-[var(--primary)]"
                               required
                               onChange={(e) =>
                                 setTermsAccepted(e.target.checked)
                               }
                               checked={termsAccepted}
                             />
-                            <p className="text-sm text-[color-mix(in_srgb,var(--foreground),#888_40%)]">
+                            <p className="text-sm text-[var(--color-text-secondary)]">
                               By continuing, you agree to our{" "}
                               <Link
                                 href="/terms"
@@ -667,7 +684,7 @@ const CartPage = () => {
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             type="button"
-                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_14%)] transition-colors"
                           >
                             <FaArrowLeft />
                             Back to{" "}
@@ -794,7 +811,7 @@ const CartPage = () => {
                             }}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_14%)] transition-colors"
                           >
                             <FaArrowLeft />
                             Back to Payment Methods
@@ -898,7 +915,7 @@ const CartPage = () => {
                             onClick={() => setShowPaymentOptions(false)}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
-                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--background),#333_15%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--background),#333_25%)] transition-colors"
+                            className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_14%)] transition-colors"
                           >
                             <FaArrowLeft />
                             Back to Order Summary
@@ -914,7 +931,9 @@ const CartPage = () => {
         </div>
       </div>
 
-      <Footer />
+      <div className="relative z-10">
+        <Footer />
+      </div>
     </div>
   );
 };
