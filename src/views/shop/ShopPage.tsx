@@ -136,7 +136,7 @@ const ShopPage = () => {
                 whileHover={{ scale: 1.02 }}
                 transition={{ type: "spring", stiffness: 300, damping: 15 }}
               >
-                <div className="relative inline-block h-60 aspect-[5/3] overflow-hidden rounded-2xl border border-[var(--border)]">
+                <div className="relative inline-block h-72 aspect-[16/9] overflow-hidden rounded-2xl border border-[var(--border)]">
                   <Image
                     src="/mc_bg.webp"
                     alt=""
@@ -157,7 +157,7 @@ const ShopPage = () => {
                   </div>
                 </div>
               </motion.div>
-              <div className="w-full md:flex-1 space-y-6">
+              <div className="w-full space-y-6 md:flex-1 md:pl-8">
                 <h3 className="text-3xl font-bold">{topProduct.name}</h3>
                 <div className="flex items-center">
                   <div className="flex text-warning mr-2">
