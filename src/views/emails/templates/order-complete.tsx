@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Link, Section, Text } from "@react-email/components";
 import { PaymentType } from "@generated/client";
 import {

@@ -42,7 +42,7 @@ const BIP44_COIN = {
 
 const CHAIN_DECIMALS: Record<CryptoType, number> = {
   [CryptoType.BITCOIN]: 8,
-  [CryptoType.ETHEREUM]: 18,
+  [CryptoType.ETHEREUM]: 8,
   [CryptoType.LITECOIN]: 8,
   [CryptoType.SOLANA]: 9,
 };

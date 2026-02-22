@@ -1,3 +1,4 @@
+import * as React from "react";
 import { Column, Img, Row, Section, Text } from "@react-email/components";
 import { tokens } from "@/views/emails/components/tokens";
 

@@ -68,54 +68,6 @@ const formatCountdown = (ms: number) => {
   return `${minutes}:${seconds}`;
 };
 
-const DISPLAY_DECIMALS: Record<CryptoType, number> = {
-  [CryptoType.BITCOIN]: 8,
-  [CryptoType.LITECOIN]: 8,
-  [CryptoType.SOLANA]: 9,
-  [CryptoType.ETHEREUM]: 8,
-};
-
-const formatDisplayAmount = (amount: string, chain: CryptoType) => {
-  const [wholeRaw, fractionRaw = ""] = amount.split(".");
-  const precision = DISPLAY_DECIMALS[chain];
-
-  if (precision <= 0 || !fractionRaw) {
-    return wholeRaw;
-  }
-
-  let whole = wholeRaw;
-  let fraction = fractionRaw.replace(/[^0-9]/g, "");
-  const head = fraction.slice(0, precision).padEnd(precision, "0");
-  const rest = fraction.slice(precision);
-
-  let rounded = head;
-  const needsRoundUp = /[1-9]/.test(rest);
-
-  if (needsRoundUp) {
-    let carry = 1;
-    const digits = rounded.split("");
-    for (let i = digits.length - 1; i >= 0; i--) {
-      const next = Number(digits[i]) + carry;
-      if (next >= 10) {
-        digits[i] = "0";
-        carry = 1;
-      } else {
-        digits[i] = String(next);
-        carry = 0;
-        break;
-      }
-    }
-
-    rounded = digits.join("");
-    if (carry === 1) {
-      whole = (BigInt(whole || "0") + BigInt(1)).toString();
-    }
-  }
-
-  const trimmed = rounded.replace(/0+$/, "");
-  return trimmed.length > 0 ? `${whole}.${trimmed}` : whole;
-};
-
 const StatusBadge = ({ status }: { status: OrderStatus }) => {
   let color = "";
   let Icon = FaClock;
@@ -277,10 +229,6 @@ const OrderPage = ({ id }: { id: string }) => {
     walletDetails &&
     !isConfirmationComplete;
   const rawExpectedAmount = walletDetails?.expectedAmount?.toString() ?? "";
-  const displayExpectedAmount =
-    walletDetails && rawExpectedAmount
-      ? formatDisplayAmount(rawExpectedAmount, walletDetails.chain)
-      : "";
 
   if (isLoading) {
     return (
@@ -443,7 +391,7 @@ const OrderPage = ({ id }: { id: string }) => {
                               title="Click to copy amount"
                             >
                               <span className="font-bold">
-                                {displayExpectedAmount}
+                                {rawExpectedAmount}
                               </span>
                             </div>
                             <motion.button
