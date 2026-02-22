@@ -253,12 +253,19 @@ export default function ProductSkinviewViewer({
       canvas.style.cursor = "grab";
     };
 
+    const onWheelCapture = (event: WheelEvent) => {
+      // Block skinview3d/control wheel zoom while still allowing page scroll.
+      event.stopImmediatePropagation();
+      event.stopPropagation();
+    };
+
     canvas.style.cursor = "grab";
     canvas.addEventListener("pointerdown", onPointerDown);
     canvas.addEventListener("pointermove", onPointerMove);
     canvas.addEventListener("pointerup", onPointerUp);
     canvas.addEventListener("pointercancel", onPointerUp);
     canvas.addEventListener("pointerleave", onPointerUp);
+    canvas.addEventListener("wheel", onWheelCapture, { capture: true });
 
     const onResize = () => {
       if (!viewer) return;
@@ -279,6 +286,7 @@ export default function ProductSkinviewViewer({
       canvas.removeEventListener("pointerup", onPointerUp);
       canvas.removeEventListener("pointercancel", onPointerUp);
       canvas.removeEventListener("pointerleave", onPointerUp);
+      canvas.removeEventListener("wheel", onWheelCapture, true);
       canvas.style.cursor = "";
       controls?.dispose?.();
       viewer?.dispose?.();

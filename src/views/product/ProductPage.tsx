@@ -81,8 +81,8 @@ const ProductPage = ({
     ? `https://mc-heads.net/skin/${encodeURIComponent(activeSkinUsername)}`
     : "/skin.png";
   const avatarTextureUrl = activeSkinUsername
-    ? `https://mc-heads.net/avatar/${encodeURIComponent(activeSkinUsername)}/32`
-    : "https://mc-heads.net/avatar/Steve/32";
+    ? `https://minotar.net/avatar/${encodeURIComponent(activeSkinUsername)}/32`
+    : "https://minotar.net/avatar/Steve/32";
   const pendingSkinUsername = sanitizeMinecraftUsername(skinUsernameInput.trim());
   const hasPendingSkinChange = pendingSkinUsername !== activeSkinUsername;
   const capeProduct = isCapeProduct(product ?? {});
@@ -241,12 +241,23 @@ const ProductPage = ({
                     setIsTryOnMenuOpen((prev) => !prev);
                     markTryOnHintSeen();
                   }}
-                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border border-white/40 bg-black/35 p-1.5 backdrop-blur-md transition-colors hover:bg-black/50"
+                  className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-transparent p-0 transition-transform hover:scale-[1.03]"
                   aria-label="Try on with your skin"
                 >
-                  <span
-                    className="h-full w-full rounded-lg border border-black/35 bg-cover bg-center bg-no-repeat"
-                    style={{ backgroundImage: `url(${avatarTextureUrl})` }}
+                  <img
+                    src={avatarTextureUrl}
+                    alt={
+                      activeSkinUsername
+                        ? `${activeSkinUsername} avatar`
+                        : "Default avatar"
+                    }
+                    onError={(event) => {
+                      const target = event.currentTarget;
+                      if (!target.src.includes("/Steve/32")) {
+                        target.src = "https://minotar.net/avatar/Steve/32";
+                      }
+                    }}
+                    className="h-12 w-12 shrink-0 rounded-lg object-cover shadow-[0_2px_8px_rgba(0,0,0,0.45)]"
                   />
                 </button>
 
