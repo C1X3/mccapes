@@ -77,7 +77,7 @@ export default function InvoiceFilterModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-admin-card)] rounded-xl shadow-2xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto"
       >
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold text-[var(--foreground)]">

@@ -72,7 +72,7 @@ export default function StockEditModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl border border-[var(--border)]"
+        className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl border border-[var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center mb-6">

@@ -53,11 +53,11 @@ const toAccentColorFromImageData = (data: Uint8ClampedArray): string => {
   return `hsl(${Math.round(h)} ${Math.round(s)}% ${Math.round(v * 0.55)}%)`;
 };
 
-const loadCapeAccentColor = (slug: string): Promise<string> =>
+const loadCapeAccentColorFromSrc = (src: string): Promise<string> =>
   new Promise<string>((resolve) => {
     const img = new Image();
     img.decoding = "async";
-    img.src = `/cape renders/${slug}.png`;
+    img.src = src;
 
     img.onload = () => {
       try {
@@ -82,19 +82,40 @@ const loadCapeAccentColor = (slug: string): Promise<string> =>
   });
 
 export const getCapeAccentColor = async (slug: string): Promise<string> => {
-  const cached = resolvedColorCache.get(slug);
+  const cacheKey = slug;
+  const cached = resolvedColorCache.get(cacheKey);
   if (cached) return cached;
 
-  const pending = pendingColorLoads.get(slug);
+  const pending = pendingColorLoads.get(cacheKey);
   if (pending) return pending;
 
-  const request = loadCapeAccentColor(slug).then((color) => {
-    resolvedColorCache.set(slug, color);
-    pendingColorLoads.delete(slug);
+  const request = loadCapeAccentColorFromSrc(`/cape renders/${slug}.png`).then((color) => {
+    resolvedColorCache.set(cacheKey, color);
+    pendingColorLoads.delete(cacheKey);
     return color;
   });
 
-  pendingColorLoads.set(slug, request);
+  pendingColorLoads.set(cacheKey, request);
+  return request;
+};
+
+export const getCapeAccentColorFromSource = async (
+  cacheKey: string,
+  src: string,
+): Promise<string> => {
+  const cached = resolvedColorCache.get(cacheKey);
+  if (cached) return cached;
+
+  const pending = pendingColorLoads.get(cacheKey);
+  if (pending) return pending;
+
+  const request = loadCapeAccentColorFromSrc(src).then((color) => {
+    resolvedColorCache.set(cacheKey, color);
+    pendingColorLoads.delete(cacheKey);
+    return color;
+  });
+
+  pendingColorLoads.set(cacheKey, request);
   return request;
 };
 

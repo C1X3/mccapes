@@ -6,6 +6,12 @@ import { useCart } from "@/context/CartContext";
 import { ProductGetAllOutput } from "@/server/routes/_app";
 import { useMemo, useState, type MouseEvent } from "react";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
+import {
+  getProductBackgroundBlurClasses,
+  isCapeProduct,
+  resolveCapeTexturePath,
+  resolveProductBackgroundImage,
+} from "@/utils/productMedia";
 
 type CardStyle = "normal" | "article";
 
@@ -28,22 +34,25 @@ const renderRating = (rating: number) => (
 );
 
 const CapeImage = ({
-  slug,
+  product,
   compact,
   isHovered = false,
 }: {
-  slug: string;
+  product: ProductGetAllOutput[number];
   compact?: boolean;
   isHovered?: boolean;
 }) => {
+  const texturePath = resolveCapeTexturePath(product);
+  const backgroundImage = resolveProductBackgroundImage(product);
+
   return (
     <div className="absolute inset-0">
       <Image
-        src="/mc_bg.webp"
+        src={backgroundImage}
         alt=""
         fill
         priority={false}
-        className={`object-cover scale-140 saturate-120 ${compact ? "blur-[2px]" : "blur-[3px]"}`}
+        className={`object-cover ${getProductBackgroundBlurClasses(compact ? "compact" : "default")}`}
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
 
@@ -54,7 +63,7 @@ const CapeImage = ({
       >
         <div className="absolute inset-0">
           <ProductCapeViewer
-            texturePath={`/cape renders/${slug}.png`}
+            texturePath={texturePath}
             compact={Boolean(compact)}
             variant="shop-card"
             isHovered={isHovered}
@@ -84,6 +93,7 @@ const ProductCard = ({
   }, []);
 
   if (!product) return null;
+  const capeProduct = isCapeProduct(product);
 
   const handleNavigateToProduct = () => {
     const fromHome = pathname === "/";
@@ -118,7 +128,15 @@ const ProductCard = ({
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="relative h-24 w-1/3 flex-shrink-0 overflow-hidden rounded-xl border border-[var(--border)] bg-[radial-gradient(circle_at_20%_20%,rgba(57,203,115,0.2),transparent_42%),radial-gradient(circle_at_90%_90%,rgba(84,184,255,0.16),transparent_48%)]">
-          <CapeImage slug={product.slug} compact isHovered={isHovered} />
+          {capeProduct ? (
+            <CapeImage
+              product={product}
+              compact
+              isHovered={isHovered}
+            />
+          ) : (
+            <Image src={product.image} alt={product.name} fill className="object-cover" />
+          )}
         </div>
 
         <div className="flex h-full flex-1 flex-col justify-between">
@@ -177,7 +195,14 @@ const ProductCard = ({
       }}
     >
       <div className="relative h-60 overflow-hidden border-b border-[var(--border)] bg-[radial-gradient(circle_at_20%_20%,rgba(57,203,115,0.2),transparent_42%),radial-gradient(circle_at_90%_90%,rgba(84,184,255,0.16),transparent_48%)]">
-        <CapeImage slug={product.slug} isHovered={isHovered} />
+        {capeProduct ? (
+          <CapeImage
+            product={product}
+            isHovered={isHovered}
+          />
+        ) : (
+          <Image src={product.image} alt={product.name} fill className="object-cover" />
+        )}
 
         {product.badge && (
           <div className="absolute left-3 top-3 z-10 rounded-full border border-[color-mix(in_srgb,var(--primary),#fff_20%)] bg-[var(--primary)] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-white">

@@ -2,6 +2,15 @@ import { z } from "zod";
 import { prisma } from "@/utils/prisma";
 import { adminProcedure, baseProcedure, createTRPCRouter } from "../init";
 import { TRPCError } from "@trpc/server";
+import { Prisma } from "@generated/client";
+
+const PRODUCT_TYPE_VALUES = ["CAPE", "STANDARD"] as const;
+
+const serializeCapeTexture = (bytes: Uint8Array | null) => {
+  if (!bytes || bytes.length === 0) return null;
+  const base64 = Buffer.from(bytes).toString("base64");
+  return `data:image/png;base64,${base64}`;
+};
 
 export const productRouter = createTRPCRouter({
   getAll: baseProcedure
@@ -26,6 +35,9 @@ export const productRouter = createTRPCRouter({
           price: true,
           image: true,
           additionalImages: true,
+          productType: true,
+          backgroundImageUrl: true,
+          capeTexturePng: true,
           category: true,
           rating: true,
           badge: true,
@@ -41,10 +53,17 @@ export const productRouter = createTRPCRouter({
         },
       });
 
-      return raw.map(({ stock: stockArr, ...rest }) => ({
-        ...rest,
-        stock: stockArr.length,
-      }));
+      return raw.map(({ stock: stockArr, capeTexturePng, ...rest }) => {
+        const capeTextureDataUrl =
+          rest.productType === "CAPE"
+            ? serializeCapeTexture(capeTexturePng)
+            : null;
+        return {
+          ...rest,
+          capeTextureDataUrl,
+          stock: stockArr.length,
+        };
+      });
     }),
   getBySlugForArticle: baseProcedure
     .input(z.object({ slug: z.string() }))
@@ -59,6 +78,9 @@ export const productRouter = createTRPCRouter({
           price: true,
           image: true,
           additionalImages: true,
+          productType: true,
+          backgroundImageUrl: true,
+          capeTexturePng: true,
           category: true,
           rating: true,
           badge: true,
@@ -76,9 +98,13 @@ export const productRouter = createTRPCRouter({
 
       if (!product) return null;
 
-      const { stock: stockArr, ...rest } = product;
+      const { stock: stockArr, capeTexturePng, ...rest } = product;
       return {
         ...rest,
+        capeTextureDataUrl:
+          rest.productType === "CAPE"
+            ? serializeCapeTexture(capeTexturePng)
+            : null,
         stock: stockArr.length,
       };
     }),
@@ -86,6 +112,32 @@ export const productRouter = createTRPCRouter({
   getAllWithStock: adminProcedure.query(async () => {
     return await prisma.product.findMany({
       orderBy: { order: "asc" },
+      select: {
+        id: true,
+        name: true,
+        slug: true,
+        description: true,
+        price: true,
+        image: true,
+        additionalImages: true,
+        productType: true,
+        backgroundImageUrl: true,
+        capeTexturePng: true,
+        category: true,
+        rating: true,
+        badge: true,
+        features: true,
+        stock: true,
+        slashPrice: true,
+        hideHomePage: true,
+        hideProductPage: true,
+        isFeatured: true,
+        order: true,
+        stripeProductName: true,
+        stripeId: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
   }),
 
@@ -99,6 +151,9 @@ export const productRouter = createTRPCRouter({
         stock: z.array(z.string()),
         image: z.string().min(1),
         additionalImages: z.array(z.string()),
+        productType: z.enum(PRODUCT_TYPE_VALUES),
+        capeTextureBase64: z.string().optional(),
+        backgroundImageUrl: z.string().optional(),
         category: z.string().min(1),
         badge: z.string().optional(),
         rating: z.number().min(0).max(5),
@@ -111,8 +166,27 @@ export const productRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
+      const {
+        productType,
+        capeTextureBase64,
+        additionalImages,
+        backgroundImageUrl,
+        ...rest
+      } = input;
+      const normalizedBackground = backgroundImageUrl?.trim() || null;
+      const capeTexturePng =
+        productType === "CAPE" && capeTextureBase64
+          ? Buffer.from(capeTextureBase64, "base64")
+          : null;
+
       return await prisma.product.create({
-        data: input,
+        data: {
+          ...rest,
+          productType,
+          backgroundImageUrl: normalizedBackground,
+          capeTexturePng,
+          additionalImages: productType === "CAPE" ? [] : additionalImages,
+        },
       });
     }),
 
@@ -126,6 +200,10 @@ export const productRouter = createTRPCRouter({
         stock: z.array(z.string()).optional(),
         image: z.string().min(1).optional(),
         additionalImages: z.array(z.string()).optional(),
+        productType: z.enum(PRODUCT_TYPE_VALUES).optional(),
+        capeTextureBase64: z.string().optional(),
+        clearCapeTexture: z.boolean().optional(),
+        backgroundImageUrl: z.string().optional(),
         category: z.string().min(1).optional(),
         badge: z.string().optional(),
         rating: z.number().min(0).max(5).optional(),
@@ -166,10 +244,33 @@ export const productRouter = createTRPCRouter({
       }
 
       // Admin can update everything
-      const { id, ...data } = input;
+      const { id, capeTextureBase64, clearCapeTexture, ...data } = input;
+      const productType = data.productType;
+
+      const updateData: Prisma.ProductUpdateInput = {
+        ...data,
+        backgroundImageUrl:
+          typeof data.backgroundImageUrl === "string"
+            ? data.backgroundImageUrl.trim() || null
+            : data.backgroundImageUrl,
+      };
+
+      if (productType === "CAPE") {
+        updateData.additionalImages = [];
+      }
+      if (productType === "STANDARD") {
+        updateData.capeTexturePng = null;
+      }
+      if (capeTextureBase64 && productType !== "STANDARD") {
+        updateData.capeTexturePng = Buffer.from(capeTextureBase64, "base64");
+      }
+      if (clearCapeTexture) {
+        updateData.capeTexturePng = null;
+      }
+
       return await prisma.product.update({
         where: { id },
-        data,
+        data: updateData,
       });
     }),
 

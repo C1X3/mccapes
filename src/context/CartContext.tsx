@@ -20,6 +20,7 @@ import toast from "react-hot-toast";
 import { useTRPC } from "@/server/client";
 import { useMutation } from "@tanstack/react-query";
 import { CouponType } from "@generated/browser";
+import AddToCartToast from "@/components/AddToCartToast";
 
 type CartContextType = {
   items: CartItem[];
@@ -139,7 +140,19 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
 
     setItems(newItems);
 
-    toast.success(`Added x${quantity} "${product.name}" to cart`);
+    toast.custom(
+      (t) => (
+        <AddToCartToast
+          product={product}
+          quantity={quantity}
+          onViewCart={() => {
+            toast.dismiss(t.id);
+            window.location.href = "/cart";
+          }}
+        />
+      ),
+      { duration: 4200, position: "top-right" },
+    );
     updateCartExpiration();
   };
 

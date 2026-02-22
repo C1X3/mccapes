@@ -19,6 +19,15 @@ import { useTRPC } from "@/server/client";
 import { useAdminRole } from "@/contexts/AdminContext";
 import StockEditModal from "./StockEditModal";
 
+const capeTextureToDataUrl = (bytes: Uint8Array | null | undefined) => {
+  if (!bytes || bytes.length === 0) return "";
+  let binary = "";
+  for (let i = 0; i < bytes.length; i += 1) {
+    binary += String.fromCharCode(bytes[i]!);
+  }
+  return `data:image/png;base64,${btoa(binary)}`;
+};
+
 export default function ProductsTab() {
   const { userRole } = useAdminRole();
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -94,7 +103,11 @@ export default function ProductsTab() {
       price: product.price,
       stock: product.stock,
       image: product.image,
+      backgroundImageUrl: product.backgroundImageUrl || "",
       additionalImages: product.additionalImages,
+      productType: product.productType || "CAPE",
+      capeTextureBase64: undefined,
+      capeTexturePreviewUrl: capeTextureToDataUrl(product.capeTexturePng),
       category: product.category,
       badge: product.badge || undefined,
       rating: product.rating,

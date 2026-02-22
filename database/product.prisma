@@ -1,3 +1,8 @@
+enum ProductType {
+  CAPE
+  STANDARD
+}
+
 model Product {
   id          String @id @default(cuid())
   name        String
@@ -5,6 +10,9 @@ model Product {
   price       Float
   image       String
   slug        String @unique
+  productType ProductType @default(CAPE)
+  capeTexturePng Bytes?
+  backgroundImageUrl String?
 
   stock            String[]
   additionalImages String[]

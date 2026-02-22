@@ -18,6 +18,11 @@ import { getPaymentFee } from "@/utils/fees";
 
 const AFFILIATE_COOKIE_NAME = "mccapes_affiliate";
 
+const toCapeTextureDataUrl = (bytes: Uint8Array | null | undefined) => {
+  if (!bytes || bytes.length === 0) return null;
+  return `data:image/png;base64,${Buffer.from(bytes).toString("base64")}`;
+};
+
 export const checkoutRouter = createTRPCRouter({
   processPayment: baseProcedure
     .input(
@@ -356,6 +361,10 @@ export const checkoutRouter = createTRPCRouter({
                     id: true,
                     name: true,
                     image: true,
+                    slug: true,
+                    productType: true,
+                    backgroundImageUrl: true,
+                    capeTexturePng: true,
                   },
                 },
                 // Explicitly exclude codes field
@@ -372,6 +381,11 @@ export const checkoutRouter = createTRPCRouter({
           OrderItem:
             orderWithBasicItems?.OrderItem.map((item) => ({
               ...item,
+              product: {
+                ...item.product,
+                capeTextureDataUrl: toCapeTextureDataUrl(item.product.capeTexturePng),
+                capeTexturePng: undefined,
+              },
               codes: [], // Always empty for unpaid orders
             })) || [],
         };
@@ -407,6 +421,9 @@ export const checkoutRouter = createTRPCRouter({
                   price: true,
                   image: true,
                   slug: true,
+                  productType: true,
+                  backgroundImageUrl: true,
+                  capeTexturePng: true,
                   additionalImages: true,
                   category: true,
                   rating: true,
@@ -431,6 +448,15 @@ export const checkoutRouter = createTRPCRouter({
 
       return {
         ...fullOrder,
+        OrderItem:
+          fullOrder?.OrderItem.map((item) => ({
+            ...item,
+            product: {
+              ...item.product,
+              capeTextureDataUrl: toCapeTextureDataUrl(item.product.capeTexturePng),
+              capeTexturePng: undefined,
+            },
+          })) ?? [],
         orderId: fullOrder?.id,
         paymentStatus: fullOrder?.status,
       };

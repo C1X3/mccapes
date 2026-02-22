@@ -17,7 +17,11 @@ export const schema = z.object({
   price: z.number(),
   stock: z.array(z.string()),
   image: z.string(),
+  backgroundImageUrl: z.string().optional(),
   additionalImages: z.array(z.string()),
+  productType: z.enum(["CAPE", "STANDARD"]).default("CAPE"),
+  capeTextureBase64: z.string().optional(),
+  capeTexturePreviewUrl: z.string().optional(),
   category: z.string(),
   badge: z.string().optional(),
   rating: z.number(),
@@ -51,6 +55,7 @@ export default function ProductFormModal({
 
   const [additionalImageUrls, setAdditionalImageUrls] = useState<string[]>([]);
   const [newImageUrl, setNewImageUrl] = useState("");
+  const [capeTexturePreview, setCapeTexturePreview] = useState<string>("");
 
   // Add state for price input display
   const [priceInputValue, setPriceInputValue] = useState("");
@@ -67,7 +72,11 @@ export default function ProductFormModal({
       price: 0,
       stock: [],
       image: "",
+      backgroundImageUrl: "",
       additionalImages: [],
+      productType: "CAPE",
+      capeTextureBase64: undefined,
+      capeTexturePreviewUrl: undefined,
       category: "",
       badge: "",
       rating: 0,
@@ -109,6 +118,7 @@ export default function ProductFormModal({
     if (initialData) {
       reset(initialData);
       setAdditionalImageUrls((initialData.additionalImages as string[]) || []);
+      setCapeTexturePreview(initialData.capeTexturePreviewUrl || "");
       setPriceInputValue(initialData.price.toString());
       setSlashPriceInputValue(
         initialData.slashPrice !== undefined
@@ -123,7 +133,11 @@ export default function ProductFormModal({
         price: 0,
         stock: [],
         image: "",
+        backgroundImageUrl: "",
         additionalImages: [],
+        productType: "CAPE",
+        capeTextureBase64: undefined,
+        capeTexturePreviewUrl: undefined,
         category: "",
         badge: "",
         rating: 0,
@@ -136,6 +150,7 @@ export default function ProductFormModal({
         stripeProductName: "",
       });
       setAdditionalImageUrls([]);
+      setCapeTexturePreview("");
       setPriceInputValue("");
       setSlashPriceInputValue("");
     }
@@ -185,21 +200,25 @@ export default function ProductFormModal({
   };
 
   const onSubmit = (data: z.infer<typeof schema>) => {
-    // Include the additional images
-    data.additionalImages = additionalImageUrls.concat(
-      data.additionalImages as string[],
-    );
+    const { capeTexturePreviewUrl, ...submitData } = data;
+
+    submitData.additionalImages =
+      submitData.productType === "CAPE"
+        ? []
+        : additionalImageUrls.concat(submitData.additionalImages as string[]);
 
     const formattedData = {
-      ...data,
-      additionalImages: additionalImageUrls,
-      features: data.features as string[],
-      stock: data.stock as string[],
-      hideHomePage: data.hideHomePage,
-      hideProductPage: data.hideProductPage,
-      isFeatured: data.isFeatured,
-      slashPrice: data.slashPrice,
-      order: data.order,
+      ...submitData,
+      additionalImages:
+        submitData.productType === "CAPE" ? [] : additionalImageUrls,
+      features: submitData.features as string[],
+      stock: submitData.stock as string[],
+      hideHomePage: submitData.hideHomePage,
+      hideProductPage: submitData.hideProductPage,
+      isFeatured: submitData.isFeatured,
+      slashPrice: submitData.slashPrice,
+      order: submitData.order,
+      backgroundImageUrl: submitData.backgroundImageUrl?.trim() || undefined,
     };
 
     if (isEditing && initialData?.id) {
@@ -214,6 +233,32 @@ export default function ProductFormModal({
 
   if (!isOpen) return null;
 
+  const productType = watch("productType");
+
+  useEffect(() => {
+    if (productType === "CAPE") {
+      setAdditionalImageUrls([]);
+      setValue("additionalImages", []);
+    }
+  }, [productType, setValue]);
+
+  const handleCapeTextureUpload = (file: File) => {
+    if (!file.type.startsWith("image/png")) {
+      toast.error("Cape texture must be a PNG file");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      if (typeof result !== "string") return;
+      setCapeTexturePreview(result);
+      const base64 = result.includes(",") ? result.split(",")[1] : result;
+      setValue("capeTextureBase64", base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0 }}
@@ -225,7 +270,7 @@ export default function ProductFormModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
@@ -472,6 +517,29 @@ export default function ProductFormModal({
                     </p>
                   )}
                 </>
+              )}
+            />
+          </div>
+
+          <div>
+            <label
+              htmlFor="productType"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Product Type *
+            </label>
+            <Controller
+              name="productType"
+              control={control}
+              render={({ field }) => (
+                <select
+                  id="productType"
+                  {...field}
+                  className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
+                >
+                  <option value="CAPE">Cape</option>
+                  <option value="STANDARD">Standard</option>
+                </select>
               )}
             />
           </div>
@@ -751,8 +819,67 @@ export default function ProductFormModal({
             />
           </div>
 
-          {/* Additional Images (unchanged) */}
           <div>
+            <label
+              htmlFor="backgroundImageUrl"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Background Image URL
+            </label>
+            <Controller
+              name="backgroundImageUrl"
+              control={control}
+              render={({ field }) => (
+                <input
+                  id="backgroundImageUrl"
+                  type="text"
+                  {...field}
+                  value={field.value ?? ""}
+                  className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
+                  placeholder="https://... (defaults to /mc_bg.webp if empty)"
+                />
+              )}
+            />
+          </div>
+
+          {productType === "CAPE" && (
+            <div>
+              <label
+                htmlFor="capeTextureUpload"
+                className="block text-[var(--foreground)] mb-2"
+              >
+                Cape Texture PNG
+              </label>
+              <input
+                id="capeTextureUpload"
+                type="file"
+                accept="image/png"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleCapeTextureUpload(file);
+                }}
+                className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] border-[var(--border)]"
+              />
+              <p className="text-sm text-[var(--color-text-secondary)] mt-1">
+                Upload a cape texture image (PNG). Existing textures remain if you do not upload a new file.
+              </p>
+              {capeTexturePreview && (
+                <div className="mt-3">
+                  <p className="mb-1 text-xs text-[var(--color-text-secondary)]">
+                    Currently uploaded texture
+                  </p>
+                  <img
+                    src={capeTexturePreview}
+                    alt="Cape texture preview"
+                    className="h-16 w-32 rounded border border-[var(--border)] bg-white object-contain"
+                  />
+                </div>
+              )}
+            </div>
+          )}
+
+          {productType !== "CAPE" && (
+            <div>
             <label className="block text-[var(--foreground)] mb-2">
               Additional Images
             </label>
@@ -793,7 +920,8 @@ export default function ProductFormModal({
                 ))}
               </div>
             )}
-          </div>
+            </div>
+          )}
 
           {/* Stripe Product Name */}
           <div>

@@ -13,6 +13,12 @@ import Image from "next/image";
 import { useCart } from "@/context/CartContext";
 import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
+import {
+  getProductBackgroundBlurClasses,
+  isCapeProduct,
+  resolveCapeTexturePath,
+  resolveProductBackgroundImage,
+} from "@/utils/productMedia";
 
 const ShopPage = () => {
   const router = useRouter();
@@ -138,20 +144,31 @@ const ShopPage = () => {
               >
                 <div className="relative inline-block h-72 aspect-[16/9] overflow-hidden rounded-2xl border border-[var(--border)]">
                   <Image
-                    src="/mc_bg.webp"
+                    src={resolveProductBackgroundImage(topProduct)}
                     alt=""
                     fill
-                    className="object-cover scale-140 blur-[3px] saturate-125"
+                    className={`object-cover ${getProductBackgroundBlurClasses("default")}`}
                   />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.14),rgba(0,0,0,0.3))]" />
-                  <div className="absolute inset-0">
-                    <ProductCapeViewer
-                      texturePath={`/cape renders/${topProduct.slug}.png`}
-                      compact
-                      variant="shop-card"
-                      isHovered={isFeaturedHovered}
-                    />
-                  </div>
+                  {isCapeProduct(topProduct) ? (
+                    <div className="absolute inset-0">
+                      <ProductCapeViewer
+                        texturePath={resolveCapeTexturePath(topProduct)}
+                        compact
+                        variant="shop-card"
+                        isHovered={isFeaturedHovered}
+                      />
+                    </div>
+                  ) : (
+                    <div className="absolute inset-0">
+                      <Image
+                        src={topProduct.image}
+                        alt={topProduct.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
                   <div className="absolute top-4 right-4 bg-success text-white px-3 py-1 rounded-full text-sm font-semibold">
                     FEATURED
                   </div>

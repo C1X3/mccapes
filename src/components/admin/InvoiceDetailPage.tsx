@@ -667,7 +667,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[var(--background)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -744,7 +744,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[var(--background)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-4">
@@ -822,7 +822,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
-            className="bg-[var(--background)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[80vh] flex flex-col"
+            className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-2xl w-full shadow-2xl max-h-[80vh] flex flex-col"
           >
             {/* Header */}
             <div className="flex items-center justify-between mb-6">

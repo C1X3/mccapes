@@ -15,12 +15,14 @@ interface NavbarProps {
   disableScrollState?: boolean;
   staticInContainer?: boolean;
   fullWidth?: boolean;
+  zIndexClass?: string;
 }
 
 const Navbar = ({
   disableScrollState = false,
   staticInContainer = false,
   fullWidth = false,
+  zIndexClass = "z-[9999]",
 }: NavbarProps) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -44,7 +46,7 @@ const Navbar = ({
     <>
       <SaleBanner isVisible={shouldShowBanner} onClose={() => undefined} />
       <div
-        className={`w-full ${staticInContainer ? "relative" : "fixed"} ${staticInContainer ? "top-auto" : shouldShowBanner ? "top-[40px]" : "top-0"} left-0 right-0 z-[9999] isolate transition-all duration-300 ${
+        className={`w-full ${staticInContainer ? "relative" : "fixed"} ${staticInContainer ? "top-auto" : shouldShowBanner ? "top-[40px]" : "top-0"} left-0 right-0 ${zIndexClass} isolate transition-all duration-300 ${
           effectiveScrolled ? "py-2" : "py-4"
         }`}
       >

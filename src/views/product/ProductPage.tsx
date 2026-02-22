@@ -9,6 +9,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
 import ProductSkinviewViewer from "@/components/ProductSkinviewViewer";
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import {
   FaArrowLeft,
   FaStar,
@@ -22,6 +23,12 @@ import {
   FaTimesCircle,
 } from "react-icons/fa";
 import { useCart } from "@/context/CartContext";
+import {
+  getProductBackgroundBlurClasses,
+  isCapeProduct,
+  resolveCapeTexturePath,
+  resolveProductBackgroundImage,
+} from "@/utils/productMedia";
 
 const SKIN_USERNAME_STORAGE_KEY = "mccapes.skinUsername";
 const TRY_ON_HINT_SEEN_STORAGE_KEY = "mccapes.tryOnHintSeen";
@@ -39,7 +46,11 @@ const ProductPage = ({
   product,
   stockCount,
 }: {
-  product?: Product;
+  product?: Product & {
+    capeTextureDataUrl?: string | null;
+    productType?: "CAPE" | "STANDARD";
+    backgroundImageUrl?: string | null;
+  };
   stockCount?: number;
 }) => {
   const router = useRouter();
@@ -74,6 +85,9 @@ const ProductPage = ({
     : "https://mc-heads.net/avatar/Steve/32";
   const pendingSkinUsername = sanitizeMinecraftUsername(skinUsernameInput.trim());
   const hasPendingSkinChange = pendingSkinUsername !== activeSkinUsername;
+  const capeProduct = isCapeProduct(product ?? {});
+  const productBackgroundImage = resolveProductBackgroundImage(product ?? {});
+  const capeTexturePath = resolveCapeTexturePath(product ?? {});
 
   const markTryOnHintSeen = () => {
     setShowTryOnHint(false);
@@ -184,25 +198,29 @@ const ProductPage = ({
               onPointerDown={() => setShowRotateHint(false)}
             >
               <div
-                className="pointer-events-none absolute inset-0 scale-110 bg-cover bg-center blur-md"
-                style={{ backgroundImage: "url('/mc_bg.webp')" }}
+                className={`pointer-events-none absolute inset-0 bg-cover bg-center ${getProductBackgroundBlurClasses("default")}`}
+                style={{ backgroundImage: `url('${productBackgroundImage}')` }}
               />
               <div className="pointer-events-none absolute inset-0 bg-black/20" />
 
               <div className="absolute inset-0">
-                {capeView === "cape" ? (
-                  <ProductCapeViewer texturePath={`/cape renders/${product.slug}.png`} />
+                {capeProduct ? (
+                  capeView === "cape" ? (
+                    <ProductCapeViewer texturePath={capeTexturePath} />
+                  ) : (
+                    <ProductSkinviewViewer
+                      texturePath={capeTexturePath}
+                      mode={capeView}
+                      skinPath={customSkinPath}
+                      pausedAnimation={isWalkPaused}
+                    />
+                  )
                 ) : (
-                  <ProductSkinviewViewer
-                    texturePath={`/cape renders/${product.slug}.png`}
-                    mode={capeView}
-                    skinPath={customSkinPath}
-                    pausedAnimation={isWalkPaused}
-                  />
+                  <Image src={product.image} alt={product.name} fill className="object-cover" />
                 )}
               </div>
 
-              {capeView !== "cape" && (
+              {capeProduct && capeView !== "cape" && (
                 <div className="absolute right-3 top-3 z-20">
                   <button
                     type="button"
@@ -215,6 +233,7 @@ const ProductPage = ({
                 </div>
               )}
 
+              {capeProduct && (
               <div ref={tryOnMenuRef} className="absolute left-3 top-3 z-20 flex flex-row items-start gap-2">
                 <button
                   type="button"
@@ -272,8 +291,9 @@ const ProductPage = ({
                   </div>
                 )}
               </div>
+              )}
 
-              {showRotateHint && (
+              {capeProduct && showRotateHint && (
                 <div className="pointer-events-none absolute inset-x-0 bottom-3 z-10 flex justify-center">
                   <div className="rounded-full border border-white/30 bg-black/35 px-3 py-1 text-xs font-medium text-white backdrop-blur-md">
                     Click and drag to rotate
@@ -282,6 +302,7 @@ const ProductPage = ({
               )}
             </div>
 
+            {capeProduct && (
             <div className="flex justify-center gap-2 mt-4">
               {(
                 [
@@ -304,6 +325,17 @@ const ProductPage = ({
                 </button>
               ))}
             </div>
+            )}
+
+            {!capeProduct && (
+              <div className="mt-4 grid grid-cols-2 gap-3">
+                {[product.image, ...(product.additionalImages || [])].map((img, idx) => (
+                  <div key={`${img}-${idx}`} className="relative aspect-video overflow-hidden rounded-lg border border-[var(--border)]">
+                    <Image src={img} alt={`${product.name} image ${idx + 1}`} fill className="object-cover" />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <div className="lg:col-start-2 lg:row-start-1 w-full max-w-[1000px] lg:aspect-[1000/700] flex flex-col justify-center">

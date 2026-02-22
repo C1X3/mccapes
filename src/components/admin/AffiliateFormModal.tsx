@@ -89,7 +89,7 @@ export default function AffiliateFormModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
+        className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-md w-full shadow-2xl"
       >
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">

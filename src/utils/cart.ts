@@ -10,9 +10,12 @@ export const CART_EXPIRATION_TIME = 7 * 24 * 60 * 60 * 1000; // 7 days in millis
 export type Product = {
   id: string;
   slug?: string;
+  productType?: "CAPE" | "STANDARD";
   name: string;
   price: number;
   image: string;
+  capeTextureDataUrl?: string | null;
+  backgroundImageUrl?: string | null;
   description: string;
   category: string;
   stock: number;

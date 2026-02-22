@@ -24,6 +24,12 @@ import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import QRCode from "react-qr-code";
 import { CryptoType, OrderStatus, PaymentType } from "@generated/browser";
+import {
+  getProductBackgroundBlurClasses,
+  isCapeProduct,
+  resolveCapeTexturePath,
+  resolveProductBackgroundImage,
+} from "@/utils/productMedia";
 
 // Confirmation thresholds for different crypto types
 const CONFIRMATION_THRESHOLDS: Record<CryptoType, number> = {
@@ -687,17 +693,28 @@ const OrderPage = ({ id }: { id: string }) => {
                           onMouseLeave={() => setHoveredPreviewId((prev) => (prev === item.product.id ? null : prev))}
                         >
                           <div
-                            className="pointer-events-none absolute inset-0 scale-140 saturate-120 blur-[3px] bg-cover bg-center"
-                            style={{ backgroundImage: "url('/mc_bg.webp')" }}
+                            className={`pointer-events-none absolute inset-0 bg-cover bg-center ${getProductBackgroundBlurClasses("default")}`}
+                            style={{
+                              backgroundImage: `url('${resolveProductBackgroundImage(item.product)}')`,
+                            }}
                           />
                           <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
                           <div className="absolute inset-0">
-                            <ProductCapeViewer
-                              texturePath={`/cape renders/${("slug" in item.product ? item.product.slug : null) || "experience"}.png`}
-                              compact
-                              variant="shop-card"
-                              isHovered={hoveredPreviewId === item.product.id}
-                            />
+                            {isCapeProduct(item.product) ? (
+                              <ProductCapeViewer
+                                texturePath={resolveCapeTexturePath(item.product)}
+                                compact
+                                variant="shop-card"
+                                isHovered={hoveredPreviewId === item.product.id}
+                              />
+                            ) : (
+                              <Image
+                                src={item.product.image}
+                                alt={item.product.name}
+                                fill
+                                className="object-cover"
+                              />
+                            )}
                           </div>
                         </div>
                         <div className="flex-grow">

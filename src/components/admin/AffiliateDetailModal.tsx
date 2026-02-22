@@ -149,7 +149,7 @@ export default function AffiliateDetailModal({
       onClick={onClose}
     >
       <div
-        className="bg-[var(--background)] rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-lg border border-[var(--border)]"
+        className="bg-[var(--color-admin-card)] rounded-xl w-full max-w-5xl max-h-[90vh] overflow-hidden shadow-lg border border-[var(--border)]"
         onClick={(e) => e.stopPropagation()}
       >
         {isLoading ? (
@@ -573,7 +573,7 @@ export default function AffiliateDetailModal({
           onClick={() => setShowDeleteConfirm(false)}
         >
           <div
-            className="bg-[var(--background)] rounded-xl p-6 max-w-md w-full shadow-lg border border-[var(--border)]"
+            className="bg-[var(--color-admin-card)] rounded-xl p-6 max-w-md w-full shadow-lg border border-[var(--border)]"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center gap-4 mb-4">

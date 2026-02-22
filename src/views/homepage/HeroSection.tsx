@@ -6,11 +6,17 @@ import { ProductGetAllOutput } from "@/server/routes/_app";
 import {
   FALLBACK_HERO_CAPE_COLOR,
   getCachedCapeAccentColor,
-  getCapeAccentColor,
+  getCapeAccentColorFromSource,
 } from "@/utils/capeAccentColor";
 import { AnimatePresence, motion } from "framer-motion";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
+import Image from "next/image";
+import { FaShoppingCart } from "react-icons/fa";
+import {
+  isCapeProduct,
+  resolveCapeTexturePath,
+} from "@/utils/productMedia";
 
 const HERO_FALLBACK_PRODUCT = {
   id: "hero-fallback",
@@ -20,6 +26,7 @@ const HERO_FALLBACK_PRODUCT = {
     "Purchase a redeemable Minecraft cape code at competitive community pricing without risky third-party marketplaces.",
   price: 9.99,
   slashPrice: 14.99,
+  image: "/mc_bg.webp",
 };
 
 const HeroSection = ({
@@ -46,6 +53,10 @@ const HeroSection = ({
   const productPrefix = capeCodeMatch?.[1]?.trim() ?? "";
   const heroTopWord = productPrefix || "";
   const activeSlug = activeProduct?.slug;
+  const activeTexturePath = activeProduct
+    ? resolveCapeTexturePath(activeProduct)
+    : "/cape renders/experience-cape.png";
+  const activeIsCape = activeProduct ? isCapeProduct(activeProduct) : true;
   const accentWordColor = activeSlug
     ? (colorCache[activeSlug] ??
       getCachedCapeAccentColor(activeSlug) ??
@@ -61,7 +72,7 @@ const HeroSection = ({
     if (utilCached) return;
 
     let cancelled = false;
-    getCapeAccentColor(slug).then((color) => {
+    getCapeAccentColorFromSource(slug, activeTexturePath).then((color) => {
       if (cancelled) return;
       setColorCache((prev) => (prev[slug] ? prev : { ...prev, [slug]: color }));
     });
@@ -69,7 +80,7 @@ const HeroSection = ({
     return () => {
       cancelled = true;
     };
-  }, [activeSlug, colorCache]);
+  }, [activeSlug, activeTexturePath, colorCache]);
 
   useEffect(() => {
     if (activeProducts.length <= 1) return;
@@ -88,6 +99,14 @@ const HeroSection = ({
     }
     addItem(activeProducts[normalizedIndex]!, 1);
     router.push("/cart");
+  };
+
+  const handleQuickAddHeroCape = () => {
+    if (!hasRealProducts || !activeProduct) {
+      router.push("/shop/experience");
+      return;
+    }
+    addItem(activeProducts[normalizedIndex]!, 1);
   };
 
   const handleOpenActiveProduct = () => {
@@ -167,14 +186,26 @@ const HeroSection = ({
                 </motion.div>
               </AnimatePresence>
 
-              <motion.button
-                className="minecraft-btn shrink-0 whitespace-nowrap px-4 py-2 text-sm md:px-6 md:py-2.5 md:text-base"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={handleBuyHeroCape}
-              >
-                Buy Now
-              </motion.button>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  className="minecraft-btn shrink-0 whitespace-nowrap px-4 py-2 text-sm md:px-6 md:py-2.5 md:text-base"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleBuyHeroCape}
+                >
+                  Buy Now
+                </motion.button>
+                <motion.button
+                  type="button"
+                  aria-label="Add to cart"
+                  className="flex h-10 w-10 items-center justify-center rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] text-[var(--foreground)] transition-colors hover:bg-[var(--primary)] hover:text-white md:h-11 md:w-11"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.96 }}
+                  onClick={handleQuickAddHeroCape}
+                >
+                  <FaShoppingCart size={14} />
+                </motion.button>
+              </div>
             </div>
 
             <p
@@ -218,15 +249,20 @@ const HeroSection = ({
                     willChange: "transform, opacity",
                   }}
                 >
-                  <HeroCapeStage
-                    quality="auto"
-                    interactive
-                    texturePath={
-                      activeProduct
-                        ? `/cape renders/${activeProduct.slug}.png`
-                        : "/cape renders/experience-cape.png"
-                    }
-                  />
+                  {activeIsCape ? (
+                    <HeroCapeStage
+                      quality="auto"
+                      interactive
+                      texturePath={activeTexturePath}
+                    />
+                  ) : (
+                    <Image
+                      src={activeProduct.image}
+                      alt={activeProduct.name}
+                      fill
+                      className="rounded-3xl object-cover"
+                    />
+                  )}
                 </motion.div>
               </AnimatePresence>
             </button>

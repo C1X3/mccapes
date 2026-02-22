@@ -7,6 +7,7 @@ type ProductSkinviewViewerProps = {
   mode: "player" | "elytra";
   skinPath?: string;
   pausedAnimation?: boolean;
+  showPlayer?: boolean;
 };
 
 type Skinview3dLib = {
@@ -108,9 +109,21 @@ export default function ProductSkinviewViewer({
   mode,
   skinPath = "/skin.png",
   pausedAnimation = false,
+  showPlayer = true,
 }: ProductSkinviewViewerProps) {
   const mountRef = useRef<HTMLDivElement>(null);
   const [hasError, setHasError] = useState(false);
+
+  const getTransparentSkinDataUrl = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 64;
+    canvas.height = 64;
+    const ctx = canvas.getContext("2d");
+    if (ctx) {
+      ctx.clearRect(0, 0, 64, 64);
+    }
+    return canvas.toDataURL("image/png");
+  };
 
   useEffect(() => {
     const mount = mountRef.current;
@@ -143,7 +156,10 @@ export default function ProductSkinviewViewer({
           canvas,
           width,
           height,
-          skin: skinPath,
+          skin:
+            mode === "elytra" && !showPlayer
+              ? getTransparentSkinDataUrl()
+              : skinPath,
         });
 
         viewer.fov = mode === "elytra" ? 39 : 40;
@@ -151,7 +167,12 @@ export default function ProductSkinviewViewer({
         viewer.autoRotate = false;
         viewer.animation = null;
 
-        await viewer.loadSkin(skinPath);
+        const resolvedSkinPath =
+          mode === "elytra" && !showPlayer
+            ? getTransparentSkinDataUrl()
+            : skinPath;
+
+        await viewer.loadSkin(resolvedSkinPath);
         await viewer.loadCape(
           texturePath,
           mode === "elytra" ? { backEquipment: "elytra" } : undefined,
@@ -173,6 +194,21 @@ export default function ProductSkinviewViewer({
 
         // Apply initial facing after controls/animation setup so back view sticks.
         if (viewer.playerObject) {
+          if (mode === "elytra" && !showPlayer) {
+            const playerObject = viewer.playerObject as {
+              traverse?: (
+                callback: (obj: { name?: string; visible?: boolean }) => void,
+              ) => void;
+            };
+            playerObject.traverse?.((obj: { name?: string; visible?: boolean }) => {
+              const name = (obj.name || "").toLowerCase();
+              const isWing = name.includes("elytra") || name.includes("cape");
+              if (!isWing && obj.visible !== undefined) {
+                obj.visible = false;
+              }
+            });
+          }
+
           viewer.playerObject.rotation.y = Math.PI + 0.55;
           viewer.playerObject.rotation.x = 0;
           viewer.playerObject.rotation.z = 0;
@@ -248,7 +284,7 @@ export default function ProductSkinviewViewer({
       viewer?.dispose?.();
       if (mount.contains(canvas)) mount.removeChild(canvas);
     };
-  }, [mode, pausedAnimation, skinPath, texturePath]);
+  }, [mode, pausedAnimation, showPlayer, skinPath, texturePath]);
 
   return (
     <div className="relative h-full w-full">

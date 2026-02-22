@@ -198,7 +198,7 @@ export default function ArticleFormModal({
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
-        className="bg-[var(--background)] rounded-2xl p-6 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
+        className="bg-[var(--color-admin-card)] rounded-2xl p-6 max-w-4xl w-full shadow-2xl max-h-[90vh] overflow-y-auto"
       >
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-2xl font-bold text-[var(--foreground)]">
