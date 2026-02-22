@@ -38,6 +38,8 @@ const HeroSection = ({
   const { addItem } = useCart();
   const [activeIndex, setActiveIndex] = useState(0);
   const [colorCache, setColorCache] = useState<Record<string, string>>({});
+  const [isHeroPreviewHovered, setIsHeroPreviewHovered] = useState(false);
+  const [isBuyNowHovered, setIsBuyNowHovered] = useState(false);
 
   const activeProducts = useMemo(
     () => heroProducts.filter((product) => !product.hideHomePage),
@@ -57,6 +59,7 @@ const HeroSection = ({
     ? resolveCapeTexturePath(activeProduct)
     : "/cape renders/experience-cape.png";
   const activeIsCape = activeProduct ? isCapeProduct(activeProduct) : true;
+  const isRotationPaused = isHeroPreviewHovered || isBuyNowHovered;
   const accentWordColor = activeSlug
     ? (colorCache[activeSlug] ??
       getCachedCapeAccentColor(activeSlug) ??
@@ -83,14 +86,14 @@ const HeroSection = ({
   }, [activeSlug, activeTexturePath, colorCache]);
 
   useEffect(() => {
-    if (activeProducts.length <= 1) return;
+    if (activeProducts.length <= 1 || isRotationPaused) return;
 
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % activeProducts.length);
     }, 3000);
 
     return () => clearInterval(interval);
-  }, [activeProducts.length]);
+  }, [activeProducts.length, isRotationPaused]);
 
   const handleBuyHeroCape = () => {
     if (!hasRealProducts || !activeProduct) {
@@ -192,6 +195,10 @@ const HeroSection = ({
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBuyHeroCape}
+                  onMouseEnter={() => setIsBuyNowHovered(true)}
+                  onMouseLeave={() => setIsBuyNowHovered(false)}
+                  onFocus={() => setIsBuyNowHovered(true)}
+                  onBlur={() => setIsBuyNowHovered(false)}
                 >
                   Buy Now
                 </motion.button>
@@ -202,6 +209,10 @@ const HeroSection = ({
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.96 }}
                   onClick={handleQuickAddHeroCape}
+                  onMouseEnter={() => setIsBuyNowHovered(true)}
+                  onMouseLeave={() => setIsBuyNowHovered(false)}
+                  onFocus={() => setIsBuyNowHovered(true)}
+                  onBlur={() => setIsBuyNowHovered(false)}
                 >
                   <FaShoppingCart size={14} />
                 </motion.button>
@@ -231,6 +242,10 @@ const HeroSection = ({
                   ? `View ${activeProduct.name} product page`
                   : "View product page"
               }
+              onMouseEnter={() => setIsHeroPreviewHovered(true)}
+              onMouseLeave={() => setIsHeroPreviewHovered(false)}
+              onFocus={() => setIsHeroPreviewHovered(true)}
+              onBlur={() => setIsHeroPreviewHovered(false)}
             >
               <AnimatePresence mode="sync">
                 <motion.div

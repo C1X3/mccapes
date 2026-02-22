@@ -79,7 +79,7 @@ const HomePage = () => {
               Trusted Partners
             </h3>
             <p className="mx-auto mt-3 max-w-2xl text-[var(--color-text-secondary)]">
-              Featured Minecraft creators wearing and recommending our releases.
+              Featured Minecraft creators wearing and recommending our capes.
             </p>
           </motion.div>
           <div className="px-2 py-5 md:px-3">

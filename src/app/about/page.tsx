@@ -59,7 +59,7 @@ const AboutPage = () => {
               Trusted Partners
             </h3>
             <p className="mx-auto mt-3 max-w-2xl text-[var(--color-text-secondary)]">
-              Featured Minecraft creators wearing and recommending our releases.
+              Featured Minecraft creators wearing and recommending our capes.
             </p>
           </motion.div>
           <PartnerScroller />

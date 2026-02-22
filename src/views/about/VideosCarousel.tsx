@@ -84,8 +84,7 @@ const VideosCarousel = () => {
             Videos
           </h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            Check out our latest videos showcasing our products, tutorials, and
-            more.
+            Check out our the latest videos showcasing our capes and more.
           </p>
         </motion.div>
 
