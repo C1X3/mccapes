@@ -18,6 +18,9 @@ import {
   FaCopy,
   FaBitcoin,
   FaEthereum,
+  FaDollarSign,
+  FaStickyNote,
+  FaUserFriends,
 } from "react-icons/fa";
 import { SiLitecoin, SiSolana } from "react-icons/si";
 import { useTRPC } from "@/server/client";
@@ -53,6 +56,16 @@ const CRYPTO_GRADIENTS: Record<CryptoType, string> = {
   [CryptoType.ETHEREUM]: "from-[#627eea]/10 to-[#627eea]/5",
   [CryptoType.LITECOIN]: "from-[#345d9d]/10 to-[#345d9d]/5",
   [CryptoType.SOLANA]: "from-[#14f195]/10 to-[#14f195]/5",
+};
+const PAYPAL_TIMEOUT_MS = 30 * 60 * 1000;
+
+const formatCountdown = (ms: number) => {
+  const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+  const minutes = Math.floor(totalSeconds / 60)
+    .toString()
+    .padStart(2, "0");
+  const seconds = (totalSeconds % 60).toString().padStart(2, "0");
+  return `${minutes}:${seconds}`;
 };
 
 const StatusBadge = ({ status }: { status: OrderStatus }) => {
@@ -127,6 +140,7 @@ const OrderPage = ({ id }: { id: string }) => {
   const trpc = useTRPC();
   const [copiedCode, setCopiedCode] = useState<string | null>(null);
   const [hoveredPreviewId, setHoveredPreviewId] = useState<string | null>(null);
+  const [nowMs, setNowMs] = useState(() => Date.now());
   const {
     data: order,
     isLoading: isOrderLoading,
@@ -154,6 +168,29 @@ const OrderPage = ({ id }: { id: string }) => {
       order.totalPrice - (order.discountAmount ?? 0) + (order.paymentFee ?? 0)
     );
   }, [order]);
+  const paypalExpiresAtMs = useMemo(() => {
+    if (!order || order.paymentType !== PaymentType.PAYPAL || !order.createdAt) {
+      return null;
+    }
+    return new Date(order.createdAt).getTime() + PAYPAL_TIMEOUT_MS;
+  }, [order]);
+  const paypalRemainingMs = useMemo(() => {
+    if (!paypalExpiresAtMs) return null;
+    return Math.max(0, paypalExpiresAtMs - nowMs);
+  }, [paypalExpiresAtMs, nowMs]);
+  const showPaypalCountdown = useMemo(
+    () =>
+      order?.paymentType === PaymentType.PAYPAL &&
+      order?.status === OrderStatus.PENDING &&
+      paypalRemainingMs !== null,
+    [order?.paymentType, order?.status, paypalRemainingMs],
+  );
+
+  useEffect(() => {
+    if (!showPaypalCountdown) return;
+    const timer = setInterval(() => setNowMs(Date.now()), 1000);
+    return () => clearInterval(timer);
+  }, [showPaypalCountdown]);
 
   useEffect(() => {
     const iv = setInterval(() => {
@@ -465,7 +502,7 @@ const OrderPage = ({ id }: { id: string }) => {
           {order.paymentType === PaymentType.PAYPAL &&
             order.status === "PENDING" && (
               <div className="mb-8">
-                <div className="bg-gradient-to-b from-[#0d9ad129] to-[#0d9ad110] rounded-xl p-6 border border-[var(--border)] shadow-lg backdrop-blur-sm">
+                <div className="relative bg-gradient-to-b from-[#0d9ad129] to-[#0d9ad110] rounded-xl p-6 border border-[var(--border)] shadow-lg backdrop-blur-sm">
                   <div className="flex items-center justify-between mb-4">
                     <div className="flex items-center">
                       <div className="w-10 h-10 flex items-center justify-center mr-3 text-2xl text-[#0d9ad1]">
@@ -509,7 +546,57 @@ const OrderPage = ({ id }: { id: string }) => {
                           <span className="bg-[#0d9ad1]/10 text-[#0d9ad1] w-7 h-7 flex items-center justify-center rounded-full mr-2 text-sm">
                             1
                           </span>
-                          Payment Details
+                          Requirements
+                        </h3>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                          <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 min-h-[64px] flex items-center justify-center">
+                            <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
+                              <FaDollarSign className="text-[#0d9ad1] shrink-0" />
+                              Send in USD
+                            </p>
+                          </div>
+                          <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 min-h-[64px] flex items-center justify-center">
+                            <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
+                              <FaStickyNote className="text-[#0d9ad1] shrink-0" />
+                              Include the PayPal note
+                            </p>
+                          </div>
+                          <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 min-h-[64px] flex items-center justify-center">
+                            <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
+                              <FaUserFriends className="text-[#0d9ad1] shrink-0" />
+                              Use Friends and Family
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 mb-6">
+                          <p className="flex items-start gap-2 text-sm text-red-500">
+                            <FaExclamationTriangle className="mt-0.5 shrink-0" />
+                            <span>
+                              Missing any requirement means your order will not be automatically processed.
+                            </span>
+                          </p>
+                        </div>
+
+                        <h3 className="text-lg font-medium text-[var(--foreground)] mb-4 flex items-center justify-between gap-3">
+                          <span className="flex items-center">
+                            <span className="bg-[#0d9ad1]/10 text-[#0d9ad1] w-7 h-7 flex items-center justify-center rounded-full mr-2 text-sm">
+                              2
+                            </span>
+                            Payment Details
+                          </span>
+                          {showPaypalCountdown && (
+                            <span className="rounded-md bg-[color-mix(in_srgb,var(--background),#000_10%)] px-2.5 pt-1 pb-1.5">
+                              <span className="block text-center !text-[9px] !leading-none font-semibold uppercase tracking-[0.18em] text-[var(--color-text-secondary)]">
+                                Send within
+                              </span>
+                              <span className="flex w-full items-center justify-center gap-1.5 text-sm font-semibold tabular-nums text-[var(--foreground)]">
+                                <FaClock className="text-[#0d9ad1]" />
+                                {formatCountdown(paypalRemainingMs || 0)}
+                              </span>
+                            </span>
+                          )}
                         </h3>
 
                         <div className="space-y-4">
@@ -626,32 +713,10 @@ const OrderPage = ({ id }: { id: string }) => {
                             </div>
                           )}
                         </div>
-
-                        <h3 className="text-lg font-medium text-[var(--foreground)] mt-6 mb-4 flex items-center">
-                          <span className="bg-[#0d9ad1]/10 text-[#0d9ad1] w-7 h-7 flex items-center justify-center rounded-full mr-2 text-sm">
-                            2
-                          </span>
-                          Important Instructions
-                        </h3>
-
-                        <div className="bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-4 rounded-lg mb-4">
-                          <p className="text-[var(--color-text-secondary)] mb-2">
-                            <span className="flex items-center text-red-500">
-                              <FaExclamationTriangle className="mr-2" /> Send as
-                              &quot;Friends and Family&quot; only!
-                            </span>
-                          </p>
-                          <p className="text-[var(--color-text-secondary)]">
-                            Your order will{" "}
-                            <span className="font-bold">NOT</span> be processed
-                            if payment is not sent using the &quot;Friends and
-                            Family&quot; option. This helps us avoid unnecessary
-                            fees and delays.
-                          </p>
-                        </div>
                       </div>
                     </div>
                   </div>
+
                 </div>
               </div>
             )}
@@ -688,7 +753,7 @@ const OrderPage = ({ id }: { id: string }) => {
                     >
                       <div className="flex flex-col sm:flex-row sm:items-center gap-4">
                         <div
-                          className="relative w-full sm:w-[26rem] lg:w-[30rem] aspect-video rounded-xl overflow-hidden border border-[var(--border)]"
+                          className="relative w-full sm:w-[12rem] lg:w-[14rem] aspect-video rounded-xl overflow-hidden border border-[var(--border)]"
                           onMouseEnter={() => setHoveredPreviewId(item.product.id)}
                           onMouseLeave={() => setHoveredPreviewId((prev) => (prev === item.product.id ? null : prev))}
                         >
@@ -909,12 +974,8 @@ const OrderPage = ({ id }: { id: string }) => {
           {/* FAQ Section */}
           <div className="mt-16">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold mb-2">
-                <span className="gradient-text">
-                  Frequently Asked Questions
-                </span>
-              </h2>
-              <p className="text-[var(--color-text-secondary)]">
+              <h2 className="text-3xl font-bold mb-2">Frequently Asked Questions</h2>
+              <p className="text-gray-600">
                 Find answers to common questions about our services
               </p>
             </div>
@@ -926,6 +987,7 @@ const OrderPage = ({ id }: { id: string }) => {
       <div className="relative z-10">
         <Footer />
       </div>
+
     </div>
   );
 };

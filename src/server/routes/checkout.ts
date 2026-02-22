@@ -17,6 +17,7 @@ import { headers, cookies } from "next/headers";
 import { getPaymentFee } from "@/utils/fees";
 
 const AFFILIATE_COOKIE_NAME = "mccapes_affiliate";
+const PENDING_PAYPAL_TIMEOUT_MS = 30 * 60 * 1000;
 
 const toCapeTextureDataUrl = (bytes: Uint8Array | null | undefined) => {
   if (!bytes || bytes.length === 0) return null;
@@ -291,7 +292,7 @@ export const checkoutRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input }) => {
-      const order = await prisma.order.findUnique({
+      let order = await prisma.order.findUnique({
         where: { id: input.orderId },
         select: {
           id: true,
@@ -318,7 +319,22 @@ export const checkoutRouter = createTRPCRouter({
           code: "NOT_FOUND",
           message: "Order not found",
         });
-      } // 4) Backend-side Authorization Check: Verify order ownership if email provided
+      }
+
+      const isOverduePaypalPending =
+        order.paymentType === PaymentType.PAYPAL &&
+        order.status === OrderStatus.PENDING &&
+        Date.now() - new Date(order.createdAt).getTime() >= PENDING_PAYPAL_TIMEOUT_MS;
+
+      if (isOverduePaypalPending) {
+        await prisma.order.update({
+          where: { id: order.id },
+          data: { status: OrderStatus.CANCELLED },
+        });
+        order = { ...order, status: OrderStatus.CANCELLED };
+      }
+
+      // 4) Backend-side Authorization Check: Verify order ownership if email provided
       if (input.customerEmail && order.customer.email !== input.customerEmail) {
         throw new TRPCError({
           code: "FORBIDDEN",
