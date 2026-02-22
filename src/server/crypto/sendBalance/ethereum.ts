@@ -1,5 +1,7 @@
 import { JsonRpcProvider, HDNodeWallet, formatEther, parseEther } from "ethers";
 import { prisma } from "@/utils/prisma";
+import { CryptoType } from "@generated/client";
+import { deleteCryptoWebhook } from "@/server/crypto/webhooks";
 
 export async function sendEthereum(TARGET_ADDRESS: string) {
   const MNEMONIC = process.env.MNEMONIC;
@@ -13,8 +15,8 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   );
 
   const wallets = await prisma.wallet.findMany({
-    where: { chain: "ETHEREUM", withdrawn: false },
-    select: { id: true, depositIndex: true, address: true },
+    where: { chain: "ETHEREUM", paid: true, withdrawn: false },
+    select: { id: true, depositIndex: true, address: true, webhookId: true },
   });
 
   if (wallets.length === 0) {
@@ -29,7 +31,7 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   let totalSent = BigInt(0);
   const txHashes: string[] = [];
 
-  for (const { id, depositIndex, address } of wallets) {
+  for (const { id, depositIndex, address, webhookId } of wallets) {
     console.log(`Processing wallet ${address} (index ${depositIndex})…`);
 
     const derivationPath = `m/44'/60'/0'/0/${depositIndex}`;
@@ -70,6 +72,10 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
         where: { id },
         data: { withdrawn: true, txHash: tx.hash },
       });
+
+      if (webhookId) {
+        await deleteCryptoWebhook(CryptoType.ETHEREUM, webhookId);
+      }
     } catch (error) {
       console.error(`  ❌ Error sending transaction: ${error}`);
     }

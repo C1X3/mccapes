@@ -11,6 +11,7 @@ import {
 } from "@solana/web3.js";
 import { mnemonicToSeedSync } from "bip39";
 import { derivePath } from "ed25519-hd-key";
+import { deleteCryptoWebhook } from "@/server/crypto/webhooks";
 
 function solanaKeypairFromMnemonic(mnemonic: string, index: number): Keypair {
   const seed = mnemonicToSeedSync(mnemonic);
@@ -28,6 +29,7 @@ export async function sendSolanaBalance(destination: string) {
       Wallet: {
         some: {
           chain: CryptoType.SOLANA,
+          paid: true,
           withdrawn: false,
         },
       },
@@ -35,8 +37,8 @@ export async function sendSolanaBalance(destination: string) {
     select: {
       id: true,
       Wallet: {
-        where: { chain: CryptoType.SOLANA, withdrawn: false },
-        select: { address: true, depositIndex: true },
+        where: { chain: CryptoType.SOLANA, paid: true, withdrawn: false },
+        select: { id: true, address: true, depositIndex: true, webhookId: true },
       },
     },
   });
@@ -52,12 +54,16 @@ export async function sendSolanaBalance(destination: string) {
   }
 
   // 2) Flatten & dedupe derive-indexes
-  const deduped = new Map<string, { address: string; index: number }>();
+  const deduped = new Map<
+    string,
+    { address: string; index: number; webhookId: string | null }
+  >();
   for (const order of unpaid) {
     for (const wallet of order.Wallet) {
       deduped.set(`${wallet.address}:${wallet.depositIndex}`, {
         address: wallet.address,
         index: wallet.depositIndex,
+        webhookId: wallet.webhookId,
       });
     }
   }
@@ -129,6 +135,10 @@ export async function sendSolanaBalance(destination: string) {
         where: { chain: CryptoType.SOLANA, address: idx.address },
         data: { withdrawn: true, txHash: sig },
       });
+
+      if (idx.webhookId) {
+        await deleteCryptoWebhook(CryptoType.SOLANA, idx.webhookId);
+      }
     } catch (error) {
       console.error(`Failed to sweep SOL wallet index ${idx.index}:`, error);
     }

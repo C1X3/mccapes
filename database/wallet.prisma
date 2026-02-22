@@ -12,6 +12,7 @@ model Wallet {
 
   chain          CryptoType
   depositIndex   Int
+  webhookId      String?
   address        String     @unique
   expectedAmount Decimal    @db.Decimal(30, 18)
   paid           Boolean    @default(false)
@@ -22,4 +23,6 @@ model Wallet {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@unique([chain, depositIndex])
 }

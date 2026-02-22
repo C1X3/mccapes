@@ -25,8 +25,8 @@ import {
 import { SiLitecoin, SiSolana } from "react-icons/si";
 import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import QRCode from "react-qr-code";
 import { CryptoType, OrderStatus, PaymentType } from "@generated/browser";
+import { CryptoPaymentQr } from "@/components/PaymentMethodLogo";
 import {
   getProductBackgroundBlurClasses,
   isCapeProduct,
@@ -352,13 +352,11 @@ const OrderPage = ({ id }: { id: string }) => {
                 <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mt-6">
                   <div className="flex flex-col items-center justify-center md:col-span-2">
                     <div className="bg-white p-3 rounded-xl shadow-md w-full max-w-[220px]">
-                      <QRCode
-                        value={walletDetails.address}
-                        size={200}
-                        level="H"
+                      <CryptoPaymentQr
+                        address={walletDetails.address}
+                        expectedAmount={walletDetails.expectedAmount.toString()}
+                        chain={walletDetails.chain}
                         className="w-full h-auto"
-                        fgColor="#000000"
-                        bgColor="#ffffff"
                       />
                     </div>
 

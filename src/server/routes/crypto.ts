@@ -10,20 +10,26 @@ import { sendSolanaBalance } from "../crypto/sendBalance/solana";
 import { sendBitcoin } from "../crypto/sendBalance/bitcoin";
 import { sendLitecoin } from "../crypto/sendBalance/litecoin";
 import { sendEthereum } from "../crypto/sendBalance/ethereum";
-import axios from "axios";
+import Coingecko from "@coingecko/coingecko-typescript";
+
+const coingeckoClient = new Coingecko({
+  environment: "demo",
+  demoAPIKey: process.env.COINGECKO_DEMO_API_KEY || undefined,
+  timeout: 5000,
+});
 
 // Fetch current crypto prices from CoinGecko
 async function getCryptoPrices() {
   try {
-    const resp = await axios.get(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,litecoin,solana&vs_currencies=usd",
-      { timeout: 5000 },
-    );
+    const resp = await coingeckoClient.simple.price.get({
+      ids: "bitcoin,ethereum,litecoin,solana",
+      vs_currencies: "usd",
+    });
     return {
-      bitcoin: resp.data.bitcoin?.usd || 0,
-      ethereum: resp.data.ethereum?.usd || 0,
-      litecoin: resp.data.litecoin?.usd || 0,
-      solana: resp.data.solana?.usd || 0,
+      bitcoin: resp.bitcoin?.usd || 0,
+      ethereum: resp.ethereum?.usd || 0,
+      litecoin: resp.litecoin?.usd || 0,
+      solana: resp.solana?.usd || 0,
     };
   } catch (error) {
     console.error("Error fetching crypto prices:", error);
