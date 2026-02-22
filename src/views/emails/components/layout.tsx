@@ -6,8 +6,8 @@ import {
   Head,
   Html,
   Img,
-  Preview,
   Section,
+  Preview,
   Text,
 } from "@react-email/components";
 import { tokens } from "@/views/emails/components/tokens";
@@ -38,44 +38,151 @@ export function EmailLayout({
   children,
 }: EmailLayoutProps) {
   return (
-    <Html>
-      <Head />
+    <Html lang="en">
+      <Head>
+        <meta name="color-scheme" content="light" />
+        <meta name="supported-color-schemes" content="light" />
+        <style>
+          {`
+            :root {
+              color-scheme: light;
+              supported-color-schemes: light;
+            }
+
+            @media only screen and (max-width: 640px) {
+              .email-shell {
+                width: 100% !important;
+              }
+
+              .email-outer-pad {
+                padding-left: 12px !important;
+                padding-right: 12px !important;
+              }
+
+              .email-content-pad {
+                padding-left: 16px !important;
+                padding-right: 16px !important;
+              }
+
+              .email-header-pad {
+                padding-top: 20px !important;
+                padding-bottom: 16px !important;
+              }
+
+              .email-heading {
+                font-size: 25px !important;
+                line-height: 31px !important;
+              }
+
+              .email-subheading {
+                font-size: 13px !important;
+                line-height: 20px !important;
+              }
+            }
+
+            @media (prefers-color-scheme: dark) {
+              .force-bg {
+                background-color: #ffffff !important;
+              }
+
+              .force-text {
+                color: #13221b !important;
+              }
+
+              .force-muted {
+                color: #4a6658 !important;
+              }
+
+              .force-border {
+                border-color: #d1e2d8 !important;
+              }
+            }
+
+            [data-ogsc] .force-bg {
+              background-color: #ffffff !important;
+            }
+
+            [data-ogsc] .force-text {
+              color: #13221b !important;
+            }
+
+            [data-ogsc] .force-muted {
+              color: #4a6658 !important;
+            }
+
+            [data-ogsc] .force-border {
+              border-color: #d1e2d8 !important;
+            }
+          `}
+        </style>
+      </Head>
       <Preview>{preview}</Preview>
-      <Body style={styles.body}>
-        <Container style={styles.container}>
-          <Section style={styles.heroWrap}>
-            <Img
-              src={heroImage}
-              alt={heroAlt}
-              width="640"
-              height="260"
-              style={styles.heroImage}
-            />
-          </Section>
-
-          <Section style={styles.header}>
-            <Text style={styles.meta}>{metaLabel}</Text>
-            <Text style={styles.heading}>{heading}</Text>
-            <Text style={styles.subheading}>{subheading}</Text>
-          </Section>
-
-          {children}
-
-          {ctaHref && ctaLabel && (
-            <Section style={styles.ctaWrap}>
-              <Button href={ctaHref} style={styles.cta}>
-                {ctaLabel}
-              </Button>
+      <Body style={styles.body} className="force-bg">
+        <Section style={styles.outerPad} className="email-outer-pad force-bg">
+          <Container
+            width={640}
+            style={styles.container}
+            className="email-shell force-bg force-border"
+          >
+            <Section style={styles.heroWrap}>
+              <Img
+                src={heroImage}
+                alt={heroAlt}
+                width="640"
+                height="260"
+                style={styles.heroImage}
+              />
             </Section>
-          )}
 
-          <Section style={styles.footer}>
-            <Text style={styles.footerText}>
-              Need help? Reply directly to this email with your order ID.
-            </Text>
-            <Text style={styles.footerSmall}>MCCapes • {appUrl}</Text>
-          </Section>
-        </Container>
+            <Section
+              style={styles.header}
+              className="email-content-pad email-header-pad force-bg force-border"
+            >
+              <Text style={styles.meta} className="force-border">
+                {metaLabel}
+              </Text>
+              <Text style={styles.heading} className="email-heading force-text">
+                {heading}
+              </Text>
+              <Text
+                style={styles.subheading}
+                className="email-subheading force-muted"
+              >
+                {subheading}
+              </Text>
+            </Section>
+
+            <Section
+              style={styles.contentWrap}
+              className="email-content-pad force-bg force-text"
+            >
+              {children}
+            </Section>
+
+            {ctaHref && ctaLabel && (
+              <Section
+                style={styles.ctaWrap}
+                className="email-content-pad force-bg force-text"
+              >
+                <Button href={ctaHref} style={styles.cta}>
+                  {ctaLabel}
+                </Button>
+              </Section>
+            )}
+
+            <Section
+              style={styles.footer}
+              className="email-content-pad force-bg force-border"
+            >
+              <Text style={styles.footerText} className="force-muted">
+                Need help? Reply directly to this email with your order ID.
+              </Text>
+              <Text style={styles.footerSmall} className="force-muted">
+                MCCapes • {appUrl}
+              </Text>
+            </Section>
+          </Container>
+        </Section>
       </Body>
     </Html>
   );
@@ -84,17 +191,25 @@ export function EmailLayout({
 const styles = {
   body: {
     margin: 0,
-    padding: tokens.spacing.xl,
+    padding: 0,
     backgroundColor: tokens.color.bg,
+    color: tokens.color.text,
     fontFamily: tokens.fontFamily,
   },
+  outerPad: {
+    margin: 0,
+    padding: tokens.spacing.xl,
+    backgroundColor: tokens.color.bg,
+  },
   container: {
+    width: "100%",
+    maxWidth: "640px",
     backgroundColor: tokens.color.surface,
     border: `1px solid ${tokens.color.border}`,
     borderRadius: tokens.radius.xl,
     margin: "0 auto",
-    maxWidth: "640px",
     overflow: "hidden",
+    color: tokens.color.text,
     boxShadow: "0 14px 45px rgba(16, 42, 29, 0.15)",
   },
   heroWrap: {
@@ -114,8 +229,15 @@ const styles = {
     padding: `${tokens.spacing.xl} ${tokens.spacing.xl} ${tokens.spacing.lg}`,
     textAlign: "center" as const,
     background:
-      "linear-gradient(180deg, rgba(31, 61, 47, 0.34) 0%, rgba(78, 136, 104, 0.16) 28%, rgba(255, 255, 255, 1) 72%), radial-gradient(circle at 12% 0%, rgba(34, 197, 94, 0.12), transparent 44%), radial-gradient(circle at 88% 8%, rgba(21, 128, 61, 0.08), transparent 46%)",
+      "linear-gradient(180deg, #f1f8f4 0%, #f8fcfa 52%, #ffffff 100%)",
     borderBottom: `1px solid ${tokens.color.border}`,
+    color: tokens.color.text,
+  },
+  contentWrap: {
+    margin: 0,
+    padding: `${tokens.spacing.xl} ${tokens.spacing.xl} 0`,
+    backgroundColor: tokens.color.surface,
+    color: tokens.color.text,
   },
   meta: {
     margin: "0 auto",
@@ -148,6 +270,7 @@ const styles = {
   ctaWrap: {
     padding: `${tokens.spacing.xl} ${tokens.spacing.xl} 0`,
     textAlign: "center" as const,
+    backgroundColor: tokens.color.surface,
   },
   cta: {
     backgroundColor: tokens.color.brandDark,
@@ -163,6 +286,7 @@ const styles = {
     marginTop: tokens.spacing.xl,
     padding: `${tokens.spacing.lg} ${tokens.spacing.xl} ${tokens.spacing.xl}`,
     textAlign: "center" as const,
+    backgroundColor: tokens.color.surface,
   },
   footerText: {
     margin: 0,

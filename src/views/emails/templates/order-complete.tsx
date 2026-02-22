@@ -142,14 +142,15 @@ export function buildOrderCompleteText(props: OrderCompleteTemplateProps) {
 
 const styles = {
   section: {
-    padding: `${tokens.spacing.xl} 0 0`,
+    padding: 0,
   },
   card: {
-    margin: `${tokens.spacing.lg} ${tokens.spacing.xl} 0`,
+    margin: `${tokens.spacing.lg} 0 0`,
     border: `1px solid ${tokens.color.border}`,
     borderRadius: tokens.radius.lg,
     padding: tokens.spacing.xl,
     backgroundColor: tokens.color.surface,
+    color: tokens.color.text,
   },
   greeting: {
     margin: "0 0 8px",
@@ -163,6 +164,7 @@ const styles = {
     color: tokens.color.textMuted,
     fontSize: "14px",
     lineHeight: "22px",
+    wordBreak: "break-word" as const,
   },
   subheading: {
     margin: `${tokens.spacing.lg} 0 ${tokens.spacing.sm}`,
@@ -196,11 +198,14 @@ const styles = {
     color: tokens.color.text,
     fontSize: "13px",
     lineHeight: "20px",
+    wordBreak: "break-word" as const,
   },
   tipLinks: {
     margin: `${tokens.spacing.sm} 0 0`,
+    color: tokens.color.text,
     fontSize: "13px",
     lineHeight: "20px",
+    wordBreak: "break-word" as const,
   },
   tipLink: {
     color: tokens.color.brandDark,

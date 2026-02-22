@@ -116,14 +116,16 @@ const styles = {
   banner: {
     borderRadius: tokens.radius.md,
     border: `1px solid ${tokens.color.border}`,
-    margin: `0 ${tokens.spacing.xl}`,
+    margin: 0,
     padding: `${tokens.spacing.md} ${tokens.spacing.lg}`,
+    backgroundColor: tokens.color.surface,
   },
   bannerText: {
     margin: 0,
     fontSize: "14px",
     fontWeight: "700",
     lineHeight: "22px",
+    wordBreak: "break-word" as const,
   },
   detailRow: {
     margin: 0,
@@ -144,6 +146,7 @@ const styles = {
     lineHeight: "20px",
     fontWeight: "700",
     textAlign: "right" as const,
+    wordBreak: "break-word" as const,
   },
   item: {
     margin: `${tokens.spacing.md} 0 0`,
@@ -154,10 +157,15 @@ const styles = {
   },
   itemImageCol: {
     width: "74px",
+    minWidth: "74px",
+    verticalAlign: "top" as const,
   },
   itemImage: {
     borderRadius: tokens.radius.sm,
     border: `1px solid ${tokens.color.border}`,
+    width: "56px",
+    height: "90px",
+    display: "block",
   },
   itemName: {
     margin: "0 0 4px",
@@ -165,12 +173,14 @@ const styles = {
     fontSize: "14px",
     lineHeight: "20px",
     fontWeight: "700",
+    wordBreak: "break-word" as const,
   },
   itemMeta: {
     margin: 0,
     color: tokens.color.textMuted,
     fontSize: "13px",
     lineHeight: "20px",
+    wordBreak: "break-word" as const,
   },
   code: {
     margin: `${tokens.spacing.sm} 0 0`,
@@ -198,6 +208,8 @@ const styles = {
     color: tokens.color.codeText,
     fontSize: "13px",
     lineHeight: "20px",
+    wordBreak: "break-word" as const,
+    overflowWrap: "anywhere" as const,
     fontFamily:
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace',
   },
@@ -206,6 +218,8 @@ const styles = {
     color: tokens.color.oldCodeText,
     fontSize: "13px",
     lineHeight: "20px",
+    wordBreak: "break-word" as const,
+    overflowWrap: "anywhere" as const,
     fontFamily:
       'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Courier New", monospace',
   },
