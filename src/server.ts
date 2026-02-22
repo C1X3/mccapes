@@ -6,7 +6,7 @@ import axios from "axios";
 import { CryptoType, OrderStatus, PaymentType } from "@generated/client";
 import { prisma } from "@/utils/prisma";
 import { parseUnits } from "ethers";
-import { sendOrderCompleteEmail } from "./utils/email";
+import { sendOrderCompleteEmail } from "./server/email/send";
 
 const BLOCKCYPHER_TOKEN = process.env.BLOCKCYPHER_TOKEN!;
 const HELIUS_API_KEY = process.env.HELIUS_API_KEY!;
@@ -323,6 +323,8 @@ async function checkPayments() {
               quantity: i.quantity,
               codes: i.codes,
               image: i.product.image,
+            slug: i.product.slug,
+            productType: i.product.productType,
             })),
           });
 

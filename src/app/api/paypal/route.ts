@@ -1,5 +1,5 @@
 import { parseIPN } from "@/types/paypal";
-import { sendOrderCompleteEmail } from "@/utils/email";
+import { sendOrderCompleteEmail } from "@/server/email/send";
 import { prisma } from "@/utils/prisma";
 import { OrderStatus, PaymentType } from "@generated/client";
 import axios from "axios";
@@ -166,6 +166,8 @@ export async function POST(request: NextRequest) {
         quantity: i.quantity,
         codes: i.codes,
         image: i.product.image,
+            slug: i.product.slug,
+            productType: i.product.productType,
       })),
     });
   }

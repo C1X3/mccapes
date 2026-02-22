@@ -11,6 +11,22 @@ enum OrderStatus {
   CANCELLED
 }
 
+enum EmailSuppressionReason {
+  HARD_BOUNCE
+  COMPLAINT
+  MANUAL_BLOCK
+}
+
+enum EmailSuppressionSource {
+  RESEND_WEBHOOK
+  ADMIN
+}
+
+enum EmailValidationStatus {
+  VALID
+  BLOCKED
+}
+
 model OrderItem {
   id String @id @default(cuid())
 
@@ -33,6 +49,9 @@ model CustomerInformation {
   id      String  @id @default(cuid())
   name    String
   email   String
+  emailValidationStatus EmailValidationStatus?
+  emailValidationReason String?
+  emailValidatedAt      DateTime?
 
   useragent String?
   ipAddress String?
@@ -64,4 +83,26 @@ model Order {
   customerId String @unique
 
   Wallet Wallet[]
+}
+
+model SuppressedEmail {
+  id     String @id @default(cuid())
+  email  String @unique
+  reason EmailSuppressionReason
+  source EmailSuppressionSource
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model EmailDeliveryEvent {
+  id                String @id @default(cuid())
+  providerMessageId String?
+  eventType         String
+  recipient         String?
+  payload           Json
+
+  createdAt DateTime @default(now())
+
+  @@unique([providerMessageId, eventType], map: "unique_provider_message_event")
 }

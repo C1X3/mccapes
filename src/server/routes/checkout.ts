@@ -12,9 +12,16 @@ import { createCheckoutSession as createStripeCheckout } from "../providers/stri
 import { createCheckoutSession as createPaypalCheckout } from "../providers/paypal";
 import { createWalletDetails as createCryptoCheckout } from "../providers/crypto";
 import { WalletDetails } from "../providers/types";
-import { sendOrderCompleteEmail } from "@/utils/email";
+import {
+  sendCodeReplacedEmail,
+  sendOrderCompleteEmail,
+} from "@/server/email/send";
 import { headers, cookies } from "next/headers";
 import { getPaymentFee } from "@/utils/fees";
+import {
+  getEmailValidationErrorMessage,
+  validateCustomerEmail,
+} from "@/server/email/validation";
 
 const AFFILIATE_COOKIE_NAME = "mccapes_affiliate";
 const PENDING_PAYPAL_TIMEOUT_MS = 30 * 60 * 1000;
@@ -169,6 +176,16 @@ export const checkoutRouter = createTRPCRouter({
           });
         }
 
+        const emailValidation = await validateCustomerEmail(
+          input.customerInfo.email,
+        );
+        if (!emailValidation.ok) {
+          throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: getEmailValidationErrorMessage(emailValidation.reason),
+          });
+        }
+
         const order = await prisma.order.create({
           data: {
             totalPrice: input.totalPrice,
@@ -180,7 +197,10 @@ export const checkoutRouter = createTRPCRouter({
             customer: {
               create: {
                 name: input.customerInfo.name,
-                email: input.customerInfo.email,
+                email: emailValidation.normalizedEmail,
+                emailValidationStatus: emailValidation.status,
+                emailValidationReason: emailValidation.reason,
+                emailValidatedAt: new Date(),
                 discord: input.customerInfo.discord,
                 ipAddress,
                 useragent,
@@ -324,7 +344,8 @@ export const checkoutRouter = createTRPCRouter({
       const isOverduePaypalPending =
         order.paymentType === PaymentType.PAYPAL &&
         order.status === OrderStatus.PENDING &&
-        Date.now() - new Date(order.createdAt).getTime() >= PENDING_PAYPAL_TIMEOUT_MS;
+        Date.now() - new Date(order.createdAt).getTime() >=
+          PENDING_PAYPAL_TIMEOUT_MS;
 
       if (isOverduePaypalPending) {
         await prisma.order.update({
@@ -399,7 +420,9 @@ export const checkoutRouter = createTRPCRouter({
               ...item,
               product: {
                 ...item.product,
-                capeTextureDataUrl: toCapeTextureDataUrl(item.product.capeTexturePng),
+                capeTextureDataUrl: toCapeTextureDataUrl(
+                  item.product.capeTexturePng,
+                ),
                 capeTexturePng: undefined,
               },
               codes: [], // Always empty for unpaid orders
@@ -469,7 +492,9 @@ export const checkoutRouter = createTRPCRouter({
             ...item,
             product: {
               ...item.product,
-              capeTextureDataUrl: toCapeTextureDataUrl(item.product.capeTexturePng),
+              capeTextureDataUrl: toCapeTextureDataUrl(
+                item.product.capeTexturePng,
+              ),
               capeTexturePng: undefined,
             },
           })) ?? [],
@@ -643,6 +668,8 @@ export const checkoutRouter = createTRPCRouter({
           quantity: item.quantity,
           codes: item.codes,
           image: item.product.image,
+          slug: item.product.slug,
+          productType: item.product.productType,
         })),
         totalPrice: updatedOrder.totalPrice,
         paymentFee: updatedOrder.paymentFee,
@@ -764,14 +791,13 @@ export const checkoutRouter = createTRPCRouter({
 
       // Send email notification to customer
       if (orderItem.order.customer?.email) {
-        const { sendCodeReplacedEmail } = await import("@/utils/email");
-
         try {
           await sendCodeReplacedEmail({
             customerName: orderItem.order.customer.name || "Customer",
             customerEmail: orderItem.order.customer.email,
             orderId: orderItem.order.id,
             productName: orderItem.product.name,
+            productSlug: orderItem.product.slug,
             oldCode,
             newCode: newCode,
           });

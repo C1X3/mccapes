@@ -4,7 +4,7 @@ import { stripe } from "@/server/providers/stripe";
 import Stripe from "stripe";
 import { prisma } from "@/utils/prisma";
 import { OrderStatus } from "@generated/client";
-import { sendOrderCompleteEmail } from "@/utils/email";
+import { sendOrderCompleteEmail } from "@/server/email/send";
 
 export async function POST(request: Request) {
   const reqHeaders = await headers();
@@ -152,6 +152,8 @@ export async function POST(request: Request) {
             quantity: i.quantity,
             codes: i.codes,
             image: i.product.image,
+            slug: i.product.slug,
+            productType: i.product.productType,
           })),
         });
 

@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { CartProvider } from "@/context/CartContext";
 import { TRPCReactProvider } from "@/server/client";
 import { GoogleAnalytics } from "@next/third-parties/google";
@@ -21,6 +21,10 @@ export const metadata: Metadata = {
     "minecraft cosmetics",
     "minecraft store",
   ],
+};
+
+export const viewport: Viewport = {
+  themeColor: "#4ade80",
 };
 
 export default function RootLayout({
