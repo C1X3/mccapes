@@ -321,14 +321,14 @@ const CartPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex-grow sm:ml-2 w-full">
+                      <div className="flex-grow sm:ml-2 w-full text-center">
                         <h3 className="text-xl font-bold text-[var(--foreground)]">
                           {item.product.name}
                         </h3>
                         <p className="text-[var(--color-text-secondary)] text-sm mt-1">
                           {item.product.category}
                         </p>
-                        <div className="mt-3 flex items-center">
+                        <div className="mt-3 flex items-center justify-center">
                           <span className="text-[var(--primary)] font-bold text-lg">
                             {formatPrice(item.product.price)}
                           </span>

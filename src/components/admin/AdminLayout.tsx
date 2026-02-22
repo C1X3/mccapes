@@ -11,6 +11,7 @@ import {
 } from "react-icons/fa";
 import Navbar from "@/components/Navbar/Navbar";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 interface TabItem {
   id: string;
@@ -71,6 +72,10 @@ export default function AdminLayout({
     window.location.reload();
   };
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, [currentTab]);
+
   if (!isAuthenticated) {
     return <>{authComponent}</>;
   }
@@ -81,13 +86,13 @@ export default function AdminLayout({
       <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(74,222,128,0.06),transparent_40%,rgba(148,163,184,0.10))]" />
       {/* Top Navbar in normal flow (scrolls away with page) */}
-      <div className="relative z-[5]">
+      <div className="relative z-[120]">
         <header className="py-2 flex items-center justify-center relative flex-col">
-          <Navbar disableScrollState staticInContainer zIndexClass="z-[5]" />
+          <Navbar disableScrollState staticInContainer zIndexClass="z-[120]" />
         </header>
       </div>
 
-      <div className="relative z-10 flex flex-1 pb-20 pt-4 md:pb-0 md:pt-6">
+      <div className="relative z-10 flex flex-1 pb-24 pt-4 md:pb-0 md:pt-6">
         {/* Desktop Sidebar Only - intentionally below modal overlays */}
         <aside className="fixed left-0 top-0 z-[6] hidden h-full w-64 overflow-hidden border-r border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] bg-[var(--background)] pt-[120px] md:block">
           <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
@@ -146,7 +151,7 @@ export default function AdminLayout({
       </div>
 
       {/* Mobile Bottom Tab Bar - Primary mobile navigation */}
-      <div className="fixed bottom-0 left-0 right-0 z-[6] border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] bg-[var(--background)] md:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[90] border-t border-[color-mix(in_srgb,var(--foreground),var(--background)_85%)] bg-[var(--background)] md:hidden">
         <nav className="flex justify-around items-center py-2">
           {tabs.map((tab) => (
             <button

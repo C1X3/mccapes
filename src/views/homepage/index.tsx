@@ -44,7 +44,7 @@ const HomePage = () => {
           onClick={handleScrollToProducts}
           whileHover={{ y: -2 }}
           whileTap={{ scale: 0.98 }}
-          className="absolute bottom-12 left-1/2 z-30 -translate-x-1/2 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:text-[var(--foreground)] md:bottom-16 md:text-sm"
+          className="absolute bottom-12 left-1/2 z-30 hidden -translate-x-1/2 rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] px-4 py-2 text-xs font-semibold uppercase tracking-[0.1em] text-[var(--color-text-secondary)] backdrop-blur-sm transition-colors hover:text-[var(--foreground)] md:bottom-16 md:inline-flex md:text-sm"
         >
           <span className="inline-flex items-center gap-2">
             View all

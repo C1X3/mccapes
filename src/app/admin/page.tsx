@@ -49,6 +49,10 @@ export default function AdminPage() {
     }
   }, [tabParam, currentTab]);
 
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
+
   const renderTabContent = () => {
     switch (currentTab) {
       case "dashboard":

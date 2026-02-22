@@ -178,6 +178,18 @@ body {
   background-blend-mode: overlay;
 }
 
+.app-toaster {
+  top: calc(env(safe-area-inset-top, 0px) + 0.75rem) !important;
+}
+
+@media (max-width: 767px) {
+  .app-toaster {
+    top: calc(env(safe-area-inset-top, 0px) + 5.75rem) !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+  }
+}
+
 * {
   scrollbar-width: thin;
   scrollbar-color: color-mix(in srgb, var(--primary), #000 18%) transparent;

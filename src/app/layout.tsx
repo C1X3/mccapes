@@ -47,7 +47,7 @@ export default function RootLayout({
         className="antialiased"
       >
         <GoogleAnalytics gaId="G-HJ43T34FHX" />
-        <Toaster position="top-right" />
+        <Toaster position="top-right" containerClassName="app-toaster" />
 
         <ClickTracker />
         <TRPCReactProvider>

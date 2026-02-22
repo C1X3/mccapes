@@ -196,12 +196,12 @@ export default function InvoicesTab() {
         onApplyFilters={handleApplyFilters}
         onResetAndApplyFilters={handleResetAndApplyFilters}
       />
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-xl font-bold text-[var(--foreground)] flex items-center gap-2">
+      <div className="mb-6 flex items-center justify-between gap-2">
+        <h2 className="flex shrink-0 items-center gap-2 text-xl font-bold text-[var(--foreground)]">
           <FaReceipt />
           Invoices
-        </h2>{" "}
-        <div className="flex gap-3 items-center flex-wrap">
+        </h2>
+        <div className="flex min-w-0 items-center gap-2 md:gap-3">
           {/* Export to CSV button - hidden on mobile */}
           <button
             onClick={handleExportAll}
@@ -219,21 +219,21 @@ export default function InvoicesTab() {
 
           <button
             onClick={openFilterModal}
-            className="flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
+            className="flex shrink-0 items-center gap-2 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] p-2 text-[var(--foreground)] transition-colors hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)]"
             title="Filter"
           >
             <FaFilter className="size-4" />
             <span className="hidden md:inline">Filter</span>
           </button>
 
-          <div className="relative">
+          <div className="relative min-w-0">
             {/* Mobile search input */}
             <input
               type="text"
               placeholder="Search"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="md:hidden pl-10 pr-4 py-2 rounded-lg bg-[color-mix(in_srgb,var(--surface),#000_6%)] border border-[var(--border)] text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] w-full max-w-[150px]"
+              className="w-24 rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] py-2 pl-10 pr-3 text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] md:hidden"
             />
             {/* Desktop search input */}
             <input

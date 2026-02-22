@@ -160,7 +160,7 @@ const HeroSection = ({
               </motion.div>
             </AnimatePresence>
 
-            <div className="mt-6 flex items-end justify-between gap-3 border-b border-[var(--border)] pb-5 md:mt-8 md:gap-6 md:pb-6">
+            <div className="mt-6 flex flex-col gap-4 border-b border-[var(--border)] pb-5 md:mt-8 md:gap-6 md:pb-6">
               <AnimatePresence mode="wait">
                 <motion.div
                   key={activeProduct?.id ?? "hero-price-default"}
@@ -173,10 +173,10 @@ const HeroSection = ({
                   <p className="hidden text-sm uppercase tracking-[0.1em] text-[var(--color-text-muted)] md:block">
                     {activeProduct?.name ?? "Cape Code"}
                   </p>
-                  <div className="flex items-end gap-3">
+                  <div className="flex flex-wrap items-end gap-2 md:gap-3">
                     <span
                       className="block font-bold leading-none text-[var(--foreground)]"
-                      style={{ fontSize: "3rem" }}
+                      style={{ fontSize: "clamp(2.15rem, 9vw, 3rem)" }}
                     >
                       ${activeProduct.price.toFixed(2)}
                     </span>
@@ -189,9 +189,9 @@ const HeroSection = ({
                 </motion.div>
               </AnimatePresence>
 
-              <div className="flex items-center gap-2">
+              <div className="flex w-full items-center gap-2">
                 <motion.button
-                  className="minecraft-btn shrink-0 whitespace-nowrap px-4 py-2 text-sm md:px-6 md:py-2.5 md:text-base"
+                  className="minecraft-btn min-w-[7.5rem] shrink-0 whitespace-nowrap px-4 py-2 text-sm md:px-6 md:py-2.5 md:text-base"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                   onClick={handleBuyHeroCape}
