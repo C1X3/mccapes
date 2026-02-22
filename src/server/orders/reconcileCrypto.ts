@@ -351,26 +351,38 @@ export async function reconcilePendingCryptoPayments(limit = 25) {
   let settled = 0;
 
   for (const wallet of wallets) {
-    try {
-      const didSettle =
-        wallet.chain === CryptoType.SOLANA
-          ? await reconcileSolWallet(wallet)
-          : await reconcileUtxoOrEthWallet(wallet);
+    let attempts = 0;
+    let settledThisWallet = false;
 
-      if (didSettle) {
-        settled += 1;
+    while (attempts < 2 && !settledThisWallet) {
+      attempts += 1;
+      try {
+        const didSettle =
+          wallet.chain === CryptoType.SOLANA
+            ? await reconcileSolWallet(wallet)
+            : await reconcileUtxoOrEthWallet(wallet);
+
+        if (didSettle) {
+          settled += 1;
+          settledThisWallet = true;
+        }
+        break;
+      } catch (error) {
+        if (error instanceof ReconcileRateLimitError) {
+          const waitMs = Math.max(1000, error.retryAfterMs);
+          console.warn(`${error.message} (pausing ${Math.ceil(waitMs / 1000)}s)`);
+          await sleep(waitMs);
+          continue;
+        }
+
+        console.error(
+          `Crypto reconcile failed for wallet ${wallet.id} (${wallet.chain})`,
+          error,
+        );
+        break;
+      } finally {
+        await sleep(REQUEST_SPACING_MS);
       }
-    } catch (error) {
-      if (error instanceof ReconcileRateLimitError) {
-        console.warn(error.message);
-        continue;
-      }
-      console.error(
-        `Crypto reconcile failed for wallet ${wallet.id} (${wallet.chain})`,
-        error,
-      );
-    } finally {
-      await sleep(REQUEST_SPACING_MS);
     }
   }
 
