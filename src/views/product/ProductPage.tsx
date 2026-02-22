@@ -8,7 +8,7 @@ import { motion } from "framer-motion";
 import { useRouter, useSearchParams } from "next/navigation";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
 import ProductSkinviewViewer from "@/components/ProductSkinviewViewer";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
 import {
   FaArrowLeft,
@@ -88,6 +88,20 @@ const ProductPage = ({
   const capeProduct = isCapeProduct(product ?? {});
   const productBackgroundImage = resolveProductBackgroundImage(product ?? {});
   const capeTexturePath = resolveCapeTexturePath(product ?? {});
+  const galleryImages = useMemo(() => {
+    if (!product || capeProduct) return [] as string[];
+    const images = [product.image, ...(product.additionalImages || [])].filter(Boolean);
+    return Array.from(new Set(images));
+  }, [capeProduct, product]);
+  const [selectedPreviewImage, setSelectedPreviewImage] = useState<string>("");
+
+  useEffect(() => {
+    if (capeProduct) {
+      setSelectedPreviewImage("");
+      return;
+    }
+    setSelectedPreviewImage(galleryImages[0] || product?.image || "");
+  }, [capeProduct, galleryImages, product?.image, product?.id]);
 
   const markTryOnHintSeen = () => {
     setShowTryOnHint(false);
@@ -194,14 +208,22 @@ const ProductPage = ({
         <div className="grid grid-cols-1 gap-x-12 gap-y-4 lg:grid-cols-2">
           <div className="lg:col-start-1 lg:row-start-1">
             <div
-              className="relative w-full max-w-[1000px] aspect-[1000/700] rounded-2xl overflow-hidden bg-[color-mix(in_srgb,var(--background),#000_8%)] border border-[var(--border)]"
+              className={`relative w-full max-w-[1000px] rounded-2xl overflow-hidden border border-[var(--border)] ${
+                capeProduct
+                  ? "aspect-[1000/700] bg-[color-mix(in_srgb,var(--background),#000_8%)]"
+                  : "aspect-[1000/700] bg-black"
+              }`}
               onPointerDown={() => setShowRotateHint(false)}
             >
-              <div
-                className={`pointer-events-none absolute inset-0 bg-cover bg-center ${getProductBackgroundBlurClasses("default")}`}
-                style={{ backgroundImage: `url('${productBackgroundImage}')` }}
-              />
-              <div className="pointer-events-none absolute inset-0 bg-black/20" />
+              {capeProduct && (
+                <>
+                  <div
+                    className={`pointer-events-none absolute inset-0 bg-cover bg-center ${getProductBackgroundBlurClasses("default")}`}
+                    style={{ backgroundImage: `url('${productBackgroundImage}')` }}
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-black/20" />
+                </>
+              )}
 
               <div className="absolute inset-0">
                 {capeProduct ? (
@@ -216,7 +238,13 @@ const ProductPage = ({
                     />
                   )
                 ) : (
-                  <Image src={product.image} alt={product.name} fill className="object-cover" />
+                  <Image
+                    src={selectedPreviewImage || product.image}
+                    alt={product.name}
+                    fill
+                    className="object-cover object-center"
+                    sizes="(max-width: 1024px) 100vw, 50vw"
+                  />
                 )}
               </div>
 
@@ -339,12 +367,31 @@ const ProductPage = ({
             )}
 
             {!capeProduct && (
-              <div className="mt-4 grid grid-cols-2 gap-3">
-                {[product.image, ...(product.additionalImages || [])].map((img, idx) => (
-                  <div key={`${img}-${idx}`} className="relative aspect-video overflow-hidden rounded-lg border border-[var(--border)]">
-                    <Image src={img} alt={`${product.name} image ${idx + 1}`} fill className="object-cover" />
-                  </div>
-                ))}
+              <div className="mt-3 flex items-center justify-center gap-2">
+                {galleryImages.map((img, idx) => {
+                  const isActive = img === (selectedPreviewImage || product.image);
+                  return (
+                    <button
+                      key={`${img}-${idx}`}
+                      type="button"
+                      onClick={() => setSelectedPreviewImage(img)}
+                      className={`relative w-20 aspect-[1000/700] overflow-hidden rounded-md border transition-colors ${
+                        isActive
+                          ? "border-[var(--primary)]"
+                          : "border-[var(--border)] hover:border-[var(--primary)]/60"
+                      }`}
+                      aria-label={`Show ${product.name} image ${idx + 1}`}
+                    >
+                      <Image
+                        src={img}
+                        alt={`${product.name} thumbnail ${idx + 1}`}
+                        fill
+                        className="object-cover object-center"
+                        sizes="80px"
+                      />
+                    </button>
+                  );
+                })}
               </div>
             )}
           </div>
