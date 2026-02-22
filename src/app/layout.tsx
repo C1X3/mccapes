@@ -13,7 +13,7 @@ import { Toaster } from "react-hot-toast";
 export const metadata: Metadata = {
   title: "MCCapes",
   description:
-    "Get exclusive high-quality Minecraft capes, skins and accessories to make your character stand out.",
+    "Get exclusive high-quality Minecraft capes to make your character stand out.",
   keywords: [
     "minecraft",
     "capes",
