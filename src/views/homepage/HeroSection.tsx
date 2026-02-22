@@ -143,8 +143,6 @@ const HeroSection = ({
                       <span
                         style={{
                           color: accentWordColor,
-                          textShadow:
-                            "0 0 6px color-mix(in srgb, currentColor, transparent 30%)",
                         }}
                       >
                         {heroTopWord}
