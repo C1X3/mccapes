@@ -13,8 +13,7 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
   const MNEMONIC = process.env.MNEMONIC;
 
   if (!MNEMONIC) {
-    console.error("❌ MNEMONIC is not set in env");
-    process.exit(1);
+    throw new Error("MNEMONIC is not set in env");
   }
 
   const seed = mnemonicToSeedSync(MNEMONIC);
@@ -25,8 +24,12 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
     select: { id: true, depositIndex: true, address: true },
   });
   if (wallets.length === 0) {
-    console.log("No unswept BTC wallets found.");
-    return;
+    return {
+      chain: "BITCOIN" as const,
+      initiatedCount: 0,
+      txIds: [] as string[],
+      message: "No unswept BTC wallets found.",
+    };
   }
 
   type UTXOInfo = {
@@ -35,6 +38,7 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
     value: number;
     depositIndex: number;
     rawTxHex: string;
+    address: string;
   };
   const utxos: UTXOInfo[] = [];
 
@@ -51,13 +55,17 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
           responseType: "text",
         })
       ).data.trim();
-      utxos.push({ txid, vout, value, depositIndex, rawTxHex });
+      utxos.push({ txid, vout, value, depositIndex, rawTxHex, address });
     }
   }
 
   if (utxos.length === 0) {
-    console.log("No UTXOs to sweep.");
-    return;
+    return {
+      chain: "BITCOIN" as const,
+      initiatedCount: 0,
+      txIds: [] as string[],
+      message: "No BTC UTXOs available to sweep.",
+    };
   }
 
   const psbt = new bitcoin.Psbt({ network: NETWORK });
@@ -79,10 +87,9 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
 
   const sendSats = totalSats - fee;
   if (sendSats <= 0) {
-    console.error(
-      `❌ Insufficient funds (${totalSats} sats) to cover fee (${fee} sats)`,
+    throw new Error(
+      `Insufficient BTC funds (${totalSats} sats) to cover fee (${fee} sats)`,
     );
-    process.exit(1);
   }
   console.log(
     `Total: ${totalSats} sats, fee: ${fee} sats, sending: ${sendSats} sats`,
@@ -132,10 +139,21 @@ export async function sendBitcoin(TARGET_ADDRESS: string) {
     .then((res) => res.data as string);
   console.log(`✅ Broadcasted TXID: ${txid}`);
 
+  const sweptAddresses = Array.from(new Set(utxos.map((u) => u.address)));
   await prisma.wallet.updateMany({
-    where: { id: { in: wallets.map((w) => w.id) } },
+    where: {
+      chain: "BITCOIN",
+      address: { in: sweptAddresses },
+    },
     data: { withdrawn: true, txHash: txid },
   });
 
   console.log("All addresses marked as swept.");
+
+  return {
+    chain: "BITCOIN" as const,
+    initiatedCount: sweptAddresses.length,
+    txIds: [txid],
+    message: `BTC withdrawal initiated for ${sweptAddresses.length} wallet${sweptAddresses.length === 1 ? "" : "s"}.`,
+  };
 }

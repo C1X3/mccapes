@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { DateRange } from "react-date-range";
+import toast from "react-hot-toast";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import {
@@ -195,12 +196,57 @@ export default function DashboardTab() {
     enabled: authQuery.data?.authenticated === true,
   });
 
+  const getTxExplorerUrl = (chain: string | undefined, txId: string) => {
+    if (!chain) return null;
+    if (chain === "SOLANA") return `https://explorer.solana.com/tx/${txId}`;
+    if (chain === "LITECOIN")
+      return `https://blockexplorer.one/litecoin/mainnet/tx/${txId}`;
+    if (chain === "ETHEREUM")
+      return `https://blockexplorer.one/ethereum/mainnet/tx/${txId}`;
+    if (chain === "BITCOIN")
+      return `https://blockexplorer.one/bitcoin/mainnet/tx/${txId}`;
+    return null;
+  };
+
   // Add the mutation for sending crypto balance
   const sendBalanceMutation = useMutation(
     trpc.crypto.sendBalance.mutationOptions({
-      onSuccess: () => {
+      onSuccess: (data) => {
         setIsWithdrawDialogOpen(false);
         setDestinationAddress("");
+        setWithdrawalError("");
+        const txIds = data?.txIds ?? [];
+        const txUrl =
+          txIds.length > 0 ? getTxExplorerUrl(data?.chain, txIds[0]) : null;
+        toast.custom(
+          (t) => (
+            <div className="max-w-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-xl">
+              <p className="text-sm font-semibold text-[var(--foreground)]">
+                {data?.message ?? "Withdrawal initiated."}
+              </p>
+              <div className="mt-3 flex items-center justify-end gap-2">
+                {txUrl && (
+                  <a
+                    href={txUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_12%)]"
+                  >
+                    View Transaction
+                  </a>
+                )}
+                <button
+                  type="button"
+                  onClick={() => toast.dismiss(t.id)}
+                  className="rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)]"
+                >
+                  Dismiss
+                </button>
+              </div>
+            </div>
+          ),
+          { duration: Infinity },
+        );
         cryptoBalances.refetch(); // Refresh balances after withdrawal
       },
       onError: (error) => {

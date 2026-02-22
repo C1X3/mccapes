@@ -66,8 +66,7 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
   const MNEMONIC = process.env.MNEMONIC;
 
   if (!MNEMONIC) {
-    console.error("❌ MNEMONIC is not set in env");
-    process.exit(1);
+    throw new Error("MNEMONIC is not set in env");
   }
 
   const seed = mnemonicToSeedSync(MNEMONIC);
@@ -78,8 +77,12 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
     select: { id: true, depositIndex: true, address: true },
   });
   if (wallets.length === 0) {
-    console.log("No unswept LTC wallets found.");
-    return;
+    return {
+      chain: "LITECOIN" as const,
+      initiatedCount: 0,
+      txIds: [] as string[],
+      message: "No unswept LTC wallets found.",
+    };
   }
 
   type UTXOInfo = {
@@ -134,8 +137,12 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
   }
 
   if (utxos.length === 0) {
-    console.log("No UTXOs to sweep.");
-    return;
+    return {
+      chain: "LITECOIN" as const,
+      initiatedCount: 0,
+      txIds: [] as string[],
+      message: "No LTC UTXOs available to sweep.",
+    };
   }
 
   const psbt = new bitcoin.Psbt({ network: NETWORK });
@@ -156,10 +163,9 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
 
   const sendLitoshis = totalLitoshis - fee;
   if (sendLitoshis <= 0) {
-    console.error(
-      `❌ Insufficient funds (${totalLitoshis} litoshis) to cover fee (${fee} litoshis)`,
+    throw new Error(
+      `Insufficient LTC funds (${totalLitoshis} litoshis) to cover fee (${fee} litoshis)`,
     );
-    process.exit(1);
   }
   console.log(
     `Total: ${totalLitoshis} litoshis, fee: ${fee} litoshis, sending: ${sendLitoshis} litoshis`,
@@ -222,4 +228,11 @@ export async function sendLitecoin(TARGET_ADDRESS: string) {
   });
 
   console.log(`Marked ${sweptAddresses.length} address(es) as swept.`);
+
+  return {
+    chain: "LITECOIN" as const,
+    initiatedCount: sweptAddresses.length,
+    txIds: [txid],
+    message: `LTC withdrawal initiated for ${sweptAddresses.length} wallet${sweptAddresses.length === 1 ? "" : "s"}.`,
+  };
 }

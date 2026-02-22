@@ -9,6 +9,7 @@ import { getTotalEthereumBalance } from "../crypto/getBalance/ethereum";
 import { sendSolanaBalance } from "../crypto/sendBalance/solana";
 import { sendBitcoin } from "../crypto/sendBalance/bitcoin";
 import { sendLitecoin } from "../crypto/sendBalance/litecoin";
+import { sendEthereum } from "../crypto/sendBalance/ethereum";
 import axios from "axios";
 
 // Fetch current crypto prices from CoinGecko
@@ -111,12 +112,11 @@ export const cryptoRouter = createTRPCRouter({
         return sendSolanaBalance(input.destination);
       } else if (input.type === CryptoType.BITCOIN) {
         return sendBitcoin(input.destination);
+      } else if (input.type === CryptoType.ETHEREUM) {
+        return sendEthereum(input.destination);
       } else if (input.type === CryptoType.LITECOIN) {
         return sendLitecoin(input.destination);
       }
-      // else if (input.type === CryptoType.ETHEREUM) {
-      //     return sendEthereumBalance(input.destination);
-      // }
       else {
         throw new Error("Unsupported crypto type");
       }

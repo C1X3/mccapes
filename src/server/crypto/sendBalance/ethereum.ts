@@ -5,8 +5,7 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   const MNEMONIC = process.env.MNEMONIC;
 
   if (!MNEMONIC) {
-    console.error("❌ MNEMONIC is not set in env");
-    process.exit(1);
+    throw new Error("MNEMONIC is not set in env");
   }
 
   const provider = new JsonRpcProvider(
@@ -19,8 +18,12 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   });
 
   if (wallets.length === 0) {
-    console.log("No unswept ETH wallets found.");
-    return;
+    return {
+      chain: "ETHEREUM" as const,
+      initiatedCount: 0,
+      txIds: [] as string[],
+      message: "No unswept ETH wallets found.",
+    };
   }
 
   let totalSent = BigInt(0);
@@ -58,8 +61,7 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
       });
 
       console.log(`  Transaction sent: ${tx.hash}`);
-      await tx.wait();
-      console.log(`  ✅ Confirmed: ${formatEther(valueToSend)} ETH`);
+      console.log(`  ✅ Initiated: ${formatEther(valueToSend)} ETH`);
 
       totalSent += valueToSend;
       txHashes.push(tx.hash);
@@ -79,4 +81,14 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   }
 
   console.log("All processed addresses marked as swept.");
+
+  return {
+    chain: "ETHEREUM" as const,
+    initiatedCount: txHashes.length,
+    txIds: txHashes,
+    message:
+      txHashes.length > 0
+        ? `ETH withdrawals initiated for ${txHashes.length} wallet${txHashes.length === 1 ? "" : "s"}.`
+        : "No ETH balances available to sweep.",
+  };
 }
