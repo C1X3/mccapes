@@ -86,11 +86,8 @@ declare global {
 globalThis.CRYPTO_RATES_CACHE ??= { ...DEFAULT_RATES_CACHE };
 
 function getWebhookCallbackUrl() {
-  const base = process.env.NEXT_PUBLIC_APP_URL;
-  if (!base) {
-    throw new Error("Missing NEXT_PUBLIC_APP_URL for crypto webhooks");
-  }
-  return `${base.replace(/\/$/, "")}/api/webhooks/crypto`;
+  const base = new URL(process.env.NEXT_PUBLIC_APP_URL!);
+  return `${base.origin}/api/webhooks/crypto`;
 }
 
 export async function updateCryptoRates() {
