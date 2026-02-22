@@ -29,6 +29,7 @@ import {
   CartesianGrid,
   Tooltip,
 } from "recharts";
+import { createPortal } from "react-dom";
 
 interface AffiliateDetailModalProps {
   affiliateId: string;
@@ -143,9 +144,9 @@ export default function AffiliateDetailModal({
       orders: d.orders,
     })) || [];
 
-  return (
+  const modal = (
     <div
-      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
       onClick={onClose}
     >
       <div
@@ -569,7 +570,7 @@ export default function AffiliateDetailModal({
       {/* Delete Confirmation Modal */}
       {showDeleteConfirm && (
         <div
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[60] flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[210] flex items-center justify-center p-4"
           onClick={() => setShowDeleteConfirm(false)}
         >
           <div
@@ -617,4 +618,7 @@ export default function AffiliateDetailModal({
       )}
     </div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

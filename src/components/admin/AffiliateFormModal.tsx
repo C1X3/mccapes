@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { useState } from "react";
 import { FaTimes, FaUsers } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { createPortal } from "react-dom";
 
 interface AffiliateFormData {
   id?: string;
@@ -78,12 +79,12 @@ export default function AffiliateFormModal({
 
   if (!isOpen) return null;
 
-  return (
+  const modal = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -204,4 +205,7 @@ export default function AffiliateFormModal({
       </motion.div>
     </motion.div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

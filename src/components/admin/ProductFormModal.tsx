@@ -8,6 +8,7 @@ import { useMutation } from "@tanstack/react-query";
 import { FaStar, FaRegStar } from "react-icons/fa";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { createPortal } from "react-dom";
 
 export const schema = z.object({
   id: z.string().optional(),
@@ -259,12 +260,12 @@ export default function ProductFormModal({
     reader.readAsDataURL(file);
   };
 
-  return (
+  const modal = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center overflow-y-auto p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center overflow-y-auto p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -979,4 +980,10 @@ export default function ProductFormModal({
       </motion.div>
     </motion.div>
   );
+
+  if (typeof document === "undefined") {
+    return null;
+  }
+
+  return createPortal(modal, document.body);
 }

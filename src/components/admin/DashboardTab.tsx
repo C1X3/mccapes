@@ -3,6 +3,7 @@ import { useQuery, useMutation } from "@tanstack/react-query";
 import { format, formatDistanceToNow } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { DateRange } from "react-date-range";
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
@@ -1106,9 +1107,11 @@ export default function DashboardTab() {
         )}
       </div>
       {/* Withdrawal Dialog */}
-      {isWithdrawDialogOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-admin-card rounded-lg p-6 w-full max-w-md">
+      {isWithdrawDialogOpen &&
+        typeof document !== "undefined" &&
+        createPortal(
+          <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
+          <div className="w-full max-w-md rounded-2xl border border-[var(--border)] bg-[var(--color-admin-card)] p-6 shadow-2xl">
             <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
               {selectedCrypto === CryptoType.BITCOIN && (
                 <FaBitcoin className="text-[#f7931a]" />
@@ -1151,17 +1154,21 @@ export default function DashboardTab() {
               <p>
                 Amount:{" "}
                 {selectedCrypto === CryptoType.BITCOIN &&
-                  formatCryptoBalance(cryptoBalances.data?.bitcoin || 0) +
-                    " BTC"}
+                  `${formatCryptoBalance(cryptoBalances.data?.bitcoin || 0)} BTC ($${(
+                    cryptoBalances.data?.usdValues?.bitcoin || 0
+                  ).toFixed(2)})`}
                 {selectedCrypto === CryptoType.ETHEREUM &&
-                  formatCryptoBalance(cryptoBalances.data?.ethereum || 0) +
-                    " ETH"}
+                  `${formatCryptoBalance(cryptoBalances.data?.ethereum || 0)} ETH ($${(
+                    cryptoBalances.data?.usdValues?.ethereum || 0
+                  ).toFixed(2)})`}
                 {selectedCrypto === CryptoType.LITECOIN &&
-                  formatCryptoBalance(cryptoBalances.data?.litecoin || 0) +
-                    " LTC"}
+                  `${formatCryptoBalance(cryptoBalances.data?.litecoin || 0)} LTC ($${(
+                    cryptoBalances.data?.usdValues?.litecoin || 0
+                  ).toFixed(2)})`}
                 {selectedCrypto === CryptoType.SOLANA &&
-                  formatCryptoBalance(cryptoBalances.data?.solana || 0) +
-                    " SOL"}
+                  `${formatCryptoBalance(cryptoBalances.data?.solana || 0)} SOL ($${(
+                    cryptoBalances.data?.usdValues?.solana || 0
+                  ).toFixed(2)})`}
               </p>
               <p className="text-[var(--color-text-secondary)]">
                 Network fees will be deducted automatically
@@ -1184,8 +1191,9 @@ export default function DashboardTab() {
               </button>
             </div>
           </div>
-        </div>
-      )}
+        </div>,
+          document.body,
+        )}
     </div>
   );
 }

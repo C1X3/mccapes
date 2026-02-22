@@ -70,7 +70,7 @@ export default function AdminWrapper({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -127,7 +127,7 @@ export default function AdminWrapper({
         </motion.div>
       )}
       {isAuthenticated.isLoading && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[var(--primary)]"></div>
         </div>
       )}

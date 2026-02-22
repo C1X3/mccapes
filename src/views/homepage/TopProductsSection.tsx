@@ -34,8 +34,7 @@ const TopProductsSection = ({
             Our Products
           </h2>
           <p className="mx-auto mt-3 max-w-2xl text-base text-[var(--color-text-secondary)] md:text-lg">
-            Redeemable event cape codes with transparent pricing and trusted
-            delivery.
+            Redeemable cape codes with instant email delivery from a verified source.
           </p>
         </motion.div>
 

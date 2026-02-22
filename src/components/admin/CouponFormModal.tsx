@@ -10,6 +10,7 @@ import { Controller, Resolver, useForm } from "react-hook-form";
 import { toast } from "react-hot-toast";
 import { FaTimes } from "react-icons/fa";
 import { z } from "zod";
+import { createPortal } from "react-dom";
 
 export type CouponFormModalSchema = z.infer<typeof couponCodeSchema>;
 
@@ -83,12 +84,12 @@ export default function CouponFormModal({
 
   if (!isOpen) return null;
 
-  return (
+  const modal = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center overflow-y-auto p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center overflow-y-auto p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -323,4 +324,7 @@ export default function CouponFormModal({
       </motion.div>
     </motion.div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

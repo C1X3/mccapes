@@ -168,6 +168,21 @@ const ProductPage = ({
     router.push("/cart");
   };
 
+  const stockStatusTone: "green" | "yellow" | "red" | "gray" =
+    stockCount! >= 6
+      ? "green"
+      : stockCount! >= 4
+        ? "yellow"
+        : stockCount! >= 1
+          ? "red"
+          : "gray";
+  const stockStatusText =
+    stockCount! >= 6
+      ? "In stock"
+      : stockCount! > 0
+        ? `${stockCount} in stock`
+        : "Out of stock";
+
   if (!product) {
     return (
       <div className="min-h-screen bg-[var(--background)] flex items-center justify-center">
@@ -480,32 +495,29 @@ const ProductPage = ({
               )}
 
               <div className="flex items-center gap-3">
-                {stockCount! > 10 ? (
+                {stockStatusTone === "green" ? (
                   <FaCheckCircle className="text-green-500 shrink-0" size={24} />
-                ) : stockCount! > 0 && stockCount! <= 3 ? (
-                  <FaExclamationTriangle className="text-red-500 shrink-0" size={24} />
-                ) : stockCount! > 0 ? (
+                ) : stockStatusTone === "yellow" ? (
                   <FaExclamationTriangle className="text-amber-500 shrink-0" size={24} />
+                ) : stockStatusTone === "red" ? (
+                  <FaExclamationTriangle className="text-red-500 shrink-0" size={24} />
                 ) : (
-                  <FaTimesCircle className="text-red-500 shrink-0" size={24} />
+                  <FaTimesCircle className="text-gray-500 shrink-0" size={24} />
                 )}
                 <div>
                   <span
-                    className={`font-semibold ${stockCount! > 10 ? "text-green-600" : stockCount! > 0 && stockCount! <= 3 ? "text-red-600" : stockCount! > 0 ? "text-amber-600" : "text-red-600"}`}
+                    className={`font-semibold ${
+                      stockStatusTone === "green"
+                        ? "text-green-600"
+                        : stockStatusTone === "yellow"
+                          ? "text-amber-600"
+                          : stockStatusTone === "red"
+                            ? "text-red-600"
+                            : "text-gray-600"
+                    }`}
                   >
-                    {stockCount! > 10
-                      ? "In Stock"
-                      : stockCount! > 0
-                        ? "Low Stock"
-                        : "Out of Stock"}
+                    {stockStatusText}
                   </span>
-                  {stockCount! > 0 ? (
-                    <p className="text-sm text-gray-500 mt-0.5">
-                      <span className="font-medium tabular-nums text-[var(--foreground)]">{stockCount}</span> units left in stock
-                    </p>
-                  ) : (
-                    <p className="text-sm text-gray-500 mt-0.5">Currently unavailable</p>
-                  )}
                 </div>
               </div>
             </div>

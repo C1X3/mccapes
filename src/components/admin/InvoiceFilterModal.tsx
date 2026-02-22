@@ -4,6 +4,7 @@ import { FaTimes } from "react-icons/fa";
 import { OrderStatus, PaymentType, CryptoType } from "@generated/browser";
 import { getPaymentMethodName } from "@/utils/invoiceUtils";
 import { PaymentFilterType } from "@/types/invoiceFilters";
+import { createPortal } from "react-dom";
 
 interface InvoiceFilterModalProps {
   showFilterModal: boolean;
@@ -66,12 +67,12 @@ export default function InvoiceFilterModal({
 }: InvoiceFilterModalProps) {
   if (!showFilterModal) return null;
 
-  return (
+  const modal = (
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center overflow-y-auto p-4"
+      className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center overflow-y-auto p-4"
     >
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
@@ -327,4 +328,7 @@ export default function InvoiceFilterModal({
       </motion.div>
     </motion.div>
   );
+
+  if (typeof document === "undefined") return null;
+  return createPortal(modal, document.body);
 }

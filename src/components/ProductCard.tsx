@@ -116,6 +116,22 @@ const ProductCard = ({
   const resetTilt = () => setTilt({ x: 0, y: 0 });
 
   const rating = Math.max(0, Math.min(5, Math.floor(product.rating || 0)));
+  const stockBadgeTone: "gray" | "red" | "yellow" | "none" =
+    product.stock === 0
+      ? "gray"
+      : product.stock <= 3
+        ? "red"
+        : product.stock <= 5
+          ? "yellow"
+          : "none";
+  const showStockBadge = stockBadgeTone !== "none";
+  const stockLabel = product.stock > 0 ? `${product.stock} in stock` : "Out of stock";
+  const stockBadgeClasses =
+    stockBadgeTone === "gray"
+      ? "border-gray-200 bg-gray-100 text-gray-600"
+      : stockBadgeTone === "yellow"
+        ? "border-amber-200 bg-amber-50 text-amber-700"
+        : "border-red-200 bg-red-50 text-red-600";
 
   if (styles === "article") {
     return (
@@ -139,7 +155,12 @@ const ProductCard = ({
           )}
         </div>
 
-        <div className="flex h-full flex-1 flex-col justify-between">
+        <div className="relative flex h-full flex-1 flex-col justify-between">
+          {showStockBadge && (
+            <span className={`absolute right-0 top-0 rounded-full border px-2 py-0.5 text-xs font-semibold ${stockBadgeClasses}`}>
+              {stockLabel}
+            </span>
+          )}
           <div>
             {renderRating(rating)}
             <h4 className="mt-1 text-lg font-semibold text-[var(--foreground)] group-hover:text-[var(--accent-light)]">
@@ -148,14 +169,16 @@ const ProductCard = ({
           </div>
 
           <div className="mt-4 flex items-center justify-between">
-            <span className="text-xl font-bold text-[var(--foreground)]">
-              ${product.price}
-              {product.slashPrice && (
-                <span className="ml-2 text-sm text-[var(--color-text-muted)] line-through">
-                  ${product.slashPrice.toFixed(2)}
-                </span>
-              )}
-            </span>
+            <div className="flex min-w-0 items-center gap-2">
+              <span className="text-xl font-bold text-[var(--foreground)]">
+                ${product.price}
+                {product.slashPrice && (
+                  <span className="ml-2 text-sm text-[var(--color-text-muted)] line-through">
+                    ${product.slashPrice.toFixed(2)}
+                  </span>
+                )}
+              </span>
+            </div>
             <button
               onClick={handleAddToCart}
               onMouseDown={(e) => e.stopPropagation()}
@@ -172,7 +195,7 @@ const ProductCard = ({
   return (
     <motion.div
       key={product.id}
-      className="group cursor-pointer rounded-2xl border border-[var(--border)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface),#fff_4%),color-mix(in_srgb,var(--surface),#000_9%))] overflow-hidden"
+      className="group relative cursor-pointer overflow-hidden rounded-2xl border border-[var(--border)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface),#fff_4%),color-mix(in_srgb,var(--surface),#000_9%))]"
       variants={{
         hidden: { opacity: 0, y: 20 },
         visible: { opacity: 1, y: 0 },
@@ -211,7 +234,12 @@ const ProductCard = ({
         )}
       </div>
 
-      <div className="p-5">
+      <div className="relative p-5">
+        {showStockBadge && (
+          <span className={`absolute right-5 top-5 z-20 rounded-full border px-2 py-0.5 text-xs font-semibold ${stockBadgeClasses}`}>
+            {stockLabel}
+          </span>
+        )}
         {renderRating(rating)}
         <h4 className="mb-2 mt-2 text-2xl text-[var(--foreground)] group-hover:text-[var(--accent-light)]">
           {product.name}
@@ -220,14 +248,16 @@ const ProductCard = ({
           {product.description}
         </p>
         <div className="flex items-center justify-between">
-          <span className="text-2xl font-bold text-[var(--foreground)]">
-            ${product.price}
-            {product.slashPrice && (
-              <span className="ml-2 text-sm line-through text-[var(--color-text-muted)]">
-                ${product.slashPrice.toFixed(2)}
-              </span>
-            )}
-          </span>
+          <div className="flex min-w-0 items-center gap-2">
+            <span className="text-2xl font-bold text-[var(--foreground)]">
+              ${product.price}
+              {product.slashPrice && (
+                <span className="ml-2 text-sm line-through text-[var(--color-text-muted)]">
+                  ${product.slashPrice.toFixed(2)}
+                </span>
+              )}
+            </span>
+          </div>
           <button
             type="button"
             onClick={handleAddToCart}

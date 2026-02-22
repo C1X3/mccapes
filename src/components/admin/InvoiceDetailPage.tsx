@@ -23,6 +23,7 @@ import Link from "next/link";
 import toast from "react-hot-toast";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { createPortal } from "react-dom";
 import {
   getStatusBadgeClass,
   formatDate,
@@ -656,12 +657,14 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
       </div>
 
       {/* Confirmation Modal */}
-      {showConfirmModal && (
+      {showConfirmModal &&
+        typeof document !== "undefined" &&
+        createPortal(
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -729,16 +732,19 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </button>
             </div>
           </motion.div>
-        </motion.div>
-      )}
+        </motion.div>,
+          document.body,
+        )}
 
       {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
+      {showDeleteModal &&
+        typeof document !== "undefined" &&
+        createPortal(
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -807,16 +813,20 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </button>
             </div>
           </motion.div>
-        </motion.div>
-      )}
+        </motion.div>,
+          document.body,
+        )}
 
       {/* Code Modal */}
-      {showCodeModal && selectedItem && (
+      {showCodeModal &&
+        selectedItem &&
+        typeof document !== "undefined" &&
+        createPortal(
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+          className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[200] flex items-center justify-center p-4"
         >
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
@@ -922,8 +932,9 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </p>
             </div>
           </motion.div>
-        </motion.div>
-      )}
+        </motion.div>,
+          document.body,
+        )}
     </div>
   );
 }
