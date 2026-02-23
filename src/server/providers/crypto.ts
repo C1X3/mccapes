@@ -228,6 +228,20 @@ async function registerCryptoWebhook(
   return response.data?.id ?? null;
 }
 
+async function registerWebhookBestEffort(crypto: CryptoType, address: string) {
+  try {
+    return await registerCryptoWebhook(crypto, address);
+  } catch (error: any) {
+    if (error?.response?.status === 429) {
+      console.warn(
+        `Webhook registration rate limited for ${crypto} ${address}. Checkout will continue and fallback reconcile will handle settlement.`,
+      );
+      return null;
+    }
+    throw error;
+  }
+}
+
 async function createWalletWithAtomicIndex(
   orderId: string,
   crypto: CryptoType,
@@ -317,7 +331,7 @@ export async function createWalletDetails(
     amountCrypto,
   );
 
-  const webhookId = await registerCryptoWebhook(crypto, wallet.address);
+  const webhookId = await registerWebhookBestEffort(crypto, wallet.address);
   if (webhookId) {
     await prisma.wallet.update({
       where: { id: wallet.id },

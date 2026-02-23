@@ -1,32 +1,21 @@
-import { CryptoType, OrderStatus } from "@generated/client";
+import { CryptoType } from "@generated/client";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
 
 export async function getTotalBitcoinBalance(): Promise<number> {
   const SATOSHIS_PER_BTC = 1e8;
 
-  // 1) Pull all unpaid BTC‐chain wallets
-  const unpaid = await prisma.order.findMany({
+  // 1) Pull all unswept BTC wallets
+  const wallets = await prisma.wallet.findMany({
     where: {
-      status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
-      Wallet: {
-        some: {
-          chain: CryptoType.BITCOIN,
-          withdrawn: false,
-        },
-      },
+      chain: CryptoType.BITCOIN,
+      withdrawn: false,
     },
-    select: {
-      Wallet: {
-        where: { chain: CryptoType.BITCOIN, withdrawn: false },
-        select: { address: true },
-      },
-    },
+    select: { address: true },
   });
 
   // 2) Flatten & dedupe
-  const allAddrs = unpaid.flatMap((o) => o.Wallet.map((w) => w.address));
-  const uniqueAddrs = Array.from(new Set(allAddrs));
+  const uniqueAddrs = Array.from(new Set(wallets.map((w) => w.address)));
 
   let totalSats = 0;
 

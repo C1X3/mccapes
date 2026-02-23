@@ -1,30 +1,19 @@
-import { CryptoType, OrderStatus } from "@generated/client";
+import { CryptoType } from "@generated/client";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
 import { formatEther } from "ethers";
 
 export async function getTotalEthereumBalance(): Promise<number> {
-  const unpaid = await prisma.order.findMany({
+  const wallets = await prisma.wallet.findMany({
     where: {
-      status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
-      Wallet: {
-        some: {
-          chain: CryptoType.ETHEREUM,
-          withdrawn: false,
-        },
-      },
+      chain: CryptoType.ETHEREUM,
+      withdrawn: false,
     },
-    select: {
-      Wallet: {
-        where: { chain: CryptoType.ETHEREUM, withdrawn: false },
-        select: { address: true },
-      },
-    },
+    select: { address: true },
   });
 
   // 2) Flatten & dedupe addresses
-  const allAddrs = unpaid.flatMap((o) => o.Wallet.map((w) => w.address));
-  const uniqueAddrs = Array.from(new Set(allAddrs));
+  const uniqueAddrs = Array.from(new Set(wallets.map((w) => w.address)));
 
   // 3) Fetch balances via public Ethereum RPC (FREE, no rate limits on public nodes)
   let totalWei = BigInt(0);

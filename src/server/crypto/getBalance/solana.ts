@@ -1,4 +1,4 @@
-import { CryptoType, OrderStatus } from "@generated/client";
+import { CryptoType } from "@generated/client";
 import {
   Connection,
   clusterApiUrl,
@@ -8,29 +8,17 @@ import {
 import { prisma } from "@/utils/prisma";
 
 export async function getTotalSolanaBalance(): Promise<number> {
-  // 1. Fetch all unpaid Solana‐wallet records and pluck their addresses:
-  const unpaid = await prisma.order.findMany({
+  // 1. Fetch all unswept Solana wallets and pluck their addresses:
+  const wallets = await prisma.wallet.findMany({
     where: {
-      status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
-      Wallet: {
-        some: {
-          chain: CryptoType.SOLANA,
-          withdrawn: false,
-        },
-      },
+      chain: CryptoType.SOLANA,
+      withdrawn: false,
     },
-    select: {
-      Wallet: {
-        where: { chain: CryptoType.SOLANA, withdrawn: false },
-        select: { address: true },
-      },
-    },
+    select: { address: true },
   });
 
   // 2. Flatten & dedupe the addresses:
-  const allAddrs = unpaid
-    .flatMap((o) => o.Wallet.map((w) => w.address))
-    .filter(Boolean);
+  const allAddrs = wallets.map((w) => w.address).filter(Boolean);
   const uniqueAddrs = Array.from(new Set(allAddrs));
 
   // 3. Convert to PublicKey objects:

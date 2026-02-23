@@ -122,8 +122,7 @@ export const cryptoRouter = createTRPCRouter({
         return sendEthereum(input.destination);
       } else if (input.type === CryptoType.LITECOIN) {
         return sendLitecoin(input.destination);
-      }
-      else {
+      } else {
         throw new Error("Unsupported crypto type");
       }
     }),
