@@ -15,7 +15,12 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
   );
 
   const wallets = await prisma.wallet.findMany({
-    where: { chain: "ETHEREUM", paid: true, withdrawn: false },
+    where: {
+      chain: "ETHEREUM",
+      paid: true,
+      withdrawn: false,
+      txHash: { not: null },
+    },
     select: { id: true, depositIndex: true, address: true, webhookId: true },
   });
 
@@ -24,12 +29,14 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
       chain: "ETHEREUM" as const,
       initiatedCount: 0,
       txIds: [] as string[],
+      txs: [] as Array<{ txId: string; amount: number }>,
       message: "No unswept ETH wallets found.",
     };
   }
 
   let totalSent = BigInt(0);
   const txHashes: string[] = [];
+  const txs: Array<{ txId: string; amount: number }> = [];
 
   for (const { id, depositIndex, address, webhookId } of wallets) {
     console.log(`Processing wallet ${address} (index ${depositIndex})…`);
@@ -52,6 +59,13 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
 
       if (balance <= reservedGas) {
         console.log(`  Skipping (insufficient balance to cover gas)`);
+        // Mark dust wallets as withdrawn so they do not remain in "available" forever.
+        await prisma.wallet.update({
+          where: { id },
+          data: {
+            withdrawn: true,
+          },
+        });
         continue;
       }
 
@@ -67,6 +81,10 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
 
       totalSent += valueToSend;
       txHashes.push(tx.hash);
+      txs.push({
+        txId: tx.hash,
+        amount: Number(formatEther(valueToSend)),
+      });
 
       await prisma.wallet.update({
         where: { id },
@@ -92,6 +110,7 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
     chain: "ETHEREUM" as const,
     initiatedCount: txHashes.length,
     txIds: txHashes,
+    txs,
     message:
       txHashes.length > 0
         ? `ETH withdrawals initiated for ${txHashes.length} wallet${txHashes.length === 1 ? "" : "s"}.`

@@ -5,10 +5,11 @@ import axios from "axios";
 export async function getTotalBitcoinBalance(): Promise<number> {
   const SATOSHIS_PER_BTC = 1e8;
 
-  // 1) Pull all unswept BTC wallets
+  // 1) Pull all paid, unswept BTC wallets (matches sendBalance criteria for withdrawable)
   const wallets = await prisma.wallet.findMany({
     where: {
       chain: CryptoType.BITCOIN,
+      paid: true,
       withdrawn: false,
     },
     select: { address: true },

@@ -7,6 +7,7 @@ export async function getTotalEthereumBalance(): Promise<number> {
   const wallets = await prisma.wallet.findMany({
     where: {
       chain: CryptoType.ETHEREUM,
+      paid: true,
       withdrawn: false,
     },
     select: { address: true },
@@ -18,31 +19,37 @@ export async function getTotalEthereumBalance(): Promise<number> {
   // 3) Fetch balances via public Ethereum RPC (FREE, no rate limits on public nodes)
   let totalWei = BigInt(0);
 
-  for (const address of uniqueAddrs) {
-    try {
-      // Using Cloudflare's public Ethereum node (no auth required, generous limits)
-      const url = "https://cloudflare-eth.com";
-      const resp = await axios.post(
-        url,
-        {
-          jsonrpc: "2.0",
-          method: "eth_getBalance",
-          params: [address, "latest"],
-          id: 1,
-        },
-        {
-          timeout: 3000, // 3 second timeout
-        },
-      );
+  const rpcEndpoints = [
+    "https://cloudflare-eth.com",
+    "https://eth.llamarpc.com",
+    "https://rpc.ankr.com/eth",
+  ];
 
-      if (resp.data.result) {
-        // Result is hex string, convert to BigInt
-        const balance = BigInt(resp.data.result);
-        totalWei += balance;
+  for (const address of uniqueAddrs) {
+    let balanceWei: bigint | null = null;
+    for (const url of rpcEndpoints) {
+      try {
+        const resp = await axios.post(
+          url,
+          {
+            jsonrpc: "2.0",
+            method: "eth_getBalance",
+            params: [address, "latest"],
+            id: 1,
+          },
+          { timeout: 6000 },
+        );
+        const hex = resp.data?.result;
+        if (hex !== undefined && hex !== null) {
+          balanceWei = BigInt(hex);
+          break;
+        }
+      } catch {
+        // Try next endpoint
       }
-    } catch (error) {
-      console.error(`Error fetching Ethereum balance for ${address}:`, error);
-      // Continue to next address instead of failing completely
+    }
+    if (balanceWei !== null) {
+      totalWei += balanceWei;
     }
   }
 

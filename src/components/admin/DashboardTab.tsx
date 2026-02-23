@@ -215,38 +215,79 @@ export default function DashboardTab() {
         setIsWithdrawDialogOpen(false);
         setDestinationAddress("");
         setWithdrawalError("");
-        const txIds = data?.txIds ?? [];
-        const txUrl =
-          txIds.length > 0 ? getTxExplorerUrl(data?.chain, txIds[0]) : null;
-        toast.custom(
-          (t) => (
-            <div className="max-w-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-xl">
-              <p className="text-sm font-semibold text-[var(--foreground)]">
-                {data?.message ?? "Withdrawal initiated."}
-              </p>
-              <div className="mt-3 flex items-center justify-end gap-2">
-                {txUrl && (
-                  <a
-                    href={txUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-full border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_12%)]"
+        const txRows =
+          data?.txs && data.txs.length > 0
+            ? data.txs
+            : (data?.txIds ?? []).map((txId) => ({ txId, amount: 0 }));
+
+        const chainPrice =
+          data?.chain === "BITCOIN"
+            ? (cryptoBalances.data?.prices?.bitcoin ?? 0)
+            : data?.chain === "ETHEREUM"
+              ? (cryptoBalances.data?.prices?.ethereum ?? 0)
+              : data?.chain === "LITECOIN"
+                ? (cryptoBalances.data?.prices?.litecoin ?? 0)
+                : data?.chain === "SOLANA"
+                  ? (cryptoBalances.data?.prices?.solana ?? 0)
+                  : 0;
+
+        const chainSymbol =
+          data?.chain === "BITCOIN"
+            ? "BTC"
+            : data?.chain === "ETHEREUM"
+              ? "ETH"
+              : data?.chain === "LITECOIN"
+                ? "LTC"
+                : data?.chain === "SOLANA"
+                  ? "SOL"
+                  : "";
+
+        if (txRows.length === 0) {
+          toast.success(data?.message ?? "Withdrawal initiated.");
+        } else {
+          txRows.forEach(({ txId, amount }) => {
+            const txUrl = getTxExplorerUrl(data?.chain, txId);
+            const usdAmount = amount * chainPrice;
+            toast.custom(
+              (t) => (
+                <div className="max-w-sm rounded-xl border border-[var(--border)] bg-[var(--surface)] p-4 shadow-xl">
+                  <p className="text-sm font-semibold text-[var(--foreground)]">
+                    Withdrawal initiated
+                  </p>
+                  <p className="mt-1 text-xs text-[var(--color-text-secondary)]">
+                    {amount.toFixed(8)} {chainSymbol} (${usdAmount.toFixed(2)} USD)
+                  </p>
+                  <p
+                    className="mt-1 truncate text-[11px] text-[var(--color-text-muted)]"
+                    title={txId}
                   >
-                    View Transaction
-                  </a>
-                )}
-                <button
-                  type="button"
-                  onClick={() => toast.dismiss(t.id)}
-                  className="rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)]"
-                >
-                  Dismiss
-                </button>
-              </div>
-            </div>
-          ),
-          { duration: Infinity },
-        );
+                    {txId}
+                  </p>
+                  <div className="mt-3 flex items-center justify-end gap-2">
+                    {txUrl && (
+                      <a
+                        href={txUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="rounded-md border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_6%)] px-3 py-1.5 text-xs font-semibold text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_12%)]"
+                      >
+                        View Tx
+                      </a>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => toast.dismiss(t.id)}
+                      className="rounded-md bg-[var(--primary)] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)]"
+                    >
+                      Dismiss
+                    </button>
+                  </div>
+                </div>
+              ),
+              { duration: Infinity },
+            );
+          });
+        }
         cryptoBalances.refetch(); // Refresh balances after withdrawal
       },
       onError: (error) => {

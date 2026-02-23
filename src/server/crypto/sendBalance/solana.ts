@@ -37,7 +37,12 @@ export async function sendSolanaBalance(destination: string) {
     select: {
       id: true,
       Wallet: {
-        where: { chain: CryptoType.SOLANA, paid: true, withdrawn: false },
+        where: {
+          chain: CryptoType.SOLANA,
+          paid: true,
+          withdrawn: false,
+          txHash: { not: null },
+        },
         select: { id: true, address: true, depositIndex: true, webhookId: true },
       },
     },
@@ -49,6 +54,7 @@ export async function sendSolanaBalance(destination: string) {
       chain: "SOLANA" as const,
       initiatedCount: 0,
       txIds: [] as string[],
+      txs: [] as Array<{ txId: string; amount: number }>,
       message: "No unswept SOL wallets found.",
     };
   }
@@ -73,6 +79,7 @@ export async function sendSolanaBalance(destination: string) {
   const connection = new Connection(clusterApiUrl("mainnet-beta"), "confirmed");
   const destPubkey = new PublicKey(destination);
   const txIds: string[] = [];
+  const txs: Array<{ txId: string; amount: number }> = [];
 
   for (const idx of indexes) {
     try {
@@ -81,7 +88,13 @@ export async function sendSolanaBalance(destination: string) {
       const balance = await connection.getBalance(kp.publicKey);
 
       // skip empty accounts
-      if (balance === 0) continue;
+      if (balance === 0) {
+        await prisma.wallet.updateMany({
+          where: { chain: CryptoType.SOLANA, address: idx.address },
+          data: { withdrawn: true },
+        });
+        continue;
+      }
 
       // estimate fee
       const { blockhash: feeBlockhash } =
@@ -104,7 +117,13 @@ export async function sendSolanaBalance(destination: string) {
 
       // compute sendable lamports
       const lamportsToSend = balance - fee;
-      if (lamportsToSend <= 0) continue;
+      if (lamportsToSend <= 0) {
+        await prisma.wallet.updateMany({
+          where: { chain: CryptoType.SOLANA, address: idx.address },
+          data: { withdrawn: true },
+        });
+        continue;
+      }
 
       // build actual send tx
       const { blockhash: sendBlockhash } =
@@ -125,6 +144,7 @@ export async function sendSolanaBalance(destination: string) {
       const raw = sendTx.serialize();
       const sig = await connection.sendRawTransaction(raw);
       txIds.push(sig);
+      txs.push({ txId: sig, amount: lamportsToSend / LAMPORTS_PER_SOL });
 
       console.log(
         `Initiated ${(lamportsToSend / LAMPORTS_PER_SOL).toFixed(6)} SOL from index ${idx.index} — tx ${sig}`,
@@ -150,6 +170,7 @@ export async function sendSolanaBalance(destination: string) {
     chain: "SOLANA" as const,
     initiatedCount: txIds.length,
     txIds,
+    txs,
     message:
       txIds.length > 0
         ? `SOL withdrawals initiated for ${txIds.length} wallet${txIds.length === 1 ? "" : "s"}.`

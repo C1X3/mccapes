@@ -145,7 +145,7 @@ async function buildAndBroadcastSweep(
     })
     .then((res) => res.data as string);
 
-  return txid;
+  return { txid, sentSats: sendSats };
 }
 
 export async function sendBitcoin(targetAddress: string) {
@@ -160,7 +160,12 @@ export async function sendBitcoin(targetAddress: string) {
   const root = bip32.fromSeed(seed);
 
   const wallets = await prisma.wallet.findMany({
-    where: { chain: CryptoType.BITCOIN, paid: true, withdrawn: false },
+    where: {
+      chain: CryptoType.BITCOIN,
+      paid: true,
+      withdrawn: false,
+      txHash: { not: null },
+    },
     select: {
       id: true,
       depositIndex: true,
@@ -174,28 +179,48 @@ export async function sendBitcoin(targetAddress: string) {
       chain: "BITCOIN" as const,
       initiatedCount: 0,
       txIds: [] as string[],
+      txs: [] as Array<{ txId: string; amount: number }>,
       message: "No paid unswept BTC wallets found.",
     };
   }
 
   const utxos = await fetchUtxos(wallets);
 
+  // Auto-close wallets that are paid but currently have no spendable UTXOs.
+  const walletIdsWithUtxos = new Set(utxos.map((u) => u.walletId));
+  const emptyWalletIds = wallets
+    .filter((w) => !walletIdsWithUtxos.has(w.id))
+    .map((w) => w.id);
+  if (emptyWalletIds.length > 0) {
+    await prisma.wallet.updateMany({
+      where: { id: { in: emptyWalletIds } },
+      data: { withdrawn: true },
+    });
+  }
+
   if (utxos.length === 0) {
     return {
       chain: "BITCOIN" as const,
       initiatedCount: 0,
       txIds: [] as string[],
+      txs: [] as Array<{ txId: string; amount: number }>,
       message: "No BTC UTXOs available to sweep.",
     };
   }
 
   const groups = groupUtxos(utxos);
   const txIds: string[] = [];
+  const txs: Array<{ txId: string; amount: number }> = [];
   const sweptWalletIds = new Set<string>();
 
   for (const group of groups) {
-    const txid = await buildAndBroadcastSweep(group, targetAddress, root);
+    const { txid, sentSats } = await buildAndBroadcastSweep(
+      group,
+      targetAddress,
+      root,
+    );
     txIds.push(txid);
+    txs.push({ txId: txid, amount: sentSats / 1e8 });
 
     const walletIds = Array.from(new Set(group.map((u) => u.walletId)));
     await prisma.wallet.updateMany({
@@ -236,6 +261,7 @@ export async function sendBitcoin(targetAddress: string) {
     chain: "BITCOIN" as const,
     initiatedCount: sweptWalletIds.size,
     txIds,
+    txs,
     message: `BTC withdrawal initiated for ${sweptWalletIds.size} wallet${sweptWalletIds.size === 1 ? "" : "s"}.`,
   };
 }

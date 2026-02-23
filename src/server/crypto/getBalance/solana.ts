@@ -8,10 +8,11 @@ import {
 import { prisma } from "@/utils/prisma";
 
 export async function getTotalSolanaBalance(): Promise<number> {
-  // 1. Fetch all unswept Solana wallets and pluck their addresses:
+  // 1. Fetch all paid, unswept Solana wallets (matches sendBalance criteria for withdrawable)
   const wallets = await prisma.wallet.findMany({
     where: {
       chain: CryptoType.SOLANA,
+      paid: true,
       withdrawn: false,
     },
     select: { address: true },
