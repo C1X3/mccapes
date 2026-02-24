@@ -267,6 +267,30 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     setShowDeleteModal(true);
   };
 
+  const getTxExplorerUrl = (chain: string | undefined, txId: string) => {
+    if (!chain) return null;
+    if (chain === "SOLANA") return `https://explorer.solana.com/tx/${txId}`;
+    if (chain === "LITECOIN")
+      return `https://blockexplorer.one/litecoin/mainnet/tx/${txId}`;
+    if (chain === "ETHEREUM")
+      return `https://blockexplorer.one/ethereum/mainnet/tx/${txId}`;
+    if (chain === "BITCOIN")
+      return `https://blockexplorer.one/bitcoin/mainnet/tx/${txId}`;
+    return null;
+  };
+
+  const getAddressExplorerUrl = (chain: string | undefined, address: string) => {
+    if (!chain) return null;
+    if (chain === "SOLANA") return `https://explorer.solana.com/address/${address}`;
+    if (chain === "LITECOIN")
+      return `https://blockexplorer.one/litecoin/mainnet/address/${address}`;
+    if (chain === "ETHEREUM")
+      return `https://blockexplorer.one/ethereum/mainnet/address/${address}`;
+    if (chain === "BITCOIN")
+      return `https://blockexplorer.one/bitcoin/mainnet/address/${address}`;
+    return null;
+  };
+
   const confirmDeleteInvoice = () => {
     setShowDeleteModal(false);
     deleteInvoice({
@@ -439,10 +463,56 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
               </div>
             )}
             {invoice.paymentType === PaymentType.CRYPTO && (
-              <div className="flex justify-between border-b border-[var(--border)] pb-2">
-                <span className="text-[var(--color-text-secondary)]">Transaction ID</span>
-                <span>{invoice.Wallet?.[0]?.txHash || "N/A"}</span>
-              </div>
+              <>
+                <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                  <span className="text-[var(--color-text-secondary)]">Wallet Address</span>
+                  {invoice.Wallet?.[0]?.address ? (
+                    (() => {
+                      const addressUrl = getAddressExplorerUrl(
+                        invoice.Wallet?.[0]?.chain,
+                        invoice.Wallet[0].address,
+                      );
+
+                      if (!addressUrl) {
+                        return <span className="break-all">{invoice.Wallet[0].address}</span>;
+                      }
+
+                      return (
+                        <a
+                          href={addressUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-blue-500 hover:text-blue-600 hover:underline break-all"
+                        >
+                          {invoice.Wallet[0].address}
+                        </a>
+                      );
+                    })()
+                  ) : (
+                    <span>N/A</span>
+                  )}
+                </div>
+                <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                  <span className="text-[var(--color-text-secondary)]">Transaction ID</span>
+                  {invoice.Wallet?.[0]?.txHash ? (
+                    <a
+                      href={
+                        getTxExplorerUrl(
+                          invoice.Wallet?.[0]?.chain,
+                          invoice.Wallet[0].txHash,
+                        ) ?? "#"
+                      }
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-500 hover:text-blue-600 hover:underline break-all"
+                    >
+                      {invoice.Wallet[0].txHash}
+                    </a>
+                  ) : (
+                    <span>N/A</span>
+                  )}
+                </div>
+              </>
             )}
             {invoice.paymentType === PaymentType.PAYPAL && (
               <div className="flex justify-between border-b border-[var(--border)] pb-2">
