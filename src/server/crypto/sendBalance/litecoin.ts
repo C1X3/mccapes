@@ -324,7 +324,7 @@ export async function sendLitecoin(targetAddress: string) {
     const walletIds = Array.from(new Set(group.map((u) => u.walletId)));
     await prisma.wallet.updateMany({
       where: { id: { in: walletIds } },
-      data: { withdrawn: true, txHash: txid },
+      data: { withdrawn: true },
     });
 
     for (const id of walletIds) {

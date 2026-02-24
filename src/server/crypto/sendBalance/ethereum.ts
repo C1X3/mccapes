@@ -88,7 +88,7 @@ export async function sendEthereum(TARGET_ADDRESS: string) {
 
       await prisma.wallet.update({
         where: { id },
-        data: { withdrawn: true, txHash: tx.hash },
+        data: { withdrawn: true },
       });
 
       if (webhookId) {

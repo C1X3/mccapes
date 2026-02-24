@@ -153,7 +153,7 @@ export async function sendSolanaBalance(destination: string) {
       // mark withdrawn in DB
       await prisma.wallet.updateMany({
         where: { chain: CryptoType.SOLANA, address: idx.address },
-        data: { withdrawn: true, txHash: sig },
+        data: { withdrawn: true },
       });
 
       if (idx.webhookId) {
