@@ -56,11 +56,11 @@ export const getShortenedProductName = (name: string): string => {
     return "MCE";
   } else if (name === "Purple Heart Cape Code") {
     return "Twitch";
-  } else if (name === "Follower's TikTok Cape Code") {
+  } else if (name === "Follower's Cape Code") {
     return "TikTok";
-  } else if (name === "Home Twitch Cape Code") {
+  } else if (name === "Home Cape Code") {
     return "Home";
-  } else if (name === "Menace TikTok Cape Code") {
+  } else if (name === "Menace Cape Code") {
     return "Menace";
   } else {
     return name;
