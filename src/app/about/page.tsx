@@ -7,6 +7,7 @@ import VouchesCarousel from "@/views/about/VouchesCarousel";
 import ArticleSlider from "@/views/homepage/ArticleSlider";
 import PartnerScroller from "@/views/homepage/PartnerScroll";
 import FAQSection from "@/components/FAQSection";
+import { CapeLatticePattern } from "@/views/homepage/CapeLattice";
 import { motion } from "framer-motion";
 import { useTRPC } from "@/server/client";
 import { useQuery } from "@tanstack/react-query";
@@ -25,11 +26,20 @@ const AboutPage = () => {
       <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
       <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
       <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.06),transparent_40%,rgba(57,203,115,0.08))]" />
-      {/* Top area + first sections share one continuous background */}
+      {/* Hero */}
       <section className="relative overflow-hidden">
-        {/* Hero + Videos + Vouches */}
+        <AboutHeroSection />
+      </section>
+
+      {/* Videos + Vouches */}
+      <section className="relative overflow-hidden">
+        <CapeLatticePattern
+          motifCount={8}
+          rowCount={3}
+          showVignette={false}
+          className="z-0 opacity-[0.07] md:opacity-[0.1]"
+        />
         <div className="relative z-10 overflow-hidden">
-          <AboutHeroSection />
           <VideosCarousel />
           <VouchesCarousel />
         </div>
