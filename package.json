@@ -13,6 +13,7 @@
     "postinstall": "prisma generate",
     "server": "dotenvx run -- tsx --tsconfig tsconfig.server.json src/server.ts",
     "balances": "tsx --tsconfig tsconfig.server.json src/balances.ts",
+    "sync:invoices:sheets": "dotenvx run -- tsx --tsconfig tsconfig.server.json src/scripts/syncInvoicesToGoogleSheets.ts",
     "noop": "node -e \"process.exit(0)\""
   },
   "dependencies": {

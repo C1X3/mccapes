@@ -1,16 +1,18 @@
 import { useTRPC } from "@/server/client";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import React, { useState, useMemo, useEffect } from "react";
 import {
   FaReceipt,
   FaSearch,
   FaDownload,
+  FaSync,
   FaFilter,
   FaChevronLeft,
   FaChevronRight,
   FaSpinner,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 import InvoiceFilterModal from "./InvoiceFilterModal";
 import {
   getStatusBadgeClass,
@@ -114,6 +116,21 @@ export default function InvoicesTab() {
   const { data: currentProducts = [] } = useQuery(
     trpc.product.getAllWithStock.queryOptions(),
   );
+  const { mutate: syncGoogleSheets, isPending: isSyncingGoogleSheets } =
+    useMutation(
+      trpc.invoices.syncGoogleSheets.mutationOptions({
+        onSuccess: (data) => {
+          toast.success(`Synced ${data.rowsWritten} rows`, {
+            duration: 2200,
+          });
+        },
+        onError: (error) => {
+          toast.error(error.message || "Failed to sync Google Sheets", {
+            duration: 2500,
+          });
+        },
+      }),
+    );
 
   // Compute product options for the dropdown
   const productOptions = useMemo(() => {
@@ -216,6 +233,21 @@ export default function InvoicesTab() {
             )}
             {isExporting ? "Exporting..." : "Export to CSV"}
           </button>
+          {userRole === "admin" && (
+            <button
+              onClick={() => syncGoogleSheets()}
+              disabled={isSyncingGoogleSheets}
+              className="hidden md:flex items-center gap-2 p-2 rounded-lg bg-[color-mix(in_srgb,var(--primary),#fff_80%)] border border-[var(--primary)] text-[var(--primary-foreground)] hover:bg-[color-mix(in_srgb,var(--primary),#fff_70%)] transition-colors disabled:opacity-50"
+              title="Sync completed invoices to Google Sheets"
+            >
+              {isSyncingGoogleSheets ? (
+                <FaSpinner className="size-4 animate-spin" />
+              ) : (
+                <FaSync className="size-4" />
+              )}
+              {isSyncingGoogleSheets ? "Syncing..." : "Sync"}
+            </button>
+          )}
 
           <button
             onClick={openFilterModal}

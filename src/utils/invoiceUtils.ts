@@ -62,6 +62,8 @@ export const getShortenedProductName = (name: string): string => {
     return "Home";
   } else if (name === "Menace Cape Code") {
     return "Menace";
+  } else if (name === "Copper Cape Code") {
+    return "Copper";
   } else {
     return name;
   }

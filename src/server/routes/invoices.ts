@@ -3,6 +3,7 @@ import { prisma } from "@/utils/prisma";
 import { adminProcedure, createTRPCRouter } from "../init";
 import { TRPCError } from "@trpc/server";
 import { OrderStatus, PaymentType, CryptoType } from "@generated/client";
+import { syncCompletedInvoicesToGoogleSheets } from "@/server/invoices/googleSheetsSync";
 
 const invoiceFilterSchema = z.object({
   search: z.string().optional(),
@@ -273,6 +274,48 @@ export const invoicesRouter = createTRPCRouter({
         },
       });
     }),
+
+  syncGoogleSheets: adminProcedure.mutation(async ({ ctx }) => {
+    if (ctx.role !== "admin") {
+      throw new TRPCError({
+        code: "FORBIDDEN",
+        message: "Admin access required",
+      });
+    }
+
+    const startedAt = Date.now();
+
+    try {
+      const syncResult = await syncCompletedInvoicesToGoogleSheets();
+
+      if (!syncResult.synced) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: syncResult.skippedReason || "Google Sheets sync is disabled",
+        });
+      }
+
+      console.log(
+        `[google-sheets-sync] manual success rows=${syncResult.rowsWritten} durationMs=${Date.now() - startedAt}`,
+      );
+
+      return {
+        success: true,
+        rowsWritten: syncResult.rowsWritten,
+      };
+    } catch (error) {
+      console.error("[google-sheets-sync] manual failed", error);
+
+      if (error instanceof TRPCError) {
+        throw error;
+      }
+
+      throw new TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: error instanceof Error ? error.message : "Google Sheets sync failed",
+      });
+    }
+  }),
 
   getById: adminProcedure
     .input(z.object({ orderId: z.string() }))

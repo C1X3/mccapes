@@ -13,6 +13,7 @@ export interface Invoice {
   paymentFee: number;
   discountAmount: number;
   paymentType: PaymentType;
+  notes?: string[] | null;
   customer?: {
     email?: string | null;
     discord?: string | null;
@@ -27,29 +28,44 @@ export interface Invoice {
   }>;
 }
 
+const getReplacementNoteForCSV = (notes?: string[] | null) => {
+  if (!notes || notes.length === 0) return "";
+
+  const replacementNote = [...notes]
+    .reverse()
+    .find((note) => typeof note === "string" && note.startsWith("REPLACED:"));
+
+  if (!replacementNote) return "";
+
+  const timestampMatch = replacementNote.match(
+    /(\d{1,2}\/\d{1,2}\/\d{4}\s\d{2}:\d{2}:\d{2})/,
+  );
+
+  return timestampMatch ? `Replaced (${timestampMatch[1]})` : "Replaced";
+};
+
 export const exportInvoicesToCSV = (invoices: Invoice[]) => {
   // Create CSV headers
   const headers = [
     "Status",
     "Product",
     "Code(s)",
-    "",
     "Date Sold",
     "Payment Method",
     "Amount",
     "Discount",
     "Fees",
-    "",
-    "",
-    "",
     "Buyer Email",
     "Buyer Discord",
+    "Order ID",
     "",
   ].join(",");
 
   // Map invoices to CSV rows
   const rows = invoices
     .map((invoice) => {
+      const replacementNote = getReplacementNoteForCSV(invoice.notes);
+
       // For each product in the order, create a separate row
       if (invoice.OrderItem && invoice.OrderItem.length > 0) {
         return invoice.OrderItem.flatMap((item) => {
@@ -60,18 +76,15 @@ export const exportInvoicesToCSV = (invoices: Invoice[]) => {
                 invoice.status,
                 getShortenedProductName(item.product.name),
                 `"${code}"`,
-                "",
                 formatDateTimeForCSV(invoice.createdAt),
                 getPaymentMethodName(invoice.paymentType),
                 item.price.toFixed(2),
                 invoice.discountAmount.toFixed(2),
                 invoice.paymentFee.toFixed(2),
-                "",
-                "",
-                "",
                 invoice.customer?.email || "N/A",
                 invoice.customer?.discord || "N/A",
-                "",
+                invoice.id.substring(0, 8),
+                replacementNote,
               ].join(","),
             );
           } else {
@@ -81,18 +94,15 @@ export const exportInvoicesToCSV = (invoices: Invoice[]) => {
                 invoice.status,
                 getShortenedProductName(item.product.name),
                 "N/A",
-                "",
                 formatDateTimeForCSV(invoice.createdAt),
                 getPaymentMethodName(invoice.paymentType),
                 item.price.toFixed(2),
                 invoice.discountAmount.toFixed(2),
                 invoice.paymentFee.toFixed(2),
-                "",
-                "",
-                "",
                 invoice.customer?.email || "N/A",
                 invoice.customer?.discord || "N/A",
-                "",
+                invoice.id.substring(0, 8),
+                replacementNote,
               ].join(","),
             ];
           }
@@ -103,18 +113,15 @@ export const exportInvoicesToCSV = (invoices: Invoice[]) => {
           invoice.status,
           "N/A",
           "N/A",
-          "",
           formatDateTimeForCSV(invoice.createdAt),
           getPaymentMethodName(invoice.paymentType),
           invoice.totalPrice.toFixed(2),
           invoice.discountAmount.toFixed(2),
           invoice.paymentFee.toFixed(2),
-          "",
-          "",
-          "",
           invoice.customer?.email || "N/A",
           invoice.customer?.discord || "N/A",
-          "",
+          invoice.id.substring(0, 8),
+          replacementNote,
         ].join(",");
       }
     })
