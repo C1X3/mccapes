@@ -101,6 +101,7 @@ export default function DashboardTab() {
   const [isWithdrawDialogOpen, setIsWithdrawDialogOpen] = useState(false);
   const [selectedCrypto, setSelectedCrypto] = useState<CryptoType | null>(null);
   const [destinationAddress, setDestinationAddress] = useState("");
+  const [withdrawPassword, setWithdrawPassword] = useState("");
   const [withdrawalError, setWithdrawalError] = useState("");
 
   const router = useRouter();
@@ -214,6 +215,7 @@ export default function DashboardTab() {
       onSuccess: (data) => {
         setIsWithdrawDialogOpen(false);
         setDestinationAddress("");
+        setWithdrawPassword("");
         setWithdrawalError("");
         const txRows =
           data?.txs && data.txs.length > 0
@@ -371,6 +373,7 @@ export default function DashboardTab() {
   const handleOpenWithdraw = (type: CryptoType) => {
     setSelectedCrypto(type);
     setDestinationAddress("");
+    setWithdrawPassword("");
     setWithdrawalError("");
     setIsWithdrawDialogOpen(true);
   };
@@ -381,10 +384,15 @@ export default function DashboardTab() {
       setWithdrawalError("Please enter a valid destination address.");
       return;
     }
+    if (!withdrawPassword.trim()) {
+      setWithdrawalError("Please enter the owner password.");
+      return;
+    }
 
     sendBalanceMutation.mutate({
       type: selectedCrypto,
       destination: destinationAddress.trim(),
+      password: withdrawPassword,
     });
   };
 
@@ -1232,6 +1240,23 @@ export default function DashboardTab() {
               />
             </div>
 
+            <div className="mb-4">
+              <label
+                htmlFor="withdraw-password"
+                className="block text-sm font-medium mb-1 text-[var(--color-text-secondary)]"
+              >
+                Owner password
+              </label>
+              <input
+                id="withdraw-password"
+                type="password"
+                value={withdrawPassword}
+                onChange={(e) => setWithdrawPassword(e.target.value)}
+                className="w-full p-2 border border-[var(--border)] rounded"
+                placeholder="Enter owner password"
+              />
+            </div>
+
             {withdrawalError && (
               <div className="mb-4 text-red-500 text-sm">{withdrawalError}</div>
             )}
@@ -1264,14 +1289,17 @@ export default function DashboardTab() {
 
             <div className="flex justify-end gap-2">
               <button
-                onClick={() => setIsWithdrawDialogOpen(false)}
+                onClick={() => {
+                  setIsWithdrawDialogOpen(false);
+                  setWithdrawPassword("");
+                }}
                 className="px-4 py-2 border border-[var(--border)] rounded"
               >
                 Cancel
               </button>
               <button
                 onClick={handleWithdraw}
-                disabled={sendBalanceMutation.isPending}
+                disabled={sendBalanceMutation.isPending || !withdrawPassword.trim()}
                 className="px-4 py-2 bg-[var(--primary)] text-white rounded disabled:opacity-50"
               >
                 {sendBalanceMutation.isPending ? "Processing..." : "Withdraw"}

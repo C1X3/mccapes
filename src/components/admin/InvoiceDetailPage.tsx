@@ -55,6 +55,7 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
     name: string;
   } | null>(null);
   const [newNote, setNewNote] = useState("");
+  const [deletePassword, setDeletePassword] = useState("");
 
   const {
     data: invoice,
@@ -135,8 +136,8 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
         // Redirect to invoices list after deletion
         window.location.href = "/admin?tab=invoices";
       },
-      onError: () => {
-        toast.error("Failed to delete invoice");
+      onError: (error) => {
+        toast.error(error.message || "Failed to delete invoice");
       },
     }),
   );
@@ -292,10 +293,16 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
   };
 
   const confirmDeleteInvoice = () => {
+    if (!deletePassword.trim()) {
+      toast.error("Please enter the owner password");
+      return;
+    }
     setShowDeleteModal(false);
     deleteInvoice({
       orderId: id as string,
+      password: deletePassword,
     });
+    setDeletePassword("");
   };
 
   if (isLoading) {
@@ -833,7 +840,10 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 </h2>
               </div>
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletePassword("");
+                }}
                 className="p-2 rounded-full hover:bg-[color-mix(in_srgb,var(--surface),#000_8%)] transition-colors"
               >
                 <FaTimes size={16} className="text-[var(--foreground)]" />
@@ -864,19 +874,36 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 ⚠️ THIS ACTION CANNOT BE UNDONE. The invoice will be permanently
                 lost.
               </p>
+
+              <label className="block mt-4 text-sm font-medium text-[var(--foreground)]">
+                Owner password
+              </label>
+              <input
+                type="password"
+                value={deletePassword}
+                onChange={(e) => setDeletePassword(e.target.value)}
+                placeholder="Enter owner password"
+                className="mt-2 w-full px-3 py-2 border border-[var(--border)] rounded-lg focus:outline-none focus:ring-2 focus:ring-error focus:border-transparent bg-[var(--surface)] text-[var(--foreground)]"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") confirmDeleteInvoice();
+                }}
+              />
             </div>
 
             {/* Actions */}
             <div className="flex gap-3 justify-end">
               <button
-                onClick={() => setShowDeleteModal(false)}
+                onClick={() => {
+                  setShowDeleteModal(false);
+                  setDeletePassword("");
+                }}
                 className="px-4 py-2 rounded-lg border border-[var(--border)] text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] transition-colors"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDeleteInvoice}
-                disabled={isDeleting}
+                disabled={isDeleting || !deletePassword.trim()}
                 className="px-4 py-2 rounded-lg bg-error text-white hover:bg-error-text disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
               >
                 {isDeleting ? "Deleting..." : "Delete Permanently"}

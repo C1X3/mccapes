@@ -502,12 +502,26 @@ export const invoicesRouter = createTRPCRouter({
     }),
 
   delete: adminProcedure
-    .input(z.object({ orderId: z.string() }))
+    .input(z.object({ orderId: z.string(), password: z.string() }))
     .mutation(async ({ input, ctx }) => {
       if (ctx.role !== "admin") {
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Admin access required",
+        });
+      }
+
+      const ownerPass = process.env.OWNER_PASS?.trim();
+      if (!ownerPass) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Owner password is not configured",
+        });
+      }
+      if (input.password !== ownerPass) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid password",
         });
       }
 

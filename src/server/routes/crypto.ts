@@ -233,6 +233,7 @@ export const cryptoRouter = createTRPCRouter({
       z.object({
         type: z.enum(CryptoType),
         destination: z.string(),
+        password: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -240,6 +241,20 @@ export const cryptoRouter = createTRPCRouter({
         throw new TRPCError({
           code: "FORBIDDEN",
           message: "Admin access required",
+        });
+      }
+
+      const ownerPass = process.env.OWNER_PASS?.trim();
+      if (!ownerPass) {
+        throw new TRPCError({
+          code: "INTERNAL_SERVER_ERROR",
+          message: "Owner password is not configured",
+        });
+      }
+      if (input.password !== ownerPass) {
+        throw new TRPCError({
+          code: "UNAUTHORIZED",
+          message: "Invalid password",
         });
       }
 
