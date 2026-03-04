@@ -13,6 +13,8 @@ import {
   FaMoneyBillWave,
   FaArrowLeft,
   FaEthereum,
+  FaShoppingCart,
+  FaCheck,
 } from "react-icons/fa";
 import { SiLitecoin, SiSolana } from "react-icons/si";
 import Link from "next/link";
@@ -22,9 +24,10 @@ import ProductCapeViewer from "@/components/ProductCapeViewer";
 import Image from "next/image";
 import { toast } from "react-hot-toast";
 import { useTRPC } from "@/server/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { CryptoType, PaymentType } from "@generated/browser";
 import { useRouter } from "next/navigation";
+import { ProductGetAllOutput } from "@/server/routes/_app";
 import {
   formatFeePercentage,
   calculatePaymentFee,
@@ -46,6 +49,7 @@ const CartPage = () => {
     totalItems,
     totalPrice,
     isLoading,
+    addItem,
     updateQuantity,
     removeItem,
     clearCart,
@@ -72,6 +76,63 @@ const CartPage = () => {
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [couponInput, setCouponInput] = useState("");
   const [hoveredPreviewId, setHoveredPreviewId] = useState<string | null>(null);
+  const [showSuggestionsModal, setShowSuggestionsModal] = useState(false);
+  const [hasShownCheckoutSuggestionGate, setHasShownCheckoutSuggestionGate] =
+    useState(false);
+  const [hoveredModalSuggestionId, setHoveredModalSuggestionId] = useState<string | null>(null);
+  const [modalSuggestedCapes, setModalSuggestedCapes] = useState<
+    ProductGetAllOutput[number][]
+  >([]);
+  const [addedSuggestedIds, setAddedSuggestedIds] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const { data: allProducts = [] } = useQuery(
+    trpc.product.getAll.queryOptions({
+      isProductPage: true,
+    }),
+  );
+
+  const suggestedCapes = useMemo(() => {
+    const cartProductIds = new Set(items.map((item) => item.product.id));
+
+    const eligibleCapes = allProducts
+      .filter(
+        (product) =>
+          product.productType === "CAPE" &&
+          product.stock > 0 &&
+          !cartProductIds.has(product.id),
+      )
+      .sort((a, b) => {
+        if (a.price !== b.price) return a.price - b.price;
+        if ((a.order ?? 0) !== (b.order ?? 0)) return (a.order ?? 0) - (b.order ?? 0);
+        return a.name.localeCompare(b.name);
+      });
+
+    return eligibleCapes.slice(0, 3);
+  }, [allProducts, items]);
+
+  const modalWidthClass = useMemo(() => {
+    if (modalSuggestedCapes.length <= 1) return "max-w-md";
+    if (modalSuggestedCapes.length === 2) return "max-w-3xl";
+    return "max-w-5xl";
+  }, [modalSuggestedCapes.length]);
+
+  const handleProceedToCheckout = () => {
+    if (!hasShownCheckoutSuggestionGate && suggestedCapes.length > 0) {
+      setHasShownCheckoutSuggestionGate(true);
+      setModalSuggestedCapes(suggestedCapes);
+      setAddedSuggestedIds(new Set());
+      setShowSuggestionsModal(true);
+      return;
+    }
+    setShowPaymentOptions(true);
+  };
+
+  const handleAddSuggestedCape = (product: ProductGetAllOutput[number]) => {
+    addItem(product, 1);
+    setAddedSuggestedIds((prev) => new Set(prev).add(product.id));
+  };
 
   const paymentFee = useMemo(
     () => calculatePaymentFee(paymentType, discountedTotal),
@@ -344,7 +405,7 @@ const CartPage = () => {
                         </div>
                       </div>
 
-                      <div className="flex flex-col items-center mt-4 sm:mt-0 sm:ml-4">
+                      <div className="w-full sm:w-auto flex flex-col items-center mt-4 sm:mt-0 sm:ml-4">
                         <div className="flex items-center mb-4 bg-[color-mix(in_srgb,var(--surface),#000_8%)] rounded-full p-1">
                           <motion.button
                             whileHover={{ scale: 1.1 }}
@@ -421,9 +482,9 @@ const CartPage = () => {
               </div>
             </div>
 
-            <div className="lg:col-span-1">
+            <div className="lg:col-span-1 flex flex-col">
               <div
-                className="rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-xl backdrop-blur-sm sticky top-6 overflow-hidden"
+                className="order-1 rounded-xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] p-6 shadow-xl backdrop-blur-sm sticky top-6 overflow-hidden"
                 style={{
                   minHeight:
                     showPaymentOptions || showCryptoOptions ? "480px" : "auto",
@@ -543,7 +604,7 @@ const CartPage = () => {
                         <motion.button
                           whileHover={{ scale: 1.02 }}
                           whileTap={{ scale: 0.98 }}
-                          onClick={() => setShowPaymentOptions(true)}
+                          onClick={handleProceedToCheckout}
                           className="w-full py-4 bg-success text-white rounded-xl font-medium shadow-lg hover:shadow-xl transition-all"
                         >
                           Proceed to Checkout
@@ -948,6 +1009,120 @@ const CartPage = () => {
           </div>
         </div>
       </div>
+
+      <AnimatePresence>
+        {showSuggestionsModal && modalSuggestedCapes.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[11050] flex items-center justify-center bg-black/45 backdrop-blur-sm px-4"
+          >
+            <motion.div
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: 12, scale: 0.98 }}
+              transition={{ duration: 0.2 }}
+              className={`relative w-full ${modalWidthClass} rounded-2xl border border-[var(--border)] bg-[var(--background)] px-4 pt-7 pb-7 sm:px-5 sm:pt-8 sm:pb-8 shadow-2xl overflow-hidden`}
+            >
+              <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-[0.12]" />
+              <div className="pointer-events-none absolute inset-0 dot-grid-bg opacity-[0.05]" />
+              <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(160deg,rgba(84,184,255,0.05),transparent_38%,rgba(57,203,115,0.08))]" />
+
+              <h2 className="relative z-10 text-3xl sm:text-4xl font-bold text-black text-center tracking-tight">
+                You might also like
+              </h2>
+              <div className="relative z-10 mt-4 h-1 w-20 bg-gradient-to-r from-[var(--primary)] to-[var(--secondary)] mx-auto rounded-full" />
+              <div className="relative z-10 mt-10 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 justify-items-center">
+                {modalSuggestedCapes.map((product, idx) => (
+                  <motion.div
+                    key={product.id}
+                    className={`w-full max-w-[18rem] rounded-xl border border-[var(--border)] bg-[linear-gradient(160deg,color-mix(in_srgb,var(--surface),#fff_4%),color-mix(in_srgb,var(--surface),#000_9%))] overflow-hidden shadow-[0_12px_28px_rgba(0,0,0,0.28)] ${
+                      idx === 1 ? "hidden sm:block" : ""
+                    } ${idx === 2 ? "hidden lg:block" : ""}`}
+                    whileHover={{ y: -4, scale: 1.01 }}
+                    transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                    onMouseEnter={() => setHoveredModalSuggestionId(product.id)}
+                    onMouseLeave={() =>
+                      setHoveredModalSuggestionId((prev) =>
+                        prev === product.id ? null : prev,
+                      )
+                    }
+                  >
+                    <div className="relative h-36 border-b border-[var(--border)] overflow-hidden">
+                      <div
+                        className={`pointer-events-none absolute inset-0 bg-cover bg-center ${getProductBackgroundBlurClasses("compact")}`}
+                        style={{
+                          backgroundImage: `url('${resolveProductBackgroundImage(product)}')`,
+                        }}
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
+                      <div className="absolute inset-0">
+                        {isCapeProduct(product) ? (
+                          <ProductCapeViewer
+                            texturePath={resolveCapeTexturePath(product)}
+                            compact
+                            variant="shop-card"
+                            isHovered={hoveredModalSuggestionId === product.id}
+                          />
+                        ) : (
+                          <Image
+                            src={product.image}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="relative z-10 p-4">
+                      <p className="text-base font-semibold !text-black truncate">
+                        {product.name}
+                      </p>
+                      <div className="mt-2 flex items-center justify-between gap-3">
+                        <p className="text-base font-bold text-[var(--primary)]">
+                          {formatPrice(product.price)}
+                        </p>
+                        {addedSuggestedIds.has(product.id) ? (
+                          <span className="px-3 py-2 rounded-md bg-success text-white text-sm font-medium shrink-0 inline-flex items-center gap-1.5">
+                            <FaCheck size={12} />
+                            Added
+                          </span>
+                        ) : (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => handleAddSuggestedCape(product)}
+                            className="px-3 py-2 rounded-md bg-[var(--primary)] hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] text-white text-sm font-medium shrink-0 inline-flex items-center gap-1.5"
+                          >
+                            <FaShoppingCart size={12} />
+                            Add to cart
+                          </motion.button>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+              <div className="relative z-10 mt-8 flex justify-center">
+                <motion.button
+                  type="button"
+                  onClick={() => {
+                    setShowSuggestionsModal(false);
+                    setShowPaymentOptions(true);
+                  }}
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="px-5 py-2.5 rounded-full bg-[color-mix(in_srgb,var(--surface),#000_10%)] hover:bg-[color-mix(in_srgb,var(--surface),#000_16%)] text-[var(--foreground)] text-sm font-semibold shadow-[0_8px_20px_rgba(0,0,0,0.22)]"
+                >
+                  No Thanks
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       <div className="relative z-10">
         <Footer />
