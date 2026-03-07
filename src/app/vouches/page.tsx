@@ -25,9 +25,8 @@ const VouchesPage = () => {
               Vouches
             </h1>
             <p className="mx-auto max-w-2xl text-[var(--color-text-secondary)]">
-              See what our customers have to say about their experiences with
-              our premium Minecraft cosmetics. Each vouch is linked to its
-              original Discord message.
+            See what our customers have to say about our Minecraft cosmetics.
+            Each vouch is linked to its original Discord message.
             </p>
           </motion.div>
 

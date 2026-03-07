@@ -116,8 +116,7 @@ const VouchesCarousel = () => {
             Customer Vouches
           </h3>
           <p className="text-gray-600 max-w-2xl mx-auto">
-            See what our customers have to say about their experiences with our
-            premium Minecraft cosmetics.
+            See what our customers have to say about our Minecraft cosmetics.
           </p>
         </motion.div>
 
