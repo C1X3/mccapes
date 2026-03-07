@@ -1116,7 +1116,7 @@ const CartPage = () => {
                   whileTap={{ scale: 0.97 }}
                   className="px-5 py-2.5 rounded-full bg-[color-mix(in_srgb,var(--surface),#000_10%)] hover:bg-[color-mix(in_srgb,var(--surface),#000_16%)] text-[var(--foreground)] text-sm font-semibold shadow-[0_8px_20px_rgba(0,0,0,0.22)]"
                 >
-                  No Thanks
+                  Proceed to Checkout
                 </motion.button>
               </div>
             </motion.div>
