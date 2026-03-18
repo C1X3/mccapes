@@ -9,7 +9,6 @@ import { CheckoutPayload, WalletDetails } from "./types";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
 import { CryptoType, Prisma } from "@generated/client";
-import Coingecko from "@coingecko/coingecko-typescript";
 import { createHelius } from "helius-sdk";
 
 const bip32 = BIP32Factory(ecc);
@@ -56,11 +55,8 @@ const DEFAULT_RATES_CACHE: CryptoRatesCache = {
   solana: 150,
 };
 
-const coingeckoClient = new Coingecko({
-  environment: "demo",
-  demoAPIKey: process.env.COINGECKO_DEMO_API_KEY || undefined,
-  timeout: 10000,
-});
+const COINMARKETCAP_QUOTES_URL =
+  "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest";
 
 let heliusClient: ReturnType<typeof createHelius> | null = null;
 
@@ -92,16 +88,54 @@ function getWebhookCallbackUrl() {
 
 export async function updateCryptoRates() {
   try {
-    const resp = await coingeckoClient.simple.price.get({
-      ids: "bitcoin,ethereum,litecoin,solana",
-      vs_currencies: "usd",
+    const apiKey = process.env.COINMARKETCAP_API_KEY;
+    if (!apiKey) {
+      throw new Error("COINMARKETCAP_API_KEY is not configured");
+    }
+
+    const { data } = await axios.get(COINMARKETCAP_QUOTES_URL, {
+      params: {
+        symbol: "BTC,ETH,LTC,SOL",
+        convert: "USD",
+      },
+      headers: {
+        "X-CMC_PRO_API_KEY": apiKey,
+      },
+      timeout: 10000,
     });
 
+    type CmcQuoteEntry = { symbol?: string; price?: number };
+    type CmcAssetEntry = {
+      symbol?: string;
+      quote?: CmcQuoteEntry[] | { USD?: { price?: number } };
+    };
+
+    const assets: CmcAssetEntry[] = Array.isArray(data?.data) ? data.data : [];
+    const extractUsdPrice = (asset: CmcAssetEntry | undefined) => {
+      if (!asset) return NaN;
+      const quote = asset.quote;
+      if (Array.isArray(quote)) {
+        return Number(quote.find((entry) => entry.symbol === "USD")?.price);
+      }
+      return Number(quote?.USD?.price);
+    };
+
+    const getUsdPrice = (symbol: "BTC" | "ETH" | "LTC" | "SOL") => {
+      const candidates = assets.filter((entry) => entry.symbol === symbol);
+      for (const candidate of candidates) {
+        const price = extractUsdPrice(candidate);
+        if (Number.isFinite(price) && price > 0) {
+          return price;
+        }
+      }
+      return NaN;
+    };
+
     const nextRates: CryptoRatesCache = {
-      bitcoin: Number(resp.bitcoin?.usd),
-      ethereum: Number(resp.ethereum?.usd),
-      litecoin: Number(resp.litecoin?.usd),
-      solana: Number(resp.solana?.usd),
+      bitcoin: getUsdPrice("BTC"),
+      ethereum: getUsdPrice("ETH"),
+      litecoin: getUsdPrice("LTC"),
+      solana: getUsdPrice("SOL"),
     };
 
     if (
@@ -123,7 +157,7 @@ if (!globalThis.CRYPTO_RATES_CACHE_INTERVAL) {
   void updateCryptoRates();
   globalThis.CRYPTO_RATES_CACHE_INTERVAL = setInterval(() => {
     void updateCryptoRates();
-  }, 60000);
+  }, 5 * 60 * 1000);
 }
 
 function getCachedUsdRate(crypto: CryptoType) {

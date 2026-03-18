@@ -6,7 +6,6 @@ import { sendSolanaBalance } from "../crypto/sendBalance/solana";
 import { sendBitcoin } from "../crypto/sendBalance/bitcoin";
 import { sendLitecoin } from "../crypto/sendBalance/litecoin";
 import { sendEthereum } from "../crypto/sendBalance/ethereum";
-import Coingecko from "@coingecko/coingecko-typescript";
 import { prisma } from "@/utils/prisma";
 import axios from "axios";
 
@@ -16,24 +15,60 @@ declare global {
   var CRYPTO_DUST_PRUNE_LAST_RUN_MS: number | undefined;
 }
 
-const coingeckoClient = new Coingecko({
-  environment: "demo",
-  demoAPIKey: process.env.COINGECKO_DEMO_API_KEY || undefined,
-  timeout: 5000,
-});
+const COINMARKETCAP_QUOTES_URL =
+  "https://pro-api.coinmarketcap.com/v3/cryptocurrency/quotes/latest";
 
-// Fetch current crypto prices from CoinGecko
+// Fetch current crypto prices from CoinMarketCap
 async function getCryptoPrices() {
   try {
-    const resp = await coingeckoClient.simple.price.get({
-      ids: "bitcoin,ethereum,litecoin,solana",
-      vs_currencies: "usd",
+    const apiKey = process.env.COINMARKETCAP_API_KEY;
+    if (!apiKey) {
+      throw new Error("COINMARKETCAP_API_KEY is not configured");
+    }
+
+    const { data } = await axios.get(COINMARKETCAP_QUOTES_URL, {
+      params: {
+        symbol: "BTC,ETH,LTC,SOL",
+        convert: "USD",
+      },
+      headers: {
+        "X-CMC_PRO_API_KEY": apiKey,
+      },
+      timeout: 5000,
     });
+
+    type CmcQuoteEntry = { symbol?: string; price?: number };
+    type CmcAssetEntry = {
+      symbol?: string;
+      quote?: CmcQuoteEntry[] | { USD?: { price?: number } };
+    };
+
+    const assets: CmcAssetEntry[] = Array.isArray(data?.data) ? data.data : [];
+    const extractUsdPrice = (asset: CmcAssetEntry | undefined) => {
+      if (!asset) return NaN;
+      const quote = asset.quote;
+      if (Array.isArray(quote)) {
+        return Number(quote.find((entry) => entry.symbol === "USD")?.price);
+      }
+      return Number(quote?.USD?.price);
+    };
+
+    const getUsdPrice = (symbol: "BTC" | "ETH" | "LTC" | "SOL") => {
+      const candidates = assets.filter((entry) => entry.symbol === symbol);
+      for (const candidate of candidates) {
+        const price = extractUsdPrice(candidate);
+        if (Number.isFinite(price) && price > 0) {
+          return price;
+        }
+      }
+      return NaN;
+    };
+
     return {
-      bitcoin: resp.bitcoin?.usd || 0,
-      ethereum: resp.ethereum?.usd || 0,
-      litecoin: resp.litecoin?.usd || 0,
-      solana: resp.solana?.usd || 0,
+      bitcoin: getUsdPrice("BTC") || 0,
+      ethereum: getUsdPrice("ETH") || 0,
+      litecoin: getUsdPrice("LTC") || 0,
+      solana: getUsdPrice("SOL") || 0,
     };
   } catch (error) {
     console.error("Error fetching crypto prices:", error);
