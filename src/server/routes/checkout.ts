@@ -109,9 +109,9 @@ export const checkoutRouter = createTRPCRouter({
         }
 
         if (input.couponCode) {
-          const coupon = await prisma.coupon.findUnique({
+          const coupon = await prisma.coupon.findFirst({
             where: {
-              code: input.couponCode,
+              code: { equals: input.couponCode, mode: "insensitive" },
             },
           });
 

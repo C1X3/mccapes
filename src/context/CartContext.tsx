@@ -18,7 +18,7 @@ import {
 } from "@/utils/cart";
 import toast from "react-hot-toast";
 import { useTRPC } from "@/server/client";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { CouponType } from "@generated/browser";
 import AddToCartToast from "@/components/AddToCartToast";
 
@@ -61,9 +61,17 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     type: CouponType;
     discount: number;
   } | null>(null);
+  const [hasAttemptedAffiliateAutoCoupon, setHasAttemptedAffiliateAutoCoupon] =
+    useState(false);
 
   const { mutateAsync: validateCoupon, isPending: isCouponLoading } =
     useMutation(trpc.coupon.validateCoupon.mutationOptions());
+  const { data: affiliateCoupon, isFetched: isAffiliateCouponFetched } = useQuery(
+    {
+      ...trpc.coupon.getAffiliateCoupon.queryOptions(),
+      enabled: !isLoading && !coupon && !hasAttemptedAffiliateAutoCoupon,
+    },
+  );
 
   useEffect(() => {
     const loadCart = () => {
@@ -251,6 +259,24 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     },
     [totalPrice, validateCoupon],
   );
+
+  useEffect(() => {
+    if (isLoading || coupon || hasAttemptedAffiliateAutoCoupon) return;
+    if (!isAffiliateCouponFetched) return;
+
+    setHasAttemptedAffiliateAutoCoupon(true);
+
+    if (affiliateCoupon?.code) {
+      void applyCoupon(affiliateCoupon.code);
+    }
+  }, [
+    applyCoupon,
+    affiliateCoupon?.code,
+    coupon,
+    hasAttemptedAffiliateAutoCoupon,
+    isAffiliateCouponFetched,
+    isLoading,
+  ]);
 
   // Remove coupon
   const removeCoupon = () => {

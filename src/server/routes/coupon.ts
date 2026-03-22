@@ -1,9 +1,12 @@
 import { prisma } from "@/utils/prisma";
 import { CouponType } from "@generated/client";
 import { TRPCError } from "@trpc/server";
+import { cookies } from "next/headers";
 import { z } from "zod";
 import { adminProcedure, baseProcedure, createTRPCRouter } from "../init";
 import { couponCodeSchema } from "../schemas/coupon";
+
+const AFFILIATE_COOKIE_NAME = "mccapes_affiliate";
 
 export const couponRouter = createTRPCRouter({
   getAll: adminProcedure.query(async ({ ctx }) => {
@@ -29,12 +32,48 @@ export const couponRouter = createTRPCRouter({
     });
   }),
 
+  getAffiliateCoupon: baseProcedure.query(async () => {
+    const reqCookies = await cookies();
+    const affiliateCookie = reqCookies.get(AFFILIATE_COOKIE_NAME);
+    const affiliateCode = affiliateCookie?.value?.trim();
+
+    if (!affiliateCode) {
+      return null;
+    }
+
+    const affiliate = await prisma.affiliate.findFirst({
+      where: {
+        code: { equals: affiliateCode, mode: "insensitive" },
+        active: true,
+      },
+      select: { code: true },
+    });
+
+    if (!affiliate) {
+      return null;
+    }
+
+    const coupon = await prisma.coupon.findFirst({
+      where: {
+        code: { equals: affiliate.code, mode: "insensitive" },
+        active: true,
+        validUntil: { gte: new Date() },
+        usageCount: { lt: prisma.coupon.fields.usageLimit },
+      },
+      select: {
+        code: true,
+      },
+    });
+
+    return coupon;
+  }),
+
   validateCoupon: baseProcedure
     .input(z.object({ code: z.string() }))
     .mutation(async ({ input }) => {
       const coupon = await prisma.coupon.findFirst({
         where: {
-          code: input.code,
+          code: { equals: input.code, mode: "insensitive" },
           active: true,
           validUntil: { gte: new Date() },
           usageCount: { lt: prisma.coupon.fields.usageLimit },
