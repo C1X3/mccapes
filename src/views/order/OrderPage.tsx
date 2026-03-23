@@ -544,6 +544,15 @@ const OrderPage = ({ id }: { id: string }) => {
                         </h3>
 
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-6">
+                          <div className="relative rounded-lg border border-[#0d9ad1]/50 bg-[color-mix(in_srgb,#0d9ad1,var(--background)_92%)] p-3 min-h-[64px] flex items-center justify-center shadow-[0_0_0_1px_rgba(13,154,209,0.2)]">
+                            <span className="absolute -top-2 right-2 rounded-full bg-[#0d9ad1] px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
+                              Required
+                            </span>
+                            <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
+                              <FaUserFriends className="text-[#0d9ad1] text-base shrink-0" />
+                              Use Friends & Family
+                            </p>
+                          </div>
                           <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 min-h-[64px] flex items-center justify-center">
                             <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
                               <FaDollarSign className="text-[#0d9ad1] shrink-0" />
@@ -554,12 +563,6 @@ const OrderPage = ({ id }: { id: string }) => {
                             <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
                               <FaStickyNote className="text-[#0d9ad1] shrink-0" />
                               Include the PayPal note
-                            </p>
-                          </div>
-                          <div className="rounded-lg border border-[var(--border)] bg-[color-mix(in_srgb,var(--foreground),var(--background)_95%)] p-3 min-h-[64px] flex items-center justify-center">
-                            <p className="flex items-center justify-center gap-2 text-center text-sm font-semibold text-[var(--foreground)] leading-tight">
-                              <FaUserFriends className="text-[#0d9ad1] shrink-0" />
-                              Use Friends and Family
                             </p>
                           </div>
                         </div>
