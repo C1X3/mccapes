@@ -25,6 +25,8 @@ import {
 
 const AFFILIATE_COOKIE_NAME = "mccapes_affiliate";
 const PENDING_PAYPAL_TIMEOUT_MS = 30 * 60 * 1000;
+const PENDING_STRIPE_TIMEOUT_MS = 30 * 60 * 1000;
+const PENDING_CRYPTO_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 const toCapeTextureDataUrl = (bytes: Uint8Array | null | undefined) => {
   if (!bytes || bytes.length === 0) return null;
@@ -341,13 +343,17 @@ export const checkoutRouter = createTRPCRouter({
         });
       }
 
-      const isOverduePaypalPending =
-        order.paymentType === PaymentType.PAYPAL &&
+      const pendingAgeMs = Date.now() - new Date(order.createdAt).getTime();
+      const isOverduePendingOrder =
         order.status === OrderStatus.PENDING &&
-        Date.now() - new Date(order.createdAt).getTime() >=
-          PENDING_PAYPAL_TIMEOUT_MS;
+        ((order.paymentType === PaymentType.PAYPAL &&
+          pendingAgeMs >= PENDING_PAYPAL_TIMEOUT_MS) ||
+          (order.paymentType === PaymentType.STRIPE &&
+            pendingAgeMs >= PENDING_STRIPE_TIMEOUT_MS) ||
+          (order.paymentType === PaymentType.CRYPTO &&
+            pendingAgeMs >= PENDING_CRYPTO_TIMEOUT_MS));
 
-      if (isOverduePaypalPending) {
+      if (isOverduePendingOrder) {
         await prisma.order.update({
           where: { id: order.id },
           data: { status: OrderStatus.CANCELLED },

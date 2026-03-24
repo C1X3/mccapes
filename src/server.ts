@@ -8,6 +8,8 @@ import { syncCompletedInvoicesToGoogleSheets } from "@/server/invoices/googleShe
 const POLL_INTERVAL = 30 * 1000;
 const CRYPTO_RECONCILE_INTERVAL = 60 * 1000;
 const DEFAULT_SHEETS_SYNC_INTERVAL = 60 * 60 * 1000;
+const PENDING_CARD_TIMEOUT_MS = 30 * 60 * 1000;
+const PENDING_CRYPTO_TIMEOUT_MS = 24 * 60 * 60 * 1000;
 
 function getSheetsSyncIntervalMs(): number {
   const raw = process.env.GOOGLE_SHEETS_SYNC_INTERVAL_MS;
@@ -21,14 +23,24 @@ function getSheetsSyncIntervalMs(): number {
 }
 
 async function expireOrders() {
-  await prisma.order.updateMany({
-    where: {
-      status: OrderStatus.PENDING,
-      paymentType: { in: [PaymentType.STRIPE, PaymentType.PAYPAL] },
-      createdAt: { lt: new Date(Date.now() - 30 * 60 * 1000) },
-    },
-    data: { status: OrderStatus.CANCELLED },
-  });
+  await Promise.all([
+    prisma.order.updateMany({
+      where: {
+        status: OrderStatus.PENDING,
+        paymentType: { in: [PaymentType.STRIPE, PaymentType.PAYPAL] },
+        createdAt: { lt: new Date(Date.now() - PENDING_CARD_TIMEOUT_MS) },
+      },
+      data: { status: OrderStatus.CANCELLED },
+    }),
+    prisma.order.updateMany({
+      where: {
+        status: OrderStatus.PENDING,
+        paymentType: PaymentType.CRYPTO,
+        createdAt: { lt: new Date(Date.now() - PENDING_CRYPTO_TIMEOUT_MS) },
+      },
+      data: { status: OrderStatus.CANCELLED },
+    }),
+  ]);
 }
 
 (async function backgroundLoop() {
