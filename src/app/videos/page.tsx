@@ -45,6 +45,12 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/wGbQJwCBbR4/maxresdefault.jpg",
   },
   {
+    title: "Minecraft's NEW Moonlight Trail Cape? (Minecraft Live 2026)",
+    description: "Flxme",
+    url: "https://www.youtube.com/watch?v=xhe3C1M9jnw",
+    thumbnail: "https://img.youtube.com/vi/xhe3C1M9jnw/maxresdefault.jpg",
+  },
+  {
     title: "when a top ranked player joins your smp...",
     description: "Flowtives",
     url: "https://www.youtube.com/embed/NFbr6KXdY64",
@@ -61,6 +67,12 @@ const videos: Video[] = [
     description: "Dewier",
     url: "https://www.youtube.com/embed/S9qxDXXqEXA",
     thumbnail: "https://img.youtube.com/vi/S9qxDXXqEXA/maxresdefault.jpg",
+  },
+  {
+    title: "This FREE Minecraft Cape is Now Worth $400...",
+    description: "godnxss",
+    url: "https://www.youtube.com/watch?v=x_vPIKFaQUE",
+    thumbnail: "https://img.youtube.com/vi/x_vPIKFaQUE/maxresdefault.jpg",
   },
   {
     title: "How to Claim Minecraft Copper Cape in 4 Minutes (Java & Bedrock)",
@@ -99,6 +111,12 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/TNhBkEyOPL0/maxresdefault.jpg",
   },
   {
+    title: "I Finally Got Gold Prestige in Bedwars!",
+    description: "Dewier",
+    url: "https://www.youtube.com/watch?v=uKSfyfmVPqc",
+    thumbnail: "https://img.youtube.com/vi/uKSfyfmVPqc/maxresdefault.jpg",
+  },
+  {
     title: "I Destroyed Top Bedwars Players",
     description: "Dewier",
     url: "https://www.youtube.com/embed/Ei5P9ufh5JI",
@@ -135,6 +153,12 @@ const videos: Video[] = [
     thumbnail: "https://img.youtube.com/vi/Auo65h3BXjg/maxresdefault.jpg",
   },
   {
+    title: "Breaking ABSURD Minecraft Server Rules",
+    description: "qBedwars",
+    url: "https://www.youtube.com/watch?v=gBZoGt_iH5g",
+    thumbnail: "https://img.youtube.com/vi/gBZoGt_iH5g/maxresdefault.jpg",
+  },
+  {
     title: "Top 5 BEST Bedwars Texture Packs (1.8.9) | FPS Boost",
     description: "Kornelic",
     url: "https://www.youtube.com/embed/y1tn-DbccKY",
@@ -151,6 +175,12 @@ const videos: Video[] = [
     description: "ItzBlake",
     url: "https://www.youtube.com/embed/HFCel2yap3I",
     thumbnail: "https://img.youtube.com/vi/HFCel2yap3I/maxresdefault.jpg",
+  },
+  {
+    title: "I Fought ItzRealMe, Minecraft's Retired Legend",
+    description: "Flowtives",
+    url: "https://www.youtube.com/watch?v=J4BvSdcx6zg",
+    thumbnail: "https://img.youtube.com/vi/J4BvSdcx6zg/maxresdefault.jpg",
   },
   {
     title: "Beating Top Players In Bedwars Wagers",
@@ -197,6 +227,10 @@ const videos: Video[] = [
 ];
 
 export default function VideosPage() {
+  const shouldCenterLastDesktopRow = videos.length % 3 === 2;
+  const desktopGridVideos = shouldCenterLastDesktopRow ? videos.slice(0, -2) : videos;
+  const desktopTrailingVideos = shouldCenterLastDesktopRow ? videos.slice(-2) : [];
+
   return (
     <div className="relative min-h-screen overflow-hidden bg-[var(--background)]">
       <div className="pointer-events-none absolute inset-0 tech-grid-bg opacity-20" />
@@ -220,12 +254,30 @@ export default function VideosPage() {
             </p>
           </motion.div>
 
-            {/* 3-column grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:hidden">
               {videos.map((video, i) => (
                 <VideoCard key={i} video={video} />
               ))}
             </div>
+
+            <div className="hidden lg:grid lg:grid-cols-3 lg:gap-8">
+              {desktopGridVideos.map((video, i) => (
+                <VideoCard key={i} video={video} />
+              ))}
+            </div>
+
+            {shouldCenterLastDesktopRow && (
+              <div className="mt-8 hidden items-stretch justify-center gap-8 lg:flex">
+                {desktopTrailingVideos.map((video, i) => (
+                  <div
+                    key={`${video.url}-${i}`}
+                    className="w-[calc((100%-4rem)/3)]"
+                  >
+                    <VideoCard video={video} />
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </section>
@@ -263,7 +315,7 @@ function VideoCard({ video }: { video: Video }) {
   const firstPara = paragraphs[0];
 
   return (
-    <div className="overflow-hidden rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] shadow-lg card-hover">
+    <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_8%)] shadow-lg card-hover">
       <div
         className="relative aspect-video w-full cursor-pointer"
         onClick={!isPlaying ? handlePlay : undefined}
@@ -294,8 +346,8 @@ function VideoCard({ video }: { video: Video }) {
         )}
       </div>
 
-      <div className="p-6">
-        <h4 className="text-xl font-semibold mb-2 text-[var(--foreground)]">
+      <div className="flex flex-1 flex-col p-6">
+        <h4 className="mb-2 min-h-[3.5rem] text-xl font-semibold leading-7 text-[var(--foreground)]">
           {video.title}
         </h4>
         <p className="text-[var(--color-text-secondary)] mb-2">{firstPara}</p>

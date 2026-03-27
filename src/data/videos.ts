@@ -37,6 +37,12 @@ export interface Video {
       thumbnail: "https://img.youtube.com/vi/wGbQJwCBbR4/maxresdefault.jpg",
     },
     {
+      title: "Minecraft's NEW Moonlight Trail Cape? (Minecraft Live 2026)",
+      description: "Flxme",
+      url: "https://www.youtube.com/watch?v=xhe3C1M9jnw",
+      thumbnail: "https://img.youtube.com/vi/xhe3C1M9jnw/maxresdefault.jpg",
+    },
+    {
       title: "when a top ranked player joins your smp...",
       description: "Flowtives",
       url: "https://www.youtube.com/embed/NFbr6KXdY64",
@@ -53,6 +59,12 @@ export interface Video {
       description: "Dewier",
       url: "https://www.youtube.com/embed/S9qxDXXqEXA",
       thumbnail: "https://img.youtube.com/vi/S9qxDXXqEXA/maxresdefault.jpg",
+    },
+    {
+      title: "This FREE Minecraft Cape is Now Worth $400...",
+      description: "godnxss",
+      url: "https://www.youtube.com/watch?v=x_vPIKFaQUE",
+      thumbnail: "https://img.youtube.com/vi/x_vPIKFaQUE/maxresdefault.jpg",
     },
     {
       title: "How to Claim Minecraft Copper Cape in 4 Minutes (Java & Bedrock)",
@@ -91,6 +103,12 @@ export interface Video {
       thumbnail: "https://img.youtube.com/vi/TNhBkEyOPL0/maxresdefault.jpg",
     },
     {
+      title: "I Finally Got Gold Prestige in Bedwars!",
+      description: "Dewier",
+      url: "https://www.youtube.com/watch?v=uKSfyfmVPqc",
+      thumbnail: "https://img.youtube.com/vi/uKSfyfmVPqc/maxresdefault.jpg",
+    },
+    {
       title: "I Destroyed Top Bedwars Players",
       description: "Dewier",
       url: "https://www.youtube.com/embed/Ei5P9ufh5JI",
@@ -127,6 +145,12 @@ export interface Video {
       thumbnail: "https://img.youtube.com/vi/Auo65h3BXjg/maxresdefault.jpg",
     },
     {
+      title: "Breaking ABSURD Minecraft Server Rules",
+      description: "qBedwars",
+      url: "https://www.youtube.com/watch?v=gBZoGt_iH5g",
+      thumbnail: "https://img.youtube.com/vi/gBZoGt_iH5g/maxresdefault.jpg",
+    },
+    {
       title: "Top 5 BEST Bedwars Texture Packs (1.8.9) | FPS Boost",
       description: "Kornelic",
       url: "https://www.youtube.com/embed/y1tn-DbccKY",
@@ -143,6 +167,12 @@ export interface Video {
       description: "ItzBlake",
       url: "https://www.youtube.com/embed/HFCel2yap3I",
       thumbnail: "https://img.youtube.com/vi/HFCel2yap3I/maxresdefault.jpg",
+    },
+    {
+      title: "I Fought ItzRealMe, Minecraft's Retired Legend",
+      description: "Flowtives",
+      url: "https://www.youtube.com/watch?v=J4BvSdcx6zg",
+      thumbnail: "https://img.youtube.com/vi/J4BvSdcx6zg/maxresdefault.jpg",
     },
     {
       title: "Beating Top Players In Bedwars Wagers",
