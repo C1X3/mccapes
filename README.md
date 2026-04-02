@@ -35,32 +35,6 @@ The easiest way to deploy your Next.js app is to use the [Vercel Platform](https
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
 
-## Google Sheets invoice sync
+## MCCapes Description
 
-This project can sync `PAID` and `DELIVERED` invoices to a Google Sheet tab on an interval.
-
-Required env vars:
-
-```bash
-GOOGLE_SHEETS_SYNC_ENABLED=true
-GOOGLE_SHEETS_SYNC_INTERVAL_MS=3600000
-GOOGLE_SHEETS_REQUEST_TIMEOUT_MS=15000
-GOOGLE_SHEETS_SPREADSHEET_ID=1v3kO9_7eqceSmSZe26hj-gpK10AIps3pQ3k1dYwRXDM
-GOOGLE_SHEETS_TAB_NAME=Transactions
-GOOGLE_SERVICE_ACCOUNT_EMAIL=your-service-account@your-project.iam.gserviceaccount.com
-GOOGLE_SERVICE_ACCOUNT_PRIVATE_KEY="-----BEGIN PRIVATE KEY-----\n...\n-----END PRIVATE KEY-----\n"
-```
-
-Notes:
-
-- `GOOGLE_SHEETS_SYNC_INTERVAL_MS` defaults to 1 hour when missing/invalid.
-- `GOOGLE_SHEETS_REQUEST_TIMEOUT_MS` defaults to 15000ms and prevents hanging requests.
-- The sync writes the newest invoices at the top by fully refreshing `Transactions!A1:K`.
-- Column order matches the Transactions table: `Product, Codes, Date Sold, Payment Method, Amount, Discount, Fees, Buyer Email, Buyer Discord, Order ID, Notes`.
-- Share the spreadsheet with the `GOOGLE_SERVICE_ACCOUNT_EMAIL` as an editor.
-
-Run once manually:
-
-```bash
-pnpm sync:invoices:sheets
-```
+MCCapes is a Minecraft cape marketplace built with Next.js. The application provides a complete ecosystem for Minecraft players to purchase rare and exclusive capes for their player profile.
