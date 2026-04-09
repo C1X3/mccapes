@@ -1,0 +1,20 @@
+mccapes-orders-format.csv
+
+order_notes: JSON array of one string for import provenance, e.g. ["SellAuth: 4490703"]
+(SellAuth invoice numeric ID from the source export).
+
+order_items_json
+
+Value: a JSON array (one element per line item). Each object includes all scalar OrderItem
+fields from database/order.prisma (camelCase, Prisma client names):
+
+  id          string   new cuid
+  orderId     string   same as order_id on this CSV row
+  productId   string   Prisma Product.id (from product-id-map.ai.json)
+  quantity    number   int ≥ 1
+  price       number   line total (Float)
+  codes       string[] cape / delivery codes
+  createdAt   string   ISO-8601 (SellAuth times interpreted as America/New_York)
+  updatedAt   string   ISO-8601
+
+Omitted on purpose: relation keys order, product (use orderId / productId only).
