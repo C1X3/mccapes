@@ -17,11 +17,13 @@ const invoiceFilterSchema = z.object({
   paypalNote: z.string().optional(),
   invoiceId: z.string().optional(),
   dateProcessed: z.string().optional(),
+  /** Omit or true = show SellAuth imports; false = exclude orders with `SellAuth: <id>` in notes */
+  includeSellAuth: z.boolean().optional(),
 });
 
-function buildInvoiceWhereClause(
+async function buildInvoiceWhereClause(
   input: z.infer<typeof invoiceFilterSchema> | undefined,
-): Record<string, unknown> {
+): Promise<Record<string, unknown>> {
   const where: Record<string, unknown> = {};
   const andConditions: Record<string, unknown>[] = [];
 
@@ -111,6 +113,20 @@ function buildInvoiceWhereClause(
     andConditions.push({ createdAt: { gte: startOfDay, lt: endOfDay } });
   }
 
+  if (input?.includeSellAuth === false) {
+    const sellAuthOrders = await prisma.$queryRaw<{ id: string }[]>`
+      SELECT id FROM "Order"
+      WHERE EXISTS (
+        SELECT 1 FROM unnest(notes) AS t(note)
+        WHERE t.note ~ '^SellAuth:[[:space:]]*[0-9]+[[:space:]]*$'
+      )
+    `;
+    const excludeIds = sellAuthOrders.map((r) => r.id);
+    if (excludeIds.length > 0) {
+      andConditions.push({ id: { notIn: excludeIds } });
+    }
+  }
+
   if (input?.search) {
     where.OR = [
       { id: { contains: input.search, mode: "insensitive" } },
@@ -159,7 +175,7 @@ export const invoicesRouter = createTRPCRouter({
         };
       }
 
-      const where = buildInvoiceWhereClause(input);
+      const where = await buildInvoiceWhereClause(input);
 
       const completedWhere = {
         ...where,
@@ -192,19 +208,20 @@ export const invoicesRouter = createTRPCRouter({
         .object({
           page: z.number().min(1).default(1),
           limit: z.number().min(1).max(100).default(15),
+          createdAtOrder: z.enum(["asc", "desc"]).default("desc"),
         })
         .merge(invoiceFilterSchema),
     )
     .query(async ({ input }) => {
-      const { page, limit } = input;
+      const { page, limit, createdAtOrder } = input;
       const skip = (page - 1) * limit;
 
-      const where = buildInvoiceWhereClause(input);
+      const where = await buildInvoiceWhereClause(input);
 
       const [invoices, totalCount] = await Promise.all([
         prisma.order.findMany({
           where,
-          orderBy: { createdAt: "desc" },
+          orderBy: { createdAt: createdAtOrder },
           skip,
           take: limit,
           include: {
@@ -254,7 +271,7 @@ export const invoicesRouter = createTRPCRouter({
   getFiltered: adminProcedure
     .input(invoiceFilterSchema)
     .query(async ({ input }) => {
-      const where = buildInvoiceWhereClause(input);
+      const where = await buildInvoiceWhereClause(input);
 
       return await prisma.order.findMany({
         where,

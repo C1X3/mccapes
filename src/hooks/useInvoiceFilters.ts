@@ -41,6 +41,9 @@ export const useInvoiceFilters = () => {
     value: InvoiceFilters["dateProcessedFilter"],
   ) => setTempFilters((prev) => ({ ...prev, dateProcessedFilter: value }));
 
+  const setTempIncludeSellAuth = (value: InvoiceFilters["includeSellAuth"]) =>
+    setTempFilters((prev) => ({ ...prev, includeSellAuth: value }));
+
   // Initialize temp filters with current filters
   const initializeTempFilters = () => {
     setTempFilters(filters);
@@ -77,6 +80,7 @@ export const useInvoiceFilters = () => {
     setTempPaypalNoteFilter,
     setTempInvoiceIdFilter,
     setTempDateProcessedFilter,
+    setTempIncludeSellAuth,
 
     // Actions
     initializeTempFilters,

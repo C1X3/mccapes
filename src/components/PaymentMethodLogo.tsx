@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { PaymentType, CryptoType } from "@generated/browser";
 import { SiBitcoin, SiEthereum, SiLitecoin, SiSolana } from "react-icons/si";
+import { FaCoins } from "react-icons/fa";
 import { QRCodeSVG } from "qrcode.react";
 
 interface PaymentMethodLogoProps {
@@ -111,6 +112,17 @@ export const PaymentMethodLogo = ({
           </div>
         );
     }
+  }
+
+  if (paymentType === PaymentType.CRYPTO) {
+    return (
+      <div
+        className={`${config.container} flex items-center justify-center text-[color-mix(in_srgb,var(--foreground),#888_40%)]`}
+        title="Crypto"
+      >
+        <FaCoins className="h-[1.1em] w-[1.1em] shrink-0" aria-hidden />
+      </div>
+    );
   }
 
   const logoSrc = () => {

@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { FaTimes } from "react-icons/fa";
+import { FaTimes, FaToggleOn, FaToggleOff } from "react-icons/fa";
 import { OrderStatus, PaymentType, CryptoType } from "@generated/browser";
 import { getPaymentMethodName } from "@/utils/invoiceUtils";
 import { PaymentFilterType } from "@/types/invoiceFilters";
@@ -18,6 +18,7 @@ interface InvoiceFilterModalProps {
   tempPaypalNoteFilter: string;
   tempInvoiceIdFilter: string;
   tempDateProcessedFilter: string;
+  tempIncludeSellAuth: boolean;
   productOptions: {
     activeProducts: string[];
     discontinuedProducts: string[];
@@ -33,6 +34,7 @@ interface InvoiceFilterModalProps {
   setTempCodeFilter: (value: string) => void;
   setTempPaypalNoteFilter: (value: string) => void;
   setTempDateProcessedFilter: (value: string) => void;
+  setTempIncludeSellAuth: (value: boolean) => void;
   onClose: () => void;
   onApplyFilters: () => void;
   onResetAndApplyFilters: () => void;
@@ -50,6 +52,7 @@ export default function InvoiceFilterModal({
   tempPaypalNoteFilter,
   tempInvoiceIdFilter,
   tempDateProcessedFilter,
+  tempIncludeSellAuth,
   productOptions,
   setTempInvoiceIdFilter,
   setTempStatusFilter,
@@ -61,6 +64,7 @@ export default function InvoiceFilterModal({
   setTempCodeFilter,
   setTempPaypalNoteFilter,
   setTempDateProcessedFilter,
+  setTempIncludeSellAuth,
   onClose,
   onApplyFilters,
   onResetAndApplyFilters,
@@ -309,21 +313,45 @@ export default function InvoiceFilterModal({
             </div>
           </div>
         </form>
-        <div className="flex justify-end gap-3 mt-6">
-          <button
-            type="button"
-            onClick={onResetAndApplyFilters}
-            className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
-          >
-            Reset Filters
-          </button>
-          <button
-            type="button"
-            onClick={onApplyFilters}
-            className="px-6 py-3 bg-[var(--primary)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors"
-          >
-            Apply Filters
-          </button>
+        <div className="mt-6 flex flex-wrap items-center justify-between gap-x-4 gap-y-4">
+          <div className="flex min-w-0 items-center gap-3">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={tempIncludeSellAuth}
+              aria-label="Show SellAuth-imported invoices"
+              onClick={() => setTempIncludeSellAuth(!tempIncludeSellAuth)}
+              className="flex shrink-0 items-center justify-center rounded-lg p-0.5 text-[var(--foreground)] transition-opacity hover:opacity-90 focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-admin-card)]"
+            >
+              {tempIncludeSellAuth ? (
+                <FaToggleOn className="size-9 text-[var(--primary)]" aria-hidden />
+              ) : (
+                <FaToggleOff
+                  className="size-9 text-[color-mix(in_srgb,var(--foreground),#666_45%)]"
+                  aria-hidden
+                />
+              )}
+            </button>
+            <span className="text-sm font-medium text-[var(--foreground)] select-none">
+              SellAuth
+            </span>
+          </div>
+          <div className="flex shrink-0 flex-wrap justify-end gap-3 max-sm:ml-auto max-sm:w-full">
+            <button
+              type="button"
+              onClick={onResetAndApplyFilters}
+              className="px-6 py-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] text-[var(--foreground)] rounded-xl hover:bg-[color-mix(in_srgb,var(--surface),#000_18%)] transition-colors"
+            >
+              Reset Filters
+            </button>
+            <button
+              type="button"
+              onClick={onApplyFilters}
+              className="px-6 py-3 bg-[var(--primary)] text-white rounded-xl hover:bg-[color-mix(in_srgb,var(--primary),#000_10%)] transition-colors"
+            >
+              Apply Filters
+            </button>
+          </div>
         </div>
       </motion.div>
     </motion.div>

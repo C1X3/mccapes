@@ -10,6 +10,8 @@ import {
   FaChevronLeft,
   FaChevronRight,
   FaSpinner,
+  FaArrowDown,
+  FaArrowUp,
 } from "react-icons/fa";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
@@ -44,6 +46,7 @@ export default function InvoicesTab() {
     setTempPaypalNoteFilter,
     setTempInvoiceIdFilter,
     setTempDateProcessedFilter,
+    setTempIncludeSellAuth,
     initializeTempFilters,
     applyFilters,
     resetFilters,
@@ -57,6 +60,7 @@ export default function InvoicesTab() {
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(15);
+  const [createdAtOrder, setCreatedAtOrder] = useState<"asc" | "desc">("desc");
 
   const queryClient = useQueryClient();
 
@@ -82,6 +86,7 @@ export default function InvoicesTab() {
     paypalNote: filters.paypalNoteFilter || undefined,
     invoiceId: filters.invoiceIdFilter || undefined,
     dateProcessed: filters.dateProcessedFilter || undefined,
+    includeSellAuth: filters.includeSellAuth,
   };
 
   // Export filtered invoices function
@@ -109,6 +114,7 @@ export default function InvoicesTab() {
     trpc.invoices.getPaginated.queryOptions({
       page: currentPage,
       limit: itemsPerPage,
+      createdAtOrder,
       ...filterQueryParams,
     }),
   );
@@ -198,6 +204,7 @@ export default function InvoicesTab() {
         tempPaypalNoteFilter={tempFilters.paypalNoteFilter}
         tempInvoiceIdFilter={tempFilters.invoiceIdFilter}
         tempDateProcessedFilter={tempFilters.dateProcessedFilter}
+        tempIncludeSellAuth={tempFilters.includeSellAuth}
         productOptions={productOptions}
         setTempDateProcessedFilter={setTempDateProcessedFilter}
         setTempInvoiceIdFilter={setTempInvoiceIdFilter}
@@ -209,6 +216,7 @@ export default function InvoicesTab() {
         setTempDiscordFilter={setTempDiscordFilter}
         setTempCodeFilter={setTempCodeFilter}
         setTempPaypalNoteFilter={setTempPaypalNoteFilter}
+        setTempIncludeSellAuth={setTempIncludeSellAuth}
         onClose={() => setShowFilterModal(false)}
         onApplyFilters={handleApplyFilters}
         onResetAndApplyFilters={handleResetAndApplyFilters}
@@ -342,8 +350,38 @@ export default function InvoicesTab() {
               <th className="text-left py-4 px-2 text-[var(--foreground)]">
                 Email
               </th>
-              <th className="text-left py-4 px-2 text-[var(--foreground)]">
-                Created At
+              <th
+                className="text-left py-4 px-2 text-[var(--foreground)]"
+                aria-sort={
+                  createdAtOrder === "desc" ? "descending" : "ascending"
+                }
+              >
+                <button
+                  type="button"
+                  onClick={() => {
+                    setCreatedAtOrder((o) => (o === "desc" ? "asc" : "desc"));
+                    setCurrentPage(1);
+                  }}
+                  className="inline-flex items-center gap-1.5 rounded-md py-1 -my-1 -mx-1 px-1 text-left font-semibold text-[var(--foreground)] hover:bg-[color-mix(in_srgb,var(--surface),#000_10%)] focus:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--color-admin-card)] transition-colors"
+                  title={
+                    createdAtOrder === "desc"
+                      ? "Newest first — click for oldest first"
+                      : "Oldest first — click for newest first"
+                  }
+                >
+                  Created At
+                  {createdAtOrder === "desc" ? (
+                    <FaArrowDown
+                      className="size-3.5 shrink-0 text-[var(--color-text-secondary)]"
+                      aria-hidden
+                    />
+                  ) : (
+                    <FaArrowUp
+                      className="size-3.5 shrink-0 text-[var(--color-text-secondary)]"
+                      aria-hidden
+                    />
+                  )}
+                </button>
               </th>
             </tr>
           </thead>

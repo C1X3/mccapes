@@ -15,6 +15,8 @@ export interface InvoiceFilters {
   paypalNoteFilter: string;
   invoiceIdFilter: string;
   dateProcessedFilter: string;
+  /** When false, hide orders whose notes include a SellAuth import line (e.g. "SellAuth: 4490703"). */
+  includeSellAuth: boolean;
 }
 
 // Default filter values
@@ -29,4 +31,5 @@ export const defaultFilters: InvoiceFilters = {
   paypalNoteFilter: "",
   invoiceIdFilter: "",
   dateProcessedFilter: "",
+  includeSellAuth: true,
 };
