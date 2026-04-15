@@ -40,6 +40,9 @@ import {
   resolveProductBackgroundImage,
 } from "@/utils/productMedia";
 
+/** Set to false to re-enable card checkout in the UI. Server routes unchanged. */
+const STRIPE_CHECKOUT_TEMP_DISABLED = true;
+
 const CartPage = () => {
   const router = useRouter();
   const trpc = useTRPC();
@@ -70,7 +73,7 @@ const CartPage = () => {
   });
   const [showCustomerForm, setShowCustomerForm] = useState(false);
   const [paymentType, setPaymentType] = useState<PaymentType>(
-    PaymentType.STRIPE,
+    STRIPE_CHECKOUT_TEMP_DISABLED ? PaymentType.PAYPAL : PaymentType.STRIPE,
   );
   const [cryptoType, setCryptoType] = useState<CryptoType>(CryptoType.BITCOIN);
   const [termsAccepted, setTermsAccepted] = useState(false);
@@ -917,15 +920,32 @@ const CartPage = () => {
 
                         <div className="space-y-4 mb-6">
                           <motion.button
-                            onClick={() =>
-                              handlePaymentMethod(PaymentType.STRIPE)
+                            type="button"
+                            disabled={STRIPE_CHECKOUT_TEMP_DISABLED}
+                            onClick={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : () =>
+                                    handlePaymentMethod(PaymentType.STRIPE)
                             }
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.15 }}
-                            whileHover={{ scale: 1.02 }}
-                            whileTap={{ scale: 0.98 }}
-                            className="w-full p-4 bg-gradient-to-r from-[#6772e5] to-[#4f56d1] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                            whileHover={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : { scale: 1.02 }
+                            }
+                            whileTap={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : { scale: 0.98 }
+                            }
+                            className={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? "w-full p-4 rounded-xl flex items-center gap-4 cursor-not-allowed bg-[color-mix(in_srgb,var(--surface),#000_12%)] text-[color-mix(in_srgb,var(--foreground),transparent_45%)] border border-[color-mix(in_srgb,var(--foreground),transparent_88%)] opacity-70"
+                                : "w-full p-4 bg-gradient-to-r from-[#6772e5] to-[#4f56d1] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                            }
                           >
                             <FaCreditCard size={24} />
                             <div className="flex flex-col text-left">
@@ -933,8 +953,9 @@ const CartPage = () => {
                                 Credit/Debit Card
                               </span>
                               <span className="text-xs opacity-80">
-                                Pay with Stripe (
-                                {formatFeePercentage(PaymentType.STRIPE)} fee)
+                                {STRIPE_CHECKOUT_TEMP_DISABLED
+                                  ? "Temporarily unavailable"
+                                  : `Pay with Stripe (${formatFeePercentage(PaymentType.STRIPE)} fee)`}
                               </span>
                             </div>
                           </motion.button>
