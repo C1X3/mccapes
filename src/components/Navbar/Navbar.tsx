@@ -52,7 +52,7 @@ const Navbar = ({
       >
         <div className={fullWidth ? "relative w-full px-0" : "relative mx-auto w-full max-w-7xl px-4"}>
           <div
-            className={`relative overflow-hidden transition-all duration-300 border ${fullWidth ? "rounded-none" : "rounded-xl"} ${
+            className={`relative overflow-hidden transition-all duration-300 border ${effectiveScrolled ? "rounded-full" : fullWidth ? "rounded-none" : "rounded-xl"} ${
               effectiveScrolled
                 ? "border-[var(--border)] bg-[color-mix(in_srgb,var(--surface),#000_10%)] backdrop-blur-xl shadow-[0_8px_30px_rgba(0,0,0,0.12)]"
                 : "border-transparent bg-transparent backdrop-blur-0 shadow-none"
