@@ -27,6 +27,7 @@ import { useTRPC } from "@/server/client";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { CryptoType, OrderStatus, PaymentType } from "@generated/browser";
 import { CryptoPaymentQr } from "@/components/PaymentMethodLogo";
+import { getPaymentMethodName } from "@/utils/invoiceUtils";
 import {
   getProductBackgroundBlurClasses,
   isCapeProduct,
@@ -934,7 +935,7 @@ const OrderPage = ({ id }: { id: string }) => {
                   </p>
                   <p className="text-[var(--color-text-secondary)]">
                     {order.paymentType
-                      ? order.paymentType.replace("_", " ")
+                      ? getPaymentMethodName(order.paymentType)
                       : "N/A"}
                     {order.paymentType === "CRYPTO" &&
                       walletDetails?.chain &&

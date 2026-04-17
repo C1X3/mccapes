@@ -4,6 +4,7 @@ import { PaymentType } from "@generated/browser";
 export const PAYMENT_METHOD_FEES = {
   [PaymentType.CRYPTO]: 0.015, // 1.5%
   [PaymentType.PAYPAL]: 0.025, // 2.5%
+  [PaymentType.PAYPAL_CHECKOUT]: 0.04, // 4%
   [PaymentType.STRIPE]: 0.04, // 4%
 };
 

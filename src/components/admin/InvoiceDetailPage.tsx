@@ -527,6 +527,12 @@ export default function InvoiceDetailPage({ id }: { id: string }) {
                 <span>{invoice.paypalNote || "N/A"}</span>
               </div>
             )}
+            {invoice.paymentType === PaymentType.PAYPAL_CHECKOUT && (
+              <div className="flex justify-between border-b border-[var(--border)] pb-2">
+                <span className="text-[var(--color-text-secondary)]">Transaction ID</span>
+                <span>{invoice.paypalNote || "N/A"}</span>
+              </div>
+            )}
             <div className="flex justify-between pb-2">
               <span className="text-[var(--color-text-secondary)]">Created At</span>
               <span>{formatDate(invoice.createdAt, "long")}</span>

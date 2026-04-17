@@ -27,7 +27,13 @@ async function expireOrders() {
     prisma.order.updateMany({
       where: {
         status: OrderStatus.PENDING,
-        paymentType: { in: [PaymentType.STRIPE, PaymentType.PAYPAL] },
+        paymentType: {
+          in: [
+            PaymentType.STRIPE,
+            PaymentType.PAYPAL,
+            PaymentType.PAYPAL_CHECKOUT,
+          ],
+        },
         createdAt: { lt: new Date(Date.now() - PENDING_CARD_TIMEOUT_MS) },
       },
       data: { status: OrderStatus.CANCELLED },

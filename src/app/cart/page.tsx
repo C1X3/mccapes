@@ -163,6 +163,9 @@ const CartPage = () => {
         ) {
           toast.success("Redirecting to payment...");
           window.location.href = data.walletDetails.url;
+        } else if (data.success && data.paymentType === PaymentType.PAYPAL_CHECKOUT) {
+          toast.error("Could not start PayPal Checkout. Please try again.");
+          setShowPaymentOptions(true);
         }
       },
       onError: (error) => {
@@ -174,6 +177,7 @@ const CartPage = () => {
 
   const handlePaymentMethod = (method: PaymentType) => {
     setPaymentType(method);
+
     if (method === PaymentType.CRYPTO) {
       setShowCryptoOptions(true);
       setShowPaymentOptions(false);
@@ -209,7 +213,6 @@ const CartPage = () => {
       couponCode,
       discountAmount,
     });
-
     clearCart();
   };
 
@@ -920,32 +923,15 @@ const CartPage = () => {
 
                         <div className="space-y-4 mb-6">
                           <motion.button
-                            type="button"
-                            disabled={STRIPE_CHECKOUT_TEMP_DISABLED}
-                            onClick={
-                              STRIPE_CHECKOUT_TEMP_DISABLED
-                                ? undefined
-                                : () =>
-                                    handlePaymentMethod(PaymentType.STRIPE)
+                            onClick={() =>
+                              handlePaymentMethod(PaymentType.PAYPAL_CHECKOUT)
                             }
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.15 }}
-                            whileHover={
-                              STRIPE_CHECKOUT_TEMP_DISABLED
-                                ? undefined
-                                : { scale: 1.02 }
-                            }
-                            whileTap={
-                              STRIPE_CHECKOUT_TEMP_DISABLED
-                                ? undefined
-                                : { scale: 0.98 }
-                            }
-                            className={
-                              STRIPE_CHECKOUT_TEMP_DISABLED
-                                ? "w-full p-4 rounded-xl flex items-center gap-4 cursor-not-allowed bg-[color-mix(in_srgb,var(--surface),#000_12%)] text-[color-mix(in_srgb,var(--foreground),transparent_45%)] border border-[color-mix(in_srgb,var(--foreground),transparent_88%)] opacity-70"
-                                : "w-full p-4 bg-gradient-to-r from-[#6772e5] to-[#4f56d1] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
-                            }
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            className="w-full p-4 bg-gradient-to-r from-[#7c3aed] to-[#4f46e5] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
                           >
                             <FaCreditCard size={24} />
                             <div className="flex flex-col text-left">
@@ -953,9 +939,11 @@ const CartPage = () => {
                                 Credit/Debit Card
                               </span>
                               <span className="text-xs opacity-80">
-                                {STRIPE_CHECKOUT_TEMP_DISABLED
-                                  ? "Temporarily unavailable"
-                                  : `Pay with Stripe (${formatFeePercentage(PaymentType.STRIPE)} fee)`}
+                                via Paypal Checkout (
+                                {formatFeePercentage(
+                                  PaymentType.PAYPAL_CHECKOUT,
+                                )}{" "}
+                                fee)
                               </span>
                             </div>
                           </motion.button>
@@ -996,10 +984,51 @@ const CartPage = () => {
                           >
                             <FaPaypal size={24} />
                             <div className="flex flex-col text-left">
-                              <span className="font-semibold">PayPal</span>
+                              <span className="font-semibold">
+                                PayPal Friends & Family
+                              </span>
                               <span className="text-xs opacity-80">
                                 Friends & Family (
                                 {formatFeePercentage(PaymentType.PAYPAL)} fee)
+                              </span>
+                            </div>
+                          </motion.button>
+
+                          <motion.button
+                            type="button"
+                            disabled={STRIPE_CHECKOUT_TEMP_DISABLED}
+                            onClick={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : () =>
+                                    handlePaymentMethod(PaymentType.STRIPE)
+                            }
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.45 }}
+                            whileHover={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : { scale: 1.02 }
+                            }
+                            whileTap={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? undefined
+                                : { scale: 0.98 }
+                            }
+                            className={
+                              STRIPE_CHECKOUT_TEMP_DISABLED
+                                ? "w-full p-4 rounded-xl flex items-center gap-4 cursor-not-allowed bg-[color-mix(in_srgb,var(--surface),#000_12%)] text-[color-mix(in_srgb,var(--foreground),transparent_45%)] border border-[color-mix(in_srgb,var(--foreground),transparent_88%)] opacity-70"
+                                : "w-full p-4 bg-gradient-to-r from-[#6772e5] to-[#4f56d1] text-white rounded-xl flex items-center gap-4 transition-colors hover:shadow-lg"
+                            }
+                          >
+                            <FaCreditCard size={24} />
+                            <div className="flex flex-col text-left">
+                              <span className="font-semibold">Stripe</span>
+                              <span className="text-xs opacity-80">
+                                {STRIPE_CHECKOUT_TEMP_DISABLED
+                                  ? "Temporarily unavailable"
+                                  : `Pay with Stripe (${formatFeePercentage(PaymentType.STRIPE)} fee)`}
                               </span>
                             </div>
                           </motion.button>

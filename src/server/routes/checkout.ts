@@ -10,6 +10,7 @@ import {
 } from "@generated/client";
 import { createCheckoutSession as createStripeCheckout } from "../providers/stripe";
 import { createCheckoutSession as createPaypalCheckout } from "../providers/paypal";
+import { createPayPalCheckoutApprovalUrlFromOrder } from "../providers/paypalCheckout";
 import { createWalletDetails as createCryptoCheckout } from "../providers/crypto";
 import { WalletDetails } from "../providers/types";
 import {
@@ -240,6 +241,18 @@ export const checkoutRouter = createTRPCRouter({
               url: await createStripeCheckout(payloadForProviders),
             };
             break;
+          case PaymentType.PAYPAL_CHECKOUT:
+            walletDetails = {
+              amount: input.totalPrice.toFixed(2),
+              address: "",
+              url: await createPayPalCheckoutApprovalUrlFromOrder({
+                orderId: order.id,
+                totalPrice: input.totalPrice,
+                paymentFee: input.paymentFee,
+                discountAmount: input.discountAmount || 0,
+              }),
+            };
+            break;
           case PaymentType.PAYPAL:
             walletDetails = await createPaypalCheckout(payloadForProviders);
             break;
@@ -348,6 +361,8 @@ export const checkoutRouter = createTRPCRouter({
         order.status === OrderStatus.PENDING &&
         ((order.paymentType === PaymentType.PAYPAL &&
           pendingAgeMs >= PENDING_PAYPAL_TIMEOUT_MS) ||
+          (order.paymentType === PaymentType.PAYPAL_CHECKOUT &&
+            pendingAgeMs >= PENDING_STRIPE_TIMEOUT_MS) ||
           (order.paymentType === PaymentType.STRIPE &&
             pendingAgeMs >= PENDING_STRIPE_TIMEOUT_MS) ||
           (order.paymentType === PaymentType.CRYPTO &&

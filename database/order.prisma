@@ -2,6 +2,7 @@ enum PaymentType {
   STRIPE
   CRYPTO
   PAYPAL
+  PAYPAL_CHECKOUT
 }
 
 enum OrderStatus {

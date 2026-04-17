@@ -30,6 +30,18 @@ export interface OrderCompleteTemplateProps {
 
 const money = (value: number) => `$${value.toFixed(2)}`;
 const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://mccapes.net";
+const getPaymentMethodName = (paymentType: PaymentType) => {
+  switch (paymentType) {
+    case PaymentType.STRIPE:
+      return "Stripe";
+    case PaymentType.PAYPAL:
+      return "PayPal";
+    case PaymentType.PAYPAL_CHECKOUT:
+      return "Checkout";
+    case PaymentType.CRYPTO:
+      return "Crypto";
+  }
+};
 
 export function OrderCompleteTemplate(props: OrderCompleteTemplateProps) {
   const orderUrl = `${appUrl}/order/${props.orderId}`;
@@ -48,7 +60,7 @@ export function OrderCompleteTemplate(props: OrderCompleteTemplateProps) {
     >
       <Section style={styles.section}>
         <Banner
-          text={`Payment received: ${money(props.totalWithFee)} via ${props.paymentType.replace("_", " ")}.`}
+          text={`Payment received: ${money(props.totalWithFee)} via ${getPaymentMethodName(props.paymentType)}.`}
         />
 
         <Section style={styles.card}>
@@ -64,7 +76,7 @@ export function OrderCompleteTemplate(props: OrderCompleteTemplateProps) {
             <DetailRow label="Date" value={new Date(props.orderDate).toUTCString()} />
             <DetailRow
               label="Payment Method"
-              value={props.paymentType.replace("_", " ")}
+              value={getPaymentMethodName(props.paymentType)}
             />
           </Section>
 
@@ -122,7 +134,7 @@ export function buildOrderCompleteText(props: OrderCompleteTemplateProps) {
     `Customer: ${props.customerName}`,
     `Email: ${props.customerEmail}`,
     `Date: ${new Date(props.orderDate).toUTCString()}`,
-    `Payment Method: ${props.paymentType.replace("_", " ")}`,
+    `Payment Method: ${getPaymentMethodName(props.paymentType)}`,
     `Order Link: ${appUrl}/order/${props.orderId}`,
     `FAQ: ${appUrl}/faq`,
     "Support: Reply to this email and include your order ID.",

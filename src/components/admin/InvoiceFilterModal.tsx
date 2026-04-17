@@ -189,6 +189,9 @@ export default function InvoiceFilterModal({
                 <option value={PaymentType.PAYPAL}>
                   {getPaymentMethodName(PaymentType.PAYPAL)}
                 </option>
+                <option value={PaymentType.PAYPAL_CHECKOUT}>
+                  {getPaymentMethodName(PaymentType.PAYPAL_CHECKOUT)}
+                </option>
                 <option value={PaymentType.CRYPTO}>All Crypto</option>
                 <option value={CryptoType.BITCOIN}>Bitcoin</option>
                 <option value={CryptoType.ETHEREUM}>Ethereum</option>

@@ -17,7 +17,7 @@ const faqData: FAQItem[] = [
   {
     question: "What payment methods do you accept?",
     answer:
-      "We accept payments via PayPal, Bitcoin, Litecoin, Ethereum, Solana, Credit/Debit Card and more via Stripe.",
+      "We accept payments via PayPal, Paypal Checkout, Bitcoin, Litecoin, Ethereum, Solana and more via Stripe.",
   },
   {
     question: "What do I do if my PayPal order hasn't processed/cancelled?",

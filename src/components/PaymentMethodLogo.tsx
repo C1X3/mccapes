@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { PaymentType, CryptoType } from "@generated/browser";
 import { SiBitcoin, SiEthereum, SiLitecoin, SiSolana } from "react-icons/si";
-import { FaCoins } from "react-icons/fa";
+import { FaCoins, FaPaypal } from "react-icons/fa";
 import { QRCodeSVG } from "qrcode.react";
 
 interface PaymentMethodLogoProps {
@@ -125,13 +125,24 @@ export const PaymentMethodLogo = ({
     );
   }
 
+  if (paymentType === PaymentType.PAYPAL) {
+    return (
+      <div
+        className={`${config.container} flex items-center justify-center text-[#0070ba]`}
+        title="PayPal"
+      >
+        <FaPaypal className="h-[1.05em] w-[1.05em] shrink-0" aria-hidden />
+      </div>
+    );
+  }
+
   const logoSrc = () => {
     if (paymentType === PaymentType.STRIPE) {
       return "https://stripe.com/favicon.ico";
     }
 
-    if (paymentType === PaymentType.PAYPAL) {
-      return "https://paypal.com/favicon.ico";
+    if (paymentType === PaymentType.PAYPAL_CHECKOUT) {
+      return "https://www.paypalobjects.com/webstatic/icon/pp258.png";
     }
 
     return null;

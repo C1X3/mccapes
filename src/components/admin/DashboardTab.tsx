@@ -35,6 +35,7 @@ import {
 } from "recharts";
 import { CryptoType, PaymentType } from "@generated/browser";
 import { PaymentMethodLogo } from "@/components/PaymentMethodLogo";
+import { getPaymentMethodName } from "@/utils/invoiceUtils";
 
 // Define time range type
 type TimeRangeType =
@@ -839,11 +840,7 @@ export default function DashboardTab() {
                                   {order.paymentType === PaymentType.CRYPTO &&
                                   order.cryptoType
                                     ? `${order.cryptoType.charAt(0).toUpperCase() + order.cryptoType.slice(1).toLowerCase()}`
-                                    : order.paymentType === PaymentType.STRIPE
-                                      ? "Stripe"
-                                      : order.paymentType === PaymentType.PAYPAL
-                                        ? "PayPal"
-                                        : order.paymentType}
+                                    : getPaymentMethodName(order.paymentType)}
                                 </span>
                               </div>
                             </div>

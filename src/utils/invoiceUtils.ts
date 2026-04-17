@@ -27,6 +27,8 @@ export const getPaymentMethodName = (method: PaymentType): string => {
   switch (method) {
     case PaymentType.STRIPE:
       return "Stripe";
+    case PaymentType.PAYPAL_CHECKOUT:
+      return "Checkout";
     case PaymentType.PAYPAL:
       return "PayPal";
     case PaymentType.CRYPTO:
