@@ -250,6 +250,11 @@ export const checkoutRouter = createTRPCRouter({
                 totalPrice: input.totalPrice,
                 paymentFee: input.paymentFee,
                 discountAmount: input.discountAmount || 0,
+                items: input.items.map((item) => ({
+                  name: item.name,
+                  quantity: item.quantity,
+                  price: item.price,
+                })),
               }),
             };
             break;

@@ -10,6 +10,9 @@ const PAYPAL_CLIENT_ID = (
 
 const PAYPAL_CLIENT_SECRET = (process.env.PAYPAL_CLIENT_SECRET || "").trim();
 
+const toCents = (value: number) => Math.round(value * 100);
+const centsToMoneyString = (cents: number) => (cents / 100).toFixed(2);
+
 async function getPayPalAccessToken() {
   if (!PAYPAL_CLIENT_ID || !PAYPAL_CLIENT_SECRET) {
     throw new Error("PayPal client credentials are not configured");
@@ -51,6 +54,11 @@ export async function createPayPalCheckoutApprovalUrl(
     totalPrice: payload.totalPrice,
     paymentFee: payload.paymentFee,
     discountAmount: payload.discountAmount,
+    items: payload.items.map((item) => ({
+      name: item.name,
+      quantity: item.quantity,
+      price: item.price,
+    })),
   });
 }
 
@@ -59,6 +67,11 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
   totalPrice: number;
   paymentFee: number;
   discountAmount: number;
+  items: Array<{
+    name: string;
+    quantity: number;
+    price: number;
+  }>;
 }): Promise<string> {
   const appUrl = process.env.NEXT_PUBLIC_APP_URL;
   if (!appUrl) {
@@ -66,11 +79,57 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
   }
 
   const accessToken = await getPayPalAccessToken();
-  const expectedTotal = (
-    order.totalPrice +
-    order.paymentFee -
-    order.discountAmount
-  ).toFixed(2);
+  const paypalItems = order.items.map((item) => {
+    const unitAmountCents = toCents(item.price);
+    return {
+      name: item.name.slice(0, 127),
+      quantity: String(item.quantity),
+      unit_amount: {
+        currency_code: "USD",
+        value: centsToMoneyString(unitAmountCents),
+      },
+      unitAmountCents,
+    };
+  });
+
+  const itemTotalCents = paypalItems.reduce(
+    (sum, item) => sum + item.unitAmountCents * Number.parseInt(item.quantity, 10),
+    0,
+  );
+  const handlingCents = toCents(order.paymentFee);
+  const discountCents = toCents(order.discountAmount);
+  const amountCents = Math.max(0, itemTotalCents + handlingCents - discountCents);
+
+  const paypalOrderItems = paypalItems.map((item) => ({
+    name: item.name.slice(0, 127),
+    quantity: item.quantity,
+    unit_amount: item.unit_amount,
+  }));
+
+  const breakdown: {
+    item_total?: { currency_code: "USD"; value: string };
+    handling?: { currency_code: "USD"; value: string };
+    discount?: { currency_code: "USD"; value: string };
+  } = {};
+
+  if (itemTotalCents > 0) {
+    breakdown.item_total = {
+      currency_code: "USD",
+      value: centsToMoneyString(itemTotalCents),
+    };
+  }
+  if (handlingCents > 0) {
+    breakdown.handling = {
+      currency_code: "USD",
+      value: centsToMoneyString(handlingCents),
+    };
+  }
+  if (discountCents > 0) {
+    breakdown.discount = {
+      currency_code: "USD",
+      value: centsToMoneyString(discountCents),
+    };
+  }
 
   const response = await fetch(`${PAYPAL_API_URL}/v2/checkout/orders`, {
     method: "POST",
@@ -87,8 +146,10 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
           description: `Order #${order.orderId}`,
           amount: {
             currency_code: "USD",
-            value: expectedTotal,
+            value: centsToMoneyString(amountCents),
+            ...(Object.keys(breakdown).length > 0 ? { breakdown } : {}),
           },
+          ...(paypalOrderItems.length > 0 ? { items: paypalOrderItems } : {}),
         },
       ],
       application_context: {

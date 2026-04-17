@@ -312,6 +312,17 @@ export async function POST(request: Request) {
         totalPrice: true,
         paymentFee: true,
         discountAmount: true,
+        OrderItem: {
+          select: {
+            quantity: true,
+            price: true,
+            product: {
+              select: {
+                name: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -339,6 +350,11 @@ export async function POST(request: Request) {
         totalPrice: order.totalPrice,
         paymentFee: order.paymentFee,
         discountAmount: order.discountAmount,
+        items: order.OrderItem.map((item) => ({
+          name: item.product.name,
+          quantity: item.quantity,
+          price: item.price,
+        })),
       });
       return NextResponse.json({ approvalUrl }, { status: 200 });
     }
