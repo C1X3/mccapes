@@ -104,6 +104,7 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
     name: item.name.slice(0, 127),
     quantity: item.quantity,
     unit_amount: item.unit_amount,
+    category: "DIGITAL_GOODS" as const,
   }));
 
   const breakdown: {
@@ -152,10 +153,15 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
           ...(paypalOrderItems.length > 0 ? { items: paypalOrderItems } : {}),
         },
       ],
-      application_context: {
-        user_action: "PAY_NOW",
-        return_url: `${appUrl}/order/${order.orderId}`,
-        cancel_url: `${appUrl}/order/${order.orderId}?canceled=true`,
+      payment_source: {
+        paypal: {
+          experience_context: {
+            shipping_preference: "NO_SHIPPING",
+            user_action: "PAY_NOW",
+            return_url: `${appUrl}/order/${order.orderId}`,
+            cancel_url: `${appUrl}/order/${order.orderId}?canceled=true`,
+          },
+        },
       },
     }),
   });
@@ -168,10 +174,14 @@ export async function createPayPalCheckoutApprovalUrlFromOrder(order: {
   const data = (await response.json()) as {
     links?: Array<{ rel?: string; href?: string }>;
   };
-  const approveLink = data.links?.find((link) => link.rel === "approve")?.href;
+  const approveLink = data.links?.find(
+    (link) => link.rel === "approve" || link.rel === "payer-action",
+  )?.href;
 
   if (!approveLink) {
-    throw new Error("PayPal order did not include an approval URL");
+    throw new Error(
+      `PayPal order did not include an approval URL. Links: ${JSON.stringify(data.links ?? [])}`,
+    );
   }
 
   return approveLink;
