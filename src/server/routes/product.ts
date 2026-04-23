@@ -42,6 +42,7 @@ export const productRouter = createTRPCRouter({
           rating: true,
           badge: true,
           features: true,
+          preorderMessage: true,
           stock: true,
           slashPrice: true,
           hideHomePage: true,
@@ -85,6 +86,7 @@ export const productRouter = createTRPCRouter({
           rating: true,
           badge: true,
           features: true,
+          preorderMessage: true,
           stock: true,
           slashPrice: true,
           hideHomePage: true,
@@ -127,6 +129,7 @@ export const productRouter = createTRPCRouter({
         rating: true,
         badge: true,
         features: true,
+        preorderMessage: true,
         stock: true,
         slashPrice: true,
         hideHomePage: true,
@@ -158,6 +161,7 @@ export const productRouter = createTRPCRouter({
         badge: z.string().optional(),
         rating: z.number().min(0).max(5),
         features: z.array(z.string()),
+        preorderMessage: z.string().optional(),
         slashPrice: z.number().optional(),
         hideHomePage: z.boolean().default(false),
         hideProductPage: z.boolean().default(false),
@@ -171,9 +175,11 @@ export const productRouter = createTRPCRouter({
         capeTextureBase64,
         additionalImages,
         backgroundImageUrl,
+        preorderMessage,
         ...rest
       } = input;
       const normalizedBackground = backgroundImageUrl?.trim() || null;
+      const normalizedPreorderMessage = preorderMessage?.trim() || null;
       const capeTexturePng =
         productType === "CAPE" && capeTextureBase64
           ? Buffer.from(capeTextureBase64, "base64")
@@ -184,6 +190,7 @@ export const productRouter = createTRPCRouter({
           ...rest,
           productType,
           backgroundImageUrl: normalizedBackground,
+          preorderMessage: normalizedPreorderMessage,
           capeTexturePng,
           additionalImages: productType === "CAPE" ? [] : additionalImages,
         },
@@ -208,6 +215,7 @@ export const productRouter = createTRPCRouter({
         badge: z.string().optional(),
         rating: z.number().min(0).max(5).optional(),
         features: z.array(z.string()).optional(),
+        preorderMessage: z.string().optional(),
         slashPrice: z.number().optional(),
         order: z.number().optional(),
         hideHomePage: z.boolean().optional(),
@@ -253,6 +261,10 @@ export const productRouter = createTRPCRouter({
           typeof data.backgroundImageUrl === "string"
             ? data.backgroundImageUrl.trim() || null
             : data.backgroundImageUrl,
+        preorderMessage:
+          typeof data.preorderMessage === "string"
+            ? data.preorderMessage.trim() || null
+            : data.preorderMessage,
       };
 
       if (productType === "CAPE") {

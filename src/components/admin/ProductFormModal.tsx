@@ -15,6 +15,7 @@ export const schema = z.object({
   slug: z.string(),
   name: z.string(),
   description: z.string(),
+  preorderMessage: z.string().optional(),
   price: z.number(),
   stock: z.array(z.string()),
   image: z.string(),
@@ -70,6 +71,7 @@ export default function ProductFormModal({
       name: "",
       slug: "",
       description: "",
+      preorderMessage: "",
       price: 0,
       stock: [],
       image: "",
@@ -131,6 +133,7 @@ export default function ProductFormModal({
         name: "",
         slug: "",
         description: "",
+        preorderMessage: "",
         price: 0,
         stock: [],
         image: "",
@@ -219,6 +222,7 @@ export default function ProductFormModal({
       isFeatured: submitData.isFeatured,
       slashPrice: submitData.slashPrice,
       order: submitData.order,
+      preorderMessage: submitData.preorderMessage?.trim() || undefined,
       backgroundImageUrl: submitData.backgroundImageUrl?.trim() || undefined,
     };
 
@@ -375,6 +379,37 @@ export default function ProductFormModal({
                     {...field}
                     className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
                     placeholder="Enter product description"
+                  />
+                  {fieldState.error && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {fieldState.error.message}
+                    </p>
+                  )}
+                </>
+              )}
+            />
+          </div>
+
+          {/* Preorder Message */}
+          <div>
+            <label
+              htmlFor="preorderMessage"
+              className="block text-[var(--foreground)] mb-2"
+            >
+              Preorder Message
+            </label>
+            <Controller
+              name="preorderMessage"
+              control={control}
+              render={({ field, fieldState }) => (
+                <>
+                  <textarea
+                    id="preorderMessage"
+                    rows={3}
+                    {...field}
+                    value={field.value ?? ""}
+                    className="w-full p-3 bg-[color-mix(in_srgb,var(--surface),#000_8%)] border rounded-lg text-[var(--foreground)] focus:outline-none focus:ring-2 focus:ring-[var(--primary)] border-[var(--border)]"
+                    placeholder="Optional. Add preorder details (if empty, preorder popup/acknowledgment is disabled)."
                   />
                   {fieldState.error && (
                     <p className="text-red-500 text-sm mt-1">

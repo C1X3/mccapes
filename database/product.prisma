@@ -20,6 +20,7 @@ model Product {
   rating           Float
   badge            String?
   features         String[]
+  preorderMessage  String?
   order            Int @default(0)
   stripeProductName String?
 

@@ -23,9 +23,9 @@ const HERO_FALLBACK_PRODUCT = {
   slug: "experience",
   name: "Experience Cape Code",
   description:
-    "Purchase a redeemable Minecraft cape code at competitive community pricing without risky third-party marketplaces.",
-  price: 9.99,
-  slashPrice: 14.99,
+    "The Minecraft Experience Cape is a piece of Minecraft History. The Cape is only obtainable via going to an IRL Minecraft Event, the same as how Minecon Capes were obtainable, which are now worth thousands of dollars. Don't miss out, buy now!",
+  price: 49.99,
+  slashPrice: 84.99,
   image: "/mc_bg.webp",
 };
 

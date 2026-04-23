@@ -23,6 +23,7 @@ const Page = async ({ params }: { params: Promise<{ slug: string }> }) => {
       rating: true,
       badge: true,
       features: true,
+      preorderMessage: true,
       stock: true,
       order: true,
       stripeProductName: true,

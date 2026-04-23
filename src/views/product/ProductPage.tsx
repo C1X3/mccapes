@@ -10,6 +10,7 @@ import ProductCapeViewer from "@/components/ProductCapeViewer";
 import ProductSkinviewViewer from "@/components/ProductSkinviewViewer";
 import { useEffect, useMemo, useRef, useState } from "react";
 import Image from "next/image";
+import toast from "react-hot-toast";
 import {
   FaArrowLeft,
   FaStar,
@@ -32,6 +33,8 @@ import {
 
 const SKIN_USERNAME_STORAGE_KEY = "mccapes.skinUsername";
 const TRY_ON_HINT_SEEN_STORAGE_KEY = "mccapes.tryOnHintSeen";
+const PRODUCT_PREORDER_ACKNOWLEDGMENT_LABEL =
+  "I acknowledge that this is a preorder and I will not receive the product until the date above.";
 
 const sanitizeMinecraftUsername = (raw: string) =>
   raw.replace(/[^a-zA-Z0-9_]/g, "").slice(0, 16);
@@ -50,6 +53,7 @@ const ProductPage = ({
     capeTextureDataUrl?: string | null;
     productType?: "CAPE" | "STANDARD";
     backgroundImageUrl?: string | null;
+    preorderMessage?: string | null;
   };
   stockCount?: number;
 }) => {
@@ -86,6 +90,8 @@ const ProductPage = ({
   const pendingSkinUsername = sanitizeMinecraftUsername(skinUsernameInput.trim());
   const hasPendingSkinChange = pendingSkinUsername !== activeSkinUsername;
   const capeProduct = isCapeProduct(product ?? {});
+  const preorderMessage = product?.preorderMessage?.trim() || "";
+  const hasPreorderMessage = Boolean(preorderMessage);
   const productBackgroundImage = resolveProductBackgroundImage(product ?? {});
   const capeTexturePath = resolveCapeTexturePath(product ?? {});
   const galleryImages = useMemo(() => {
@@ -94,6 +100,9 @@ const ProductPage = ({
     return Array.from(new Set(images));
   }, [capeProduct, product]);
   const [selectedPreviewImage, setSelectedPreviewImage] = useState<string>("");
+  const [hasPreorderAcknowledgment, setHasPreorderAcknowledgment] =
+    useState(false);
+  const [showAcknowledgmentOutline, setShowAcknowledgmentOutline] = useState(false);
 
   useEffect(() => {
     if (capeProduct) {
@@ -102,6 +111,14 @@ const ProductPage = ({
     }
     setSelectedPreviewImage(galleryImages[0] || product?.image || "");
   }, [capeProduct, galleryImages, product?.image, product?.id]);
+
+  useEffect(() => {
+    if (!hasPreorderMessage) {
+      setHasPreorderAcknowledgment(false);
+      return;
+    }
+    setHasPreorderAcknowledgment(false);
+  }, [hasPreorderMessage, product?.id]);
 
   const markTryOnHintSeen = () => {
     setShowTryOnHint(false);
@@ -155,16 +172,32 @@ const ProductPage = ({
 
   const handleAddToCart = () => {
     if (!product) return;
+    if (hasPreorderMessage && !hasPreorderAcknowledgment) {
+      setShowAcknowledgmentOutline(true);
+      toast.error("Please acknowledge the preorder before continuing.");
+      return;
+    }
 
     setIsAdding(true);
     addItem({ ...product, stock: stockCount || 0 }, quantity);
     setIsAdding(false);
+    if (hasPreorderMessage) {
+      setHasPreorderAcknowledgment(false);
+    }
   };
 
   const handleBuyNow = () => {
     if (!product) return;
+    if (hasPreorderMessage && !hasPreorderAcknowledgment) {
+      setShowAcknowledgmentOutline(true);
+      toast.error("Please acknowledge the preorder before continuing.");
+      return;
+    }
 
     addItem({ ...product, stock: stockCount || 0 }, quantity);
+    if (hasPreorderMessage) {
+      setHasPreorderAcknowledgment(false);
+    }
     router.push("/cart");
   };
 
@@ -451,6 +484,30 @@ const ProductPage = ({
               <p className="text-[var(--foreground)] mb-4">
                 {product.description}
               </p>
+              {hasPreorderMessage && (
+                <div
+                  className={`space-y-3 rounded-xl border bg-[color-mix(in_srgb,var(--surface),#000_8%)] px-4 py-3 text-sm leading-relaxed text-[var(--color-text-secondary)] transition-all ${
+                    showAcknowledgmentOutline
+                      ? "border-amber-400 shadow-[0_0_0_2px_rgba(251,191,36,0.35)]"
+                      : "border-[var(--border)]"
+                  }`}
+                >
+                  <p>{preorderMessage}</p>
+                  <label className="flex cursor-pointer items-start gap-3 text-sm text-[var(--foreground)]">
+                    <input
+                      type="checkbox"
+                      checked={hasPreorderAcknowledgment}
+                      onChange={(event) => {
+                        const checked = event.target.checked;
+                        setHasPreorderAcknowledgment(checked);
+                        if (checked) setShowAcknowledgmentOutline(false);
+                      }}
+                      className="mt-0.5 h-4 w-4 rounded border border-[var(--border)] accent-[var(--primary)]"
+                    />
+                    <span>{PRODUCT_PREORDER_ACKNOWLEDGMENT_LABEL}</span>
+                  </label>
+                </div>
+              )}
             </div>
 
             <div className="mb-8 flex flex-wrap items-center gap-6">

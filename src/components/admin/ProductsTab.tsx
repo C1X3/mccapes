@@ -100,6 +100,7 @@ export default function ProductsTab() {
       slug: product.slug || "",
       name: product.name,
       description: product.description,
+      preorderMessage: product.preorderMessage || "",
       price: product.price,
       stock: product.stock,
       image: product.image,
