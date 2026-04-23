@@ -15,6 +15,7 @@ import { useSearchParams } from "next/navigation";
 import { useRouter } from "next/navigation";
 import {
   getProductBackgroundBlurClasses,
+  isExternalHttpUrl,
   isCapeProduct,
   resolveCapeTexturePath,
   resolveProductBackgroundImage,
@@ -79,6 +80,12 @@ const ShopPage = () => {
         ? products.sort((a, b) => b.price - a.price)[0]
         : null;
   }, [filteredProducts, products]);
+  const featuredBackgroundImage = topProduct
+    ? resolveProductBackgroundImage(topProduct)
+    : null;
+  const featuredBackgroundIsExternal = featuredBackgroundImage
+    ? isExternalHttpUrl(featuredBackgroundImage)
+    : false;
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -144,9 +151,10 @@ const ShopPage = () => {
               >
                 <div className="relative inline-block h-72 aspect-[16/9] overflow-hidden rounded-2xl border border-[var(--border)]">
                   <Image
-                    src={resolveProductBackgroundImage(topProduct)}
+                    src={featuredBackgroundImage ?? "/mc_bg.webp"}
                     alt=""
                     fill
+                    unoptimized={featuredBackgroundIsExternal}
                     className={`object-cover ${getProductBackgroundBlurClasses("default")}`}
                   />
                   <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.14),rgba(0,0,0,0.3))]" />

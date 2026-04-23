@@ -15,6 +15,8 @@ export const isCapeProduct = (product: MediaProduct) =>
 export const resolveProductBackgroundImage = (product: MediaProduct) =>
   product.backgroundImageUrl || DEFAULT_PRODUCT_BACKGROUND_IMAGE;
 
+export const isExternalHttpUrl = (url: string) => /^https?:\/\//i.test(url);
+
 export const resolveCapeTexturePath = (product: MediaProduct) => {
   if (product.capeTextureDataUrl) return product.capeTextureDataUrl;
   const slug = product.slug || "experience";

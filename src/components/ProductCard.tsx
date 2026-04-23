@@ -8,6 +8,7 @@ import { useMemo, useState, type MouseEvent } from "react";
 import ProductCapeViewer from "@/components/ProductCapeViewer";
 import {
   getProductBackgroundBlurClasses,
+  isExternalHttpUrl,
   isCapeProduct,
   resolveCapeTexturePath,
   resolveProductBackgroundImage,
@@ -44,6 +45,7 @@ const CapeImage = ({
 }) => {
   const texturePath = resolveCapeTexturePath(product);
   const backgroundImage = resolveProductBackgroundImage(product);
+  const shouldBypassOptimization = isExternalHttpUrl(backgroundImage);
 
   return (
     <div className="absolute inset-0">
@@ -52,6 +54,7 @@ const CapeImage = ({
         alt=""
         fill
         priority={false}
+        unoptimized={shouldBypassOptimization}
         className={`object-cover ${getProductBackgroundBlurClasses(compact ? "compact" : "default")}`}
       />
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(255,255,255,0.12),rgba(0,0,0,0.28))]" />
