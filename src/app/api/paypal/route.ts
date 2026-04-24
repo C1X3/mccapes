@@ -110,9 +110,7 @@ export async function POST(request: NextRequest) {
       if (product.stock.length < item.quantity) continue;
 
       const oldestStock = product.stock.slice(0, item.quantity);
-      const filteredStock = product.stock.filter(
-        (stock) => !oldestStock.includes(stock),
-      );
+      const filteredStock = product.stock.slice(item.quantity);
       await prisma.product.update({
         where: { id: item.productId },
         data: { stock: filteredStock },

@@ -60,9 +60,7 @@ export async function settleCryptoWalletPayment(input: SettleInput) {
         }
 
         const oldestStock = product.stock.slice(0, item.quantity);
-        const filteredStock = product.stock.filter(
-          (stock) => !oldestStock.includes(stock),
-        );
+        const filteredStock = product.stock.slice(item.quantity);
 
         await tx.product.update({
           where: { id: item.productId },
