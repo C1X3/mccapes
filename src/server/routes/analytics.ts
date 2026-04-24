@@ -103,6 +103,62 @@ const getDateRange = (
   }
 };
 
+const getPreviousDateRange = (
+  timeRange: z.infer<typeof timeRangeSchema>,
+  currentRange: { start: Date; end: Date },
+) => {
+  switch (timeRange) {
+    case "today": {
+      const yesterday = subDays(currentRange.start, 1);
+      return {
+        start: startOfDay(yesterday),
+        end: endOfDay(yesterday),
+      };
+    }
+    case "yesterday": {
+      const dayBeforeYesterday = subDays(currentRange.start, 1);
+      return {
+        start: startOfDay(dayBeforeYesterday),
+        end: endOfDay(dayBeforeYesterday),
+      };
+    }
+    case "past_week":
+      return {
+        start: subDays(currentRange.start, 7),
+        end: subDays(currentRange.end, 7),
+      };
+    case "past_month":
+      return {
+        start: subMonths(currentRange.start, 1),
+        end: subMonths(currentRange.end, 1),
+      };
+    case "past_3_months":
+      return {
+        start: subMonths(currentRange.start, 3),
+        end: subMonths(currentRange.end, 3),
+      };
+    case "past_6_months":
+      return {
+        start: subMonths(currentRange.start, 6),
+        end: subMonths(currentRange.end, 6),
+      };
+    case "past_year":
+      return {
+        start: subMonths(currentRange.start, 12),
+        end: subMonths(currentRange.end, 12),
+      };
+    case "custom":
+    default: {
+      const durationMs = currentRange.end.getTime() - currentRange.start.getTime();
+      const previousEnd = new Date(currentRange.start.getTime() - 1);
+      return {
+        start: new Date(previousEnd.getTime() - durationMs),
+        end: previousEnd,
+      };
+    }
+  }
+};
+
 export const analyticsRouter = createTRPCRouter({
   // Get revenue data
   getRevenue: adminProcedure
@@ -143,19 +199,16 @@ export const analyticsRouter = createTRPCRouter({
         0,
       );
 
-      // Calculate previous period date range
-      const periodLength = dateRange.end.getTime() - dateRange.start.getTime();
-      const prevEnd = new Date(dateRange.start);
-      const prevStart = new Date(prevEnd.getTime() - periodLength);
+      const previousDateRange = getPreviousDateRange(timeRange, dateRange);
 
       // Get previous period revenue for comparison
       const previousPeriodOrders = await prisma.order.findMany({
         where: {
           createdAt: {
-            gte: prevStart,
-            lte: prevEnd,
+            gte: previousDateRange.start,
+            lte: previousDateRange.end,
           },
-          status: "PAID",
+          status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
         },
         select: {
           totalPrice: true,
@@ -212,19 +265,16 @@ export const analyticsRouter = createTRPCRouter({
         },
       });
 
-      // Calculate previous period date range
-      const periodLength = dateRange.end.getTime() - dateRange.start.getTime();
-      const prevEnd = new Date(dateRange.start);
-      const prevStart = new Date(prevEnd.getTime() - periodLength);
+      const previousDateRange = getPreviousDateRange(timeRange, dateRange);
 
       // Get previous period orders for comparison
       const previousPeriodOrders = await prisma.order.count({
         where: {
           createdAt: {
-            gte: prevStart,
-            lte: prevEnd,
+            gte: previousDateRange.start,
+            lte: previousDateRange.end,
           },
-          status: "PAID",
+          status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
         },
       });
 
@@ -665,17 +715,14 @@ export const analyticsRouter = createTRPCRouter({
           ? (currentPeriodOrders / currentPeriodClicks) * 100
           : 0;
 
-      // Calculate previous period date range
-      const periodLength = dateRange.end.getTime() - dateRange.start.getTime();
-      const prevEnd = new Date(dateRange.start);
-      const prevStart = new Date(prevEnd.getTime() - periodLength);
+      const previousDateRange = getPreviousDateRange(timeRange, dateRange);
 
       // Get previous period site clicks
       const previousPeriodClicks = await prisma.siteClick.count({
         where: {
           createdAt: {
-            gte: prevStart,
-            lte: prevEnd,
+            gte: previousDateRange.start,
+            lte: previousDateRange.end,
           },
         },
       });
@@ -684,8 +731,8 @@ export const analyticsRouter = createTRPCRouter({
       const previousPeriodOrders = await prisma.order.count({
         where: {
           createdAt: {
-            gte: prevStart,
-            lte: prevEnd,
+            gte: previousDateRange.start,
+            lte: previousDateRange.end,
           },
           status: { in: [OrderStatus.PAID, OrderStatus.DELIVERED] },
         },
