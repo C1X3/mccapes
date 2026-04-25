@@ -41,10 +41,7 @@ const HeroSection = ({
   const [isHeroPreviewHovered, setIsHeroPreviewHovered] = useState(false);
   const [isBuyNowHovered, setIsBuyNowHovered] = useState(false);
 
-  const activeProducts = useMemo(
-    () => heroProducts.filter((product) => !product.hideHomePage),
-    [heroProducts],
-  );
+  const activeProducts = useMemo(() => heroProducts, [heroProducts]);
   const hasRealProducts = activeProducts.length > 0;
   const heroDisplayProducts = hasRealProducts ? activeProducts : [HERO_FALLBACK_PRODUCT];
   const normalizedIndex =

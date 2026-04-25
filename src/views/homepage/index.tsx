@@ -15,6 +15,9 @@ const HomePage = () => {
   const { data: products } = useQuery(
     trpc.product.getAll.queryOptions({ isHomePage: true }),
   );
+  const { data: heroProducts } = useQuery(
+    trpc.product.getAll.queryOptions({ isProductPage: true }),
+  );
   const { data: articles } = useQuery(
     trpc.article.getAll.queryOptions({ includeInactive: false }),
   );
@@ -37,7 +40,7 @@ const HomePage = () => {
       />
       <section className="relative overflow-visible">
         <div className="relative z-10">
-          <HeroSection heroProducts={products || []} />
+          <HeroSection heroProducts={heroProducts || []} />
         </div>
         <motion.button
           type="button"
